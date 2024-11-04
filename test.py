@@ -4,7 +4,7 @@ from PIL import Image
 from pprint import pp
 
 
-state = load_gens_legacy_state("tests/saves/kidscroll.gs0")
+state = load_gens_legacy_state("testsaves/kidscroll.gs0")
 
 #pp(state.vdp_registers)
 
