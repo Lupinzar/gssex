@@ -1,0 +1,14 @@
+from PIL import Image
+
+test = Image.new('P', (50,50))
+copy = Image.new('P', (4,1))
+
+test.putdata([0, 1, 2])
+copy.putdata([2,2,2,2])
+copy.putpalette([0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00,0xFF])
+copy.save("test_copy.png")
+test.paste(copy, (0,1))
+
+test.putpalette([0xFF, 0x00, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00])
+
+test.save('test.png')
