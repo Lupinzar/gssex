@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/lock.svg</file>
+        <file>icons/palette.svg</file>
+        <file>icons/folder-open.svg</file>
+        <file>icons/chevron-left.svg</file>
+        <file>icons/chevron-right.svg</file>
+        <file>icons/file.svg</file>
+        <file>icons/lock-open-2.svg</file>
+    </qresource>
+</RCC>

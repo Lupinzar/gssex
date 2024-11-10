@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import BinaryIO, Tuple, Iterable
 from struct import Struct
-from .enums import ScrollMode
+from .static import ScrollMode
 
 class Buffer:
     def __init__(self, data: bytearray):
@@ -258,6 +258,10 @@ def load_gens_legacy_state(filepath: str) -> SaveState:
         Buffer(vsram),
         VDPRegisters.read_vdp_registers(Buffer(vdp_regs))
     )
+
+STATE_FORMATS = {
+    'gens_legacy': load_gens_legacy_state
+}
 
 '''
 Helper Functions
