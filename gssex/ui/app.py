@@ -22,12 +22,6 @@ class App():
         self.load_file_list()
         return True
     
-    def select_first_file(self) -> bool:
-        if not len(self.file_list):
-            return False
-        self.current_file = self.file_list[0]
-        return True
-    
     def open_file(self, path) -> bool:
         if not isfile(path):
             return False
@@ -50,6 +44,28 @@ class App():
                     continue
                 self.file_list.append(entry.name)
         self.file_list.sort()
+
+    def select_first_file(self) -> bool:
+        if not len(self.file_list):
+            return False
+        self.current_file = self.file_list[0]
+        return True
+        
+    def adjust_file_index(self, increment: int) -> bool:
+        if not self.directory:
+            return False
+        self.load_file_list()
+        try:
+            new_index = self.file_list.index(self.current_file) + increment
+            print(new_index)
+            if new_index < 0 or new_index >= len(self.file_list):
+                return False
+            self.current_file = self.file_list[new_index]
+            self.valid_file = False
+            self.savestate = None
+            return True
+        except:
+            return False        
 
     #gens formatted for now...
     @staticmethod

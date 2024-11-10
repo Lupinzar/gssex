@@ -15,6 +15,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.action_open_folder.triggered.connect(self.open_folder)
         self.action_open_file.triggered.connect(self.open_file)
+        self.action_previous_file.triggered.connect(self.previous_file)
+        self.action_next_file.triggered.connect(self.next_file)
 
     def show_timed_status_message(self, message: str):
         self.statusbar.showMessage(message, App.DEFAULT_STATUS_TIMEOUT)
@@ -29,7 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.app.select_first_file():
             self.label_opened_file.setText(f"{self.app.directory} (no save states)")
             return
-        self.update_opened_label()
+        self.update_file_ui()
         #TODO: handle savestate opening and refresh
 
     def open_file(self):
@@ -39,9 +41,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.app.open_file(file[0]):
             self.show_timed_status_message(f"Could not open {file}")
             return
-        self.update_opened_label()
+        self.update_file_ui()
+        #TODO: handle savestate opening and refresh
 
-    def update_opened_label(self):
+    def next_file(self):
+        if not self.app.adjust_file_index(1):
+            self.show_timed_status_message("Already at last save state")
+            return
+        self.update_file_ui()
+        #TODO: handle savestate opening and refresh
+
+    def previous_file(self):
+        if not self.app.adjust_file_index(-1):
+            self.show_timed_status_message("Already at first save state")
+            return
+        self.update_file_ui()
+
+    def update_file_ui(self):
         self.label_opened_file.setText(f"{self.app.directory}/{self.app.current_file}")
 
             
