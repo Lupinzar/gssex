@@ -29,7 +29,7 @@ class ColorButton(QPushButton):
             self.setStyleSheet("")
 
     def color(self) -> QColor:
-        return self._color()
+        return self._color
     
     def onColorPicker(self):
         dialog = QColorDialog.getColor(initial=self._color)
