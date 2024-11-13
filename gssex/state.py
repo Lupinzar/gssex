@@ -259,9 +259,15 @@ def load_gens_legacy_state(filepath: str) -> SaveState:
         VDPRegisters.read_vdp_registers(Buffer(vdp_regs))
     )
 
-STATE_FORMATS = {
+FORMAT_FUNCTIONS = {
     'gens_legacy': load_gens_legacy_state
 }
+
+FORMAT_NAMES = {
+    'gens_legacy': 'Gens Legacy / KMOD'
+}
+
+NAMES_FORMAT = dict(reversed(item) for item in FORMAT_NAMES.items())
 
 '''
 Helper Functions

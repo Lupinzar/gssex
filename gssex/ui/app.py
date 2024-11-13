@@ -74,6 +74,7 @@ class App():
     
 class Config():
     def __init__(self):
-        self.use_neutral: bool = True
-        self.neutral_color: Tuple = (0xFB, 0x8C, 0xFF)
+        self.override_background: bool = True
+        self.override_color: int = 0xFB8CFF
         self.state_format: str = 'gens_legacy'
+        self.output_path: str = '.'
