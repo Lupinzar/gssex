@@ -24,6 +24,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_select_button.pressed.connect(self.select_output_dir)
         self.default_config_button.pressed.connect(self.restore_config_defaults)
 
+        #palette tab
+        self.global_swatch.show_gssex_pal(self.app.global_pal)
+
         self.action_open_folder.triggered.connect(self.open_folder)
         self.action_open_file.triggered.connect(self.open_file)
         self.action_previous_file.triggered.connect(self.previous_file)

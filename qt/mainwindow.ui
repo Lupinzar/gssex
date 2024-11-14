@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
@@ -49,7 +49,7 @@
           <height>111</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0" columnstretch="0,0">
+        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0">
          <property name="sizeConstraint">
           <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
@@ -164,6 +164,55 @@
        <attribute name="title">
         <string>Palette</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="__state_pal_label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>State Palette - Right click to copy a single color to the Global palette</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PaletteSwatch" name="state_swatch" native="true">
+          <property name="editable" stdset="0">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="copy_palette_button">
+          <property name="text">
+           <string>Copy</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="__global_pal_label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Global Palette - Left click a color to edit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PaletteSwatch" name="global_swatch" native="true">
+          <property name="editable" stdset="0">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_layers">
        <attribute name="title">
@@ -282,6 +331,12 @@
    <class>ColorButton</class>
    <extends>QPushButton</extends>
    <header>..ui.colorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PaletteSwatch</class>
+   <extends>QWidget</extends>
+   <header>..ui.paletteswatch.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

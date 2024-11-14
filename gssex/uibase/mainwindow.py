@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QTabWidget, QToolBar, QVBoxLayout, QWidget)
 
 from ..ui.colorbutton import ColorButton
+from ..ui.paletteswatch import PaletteSwatch
 from . import resource_rc
 
 class Ui_MainWindow(object):
@@ -150,6 +151,42 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_settings, "")
         self.tab_palette = QWidget()
         self.tab_palette.setObjectName(u"tab_palette")
+        self.verticalLayout_2 = QVBoxLayout(self.tab_palette)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.__state_pal_label = QLabel(self.tab_palette)
+        self.__state_pal_label.setObjectName(u"__state_pal_label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.__state_pal_label.sizePolicy().hasHeightForWidth())
+        self.__state_pal_label.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_2.addWidget(self.__state_pal_label)
+
+        self.state_swatch = PaletteSwatch(self.tab_palette)
+        self.state_swatch.setObjectName(u"state_swatch")
+        self.state_swatch.setProperty(u"editable", False)
+
+        self.verticalLayout_2.addWidget(self.state_swatch)
+
+        self.copy_palette_button = QPushButton(self.tab_palette)
+        self.copy_palette_button.setObjectName(u"copy_palette_button")
+
+        self.verticalLayout_2.addWidget(self.copy_palette_button)
+
+        self.__global_pal_label = QLabel(self.tab_palette)
+        self.__global_pal_label.setObjectName(u"__global_pal_label")
+        sizePolicy1.setHeightForWidth(self.__global_pal_label.sizePolicy().hasHeightForWidth())
+        self.__global_pal_label.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_2.addWidget(self.__global_pal_label)
+
+        self.global_swatch = PaletteSwatch(self.tab_palette)
+        self.global_swatch.setObjectName(u"global_swatch")
+        self.global_swatch.setProperty(u"editable", True)
+
+        self.verticalLayout_2.addWidget(self.global_swatch)
+
         self.tabWidget.addTab(self.tab_palette, "")
         self.tab_layers = QWidget()
         self.tab_layers.setObjectName(u"tab_layers")
@@ -178,7 +215,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -217,6 +254,9 @@ class Ui_MainWindow(object):
         self.bg_color_button.setText("")
         self.default_config_button.setText(QCoreApplication.translate("MainWindow", u"Restore Defaults", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
+        self.__state_pal_label.setText(QCoreApplication.translate("MainWindow", u"State Palette - Right click to copy a single color to the Global palette", None))
+        self.copy_palette_button.setText(QCoreApplication.translate("MainWindow", u"Copy", None))
+        self.__global_pal_label.setText(QCoreApplication.translate("MainWindow", u"Global Palette - Left click a color to edit", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_layers), QCoreApplication.translate("MainWindow", u"Layers", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Hardware Sprites", None))

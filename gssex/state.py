@@ -119,6 +119,10 @@ class Palette:
 
     def flattened_colors(self) -> list:
         return [part for color in self.colors for part in color]
+    
+    def get_color_as_rgb(self, index: int) -> int:
+        color = self.colors[index]
+        return (color[0]) << 16 | (color[1] << 8) | color[2]
 
     @staticmethod
     def make_index(palette: int, index: int):
