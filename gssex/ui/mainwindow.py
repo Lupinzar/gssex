@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
 from ..uibase.mainwindow import Ui_MainWindow
 from ..static import APPLICATION_NAME, RELEASE
@@ -13,8 +13,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle(f"{APPLICATION_NAME} {RELEASE}")
         self.app = App()
         self.config = Config()
+        self.config.load()
         self.setup_state_combo()
         self.refresh_config()
+
+        #config changes
+        self.bg_color_toggle.toggled.connect(self.update_config)
+        self.bg_color_button.colorChanged.connect(self.update_config)
+        self.state_format_combo.currentTextChanged.connect(self.update_config)
+        self.output_select_button.pressed.connect(self.select_output_dir)
+        self.default_config_button.pressed.connect(self.restore_config_defaults)
 
         self.action_open_folder.triggered.connect(self.open_folder)
         self.action_open_file.triggered.connect(self.open_file)
@@ -74,4 +82,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_directory_line.setPlaceholderText(self.config.output_path)
         self.bg_color_button.setColor(QColor(self.config.override_color))
 
-            
+    def update_config(self):
+        self.config.override_background = self.bg_color_toggle.isChecked()
+        self.config.override_color = self.bg_color_button.color().rgb()
+        self.config.output_path = self.output_directory_line.placeholderText()
+        self.config.state_format = NAMES_FORMAT[self.state_format_combo.currentText()]
+        self.save_config()
+
+    def save_config(self):
+        if self.config.save():
+            self.show_timed_status_message('Configuration saved')
+        else:
+            self.show_timed_status_message(f'Warning: Could not save configuration to {Config.CONFIG_PATH}')
+    
+    def select_output_dir(self):
+        directory = QFileDialog.getExistingDirectory(self, "Select images output directory...", self.config.output_path)
+        if not directory:
+            return
+        self.config.output_path = directory
+        self.refresh_config()
+        self.update_config()
+
+    def restore_config_defaults(self):
+        answer = QMessageBox.question(
+            self, 
+            "Confirmation", 
+            "Are you sure you want to restore defaults?\nYour current configuration will be lost.", QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+
+        if answer != QMessageBox.Yes:
+            return
+        self.config = Config()
+        self.refresh_config()
+        self.save_config()

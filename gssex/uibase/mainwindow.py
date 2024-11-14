@@ -78,12 +78,22 @@ class Ui_MainWindow(object):
         self.tab_settings.setObjectName(u"tab_settings")
         self.gridLayoutWidget = QWidget(self.tab_settings)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 421, 118))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 421, 111))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.gridLayout.setHorizontalSpacing(20)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.__state_format = QLabel(self.gridLayoutWidget)
+        self.__state_format.setObjectName(u"__state_format")
+
+        self.gridLayout.addWidget(self.__state_format, 3, 0, 1, 1)
+
+        self.state_format_combo = QComboBox(self.gridLayoutWidget)
+        self.state_format_combo.setObjectName(u"state_format_combo")
+
+        self.gridLayout.addWidget(self.state_format_combo, 3, 1, 1, 1)
+
         self.__bg_color_toggle_label = QLabel(self.gridLayoutWidget)
         self.__bg_color_toggle_label.setObjectName(u"__bg_color_toggle_label")
 
@@ -131,17 +141,12 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.bg_color_button, 1, 1, 1, 1)
 
-        self.__state_format = QLabel(self.gridLayoutWidget)
-        self.__state_format.setObjectName(u"__state_format")
-
-        self.gridLayout.addWidget(self.__state_format, 3, 0, 1, 1)
-
-        self.state_format_combo = QComboBox(self.gridLayoutWidget)
-        self.state_format_combo.setObjectName(u"state_format_combo")
-
-        self.gridLayout.addWidget(self.state_format_combo, 3, 1, 1, 1)
-
-        self.gridLayout.setRowMinimumHeight(0, 24)
+        self.default_config_button = QPushButton(self.tab_settings)
+        self.default_config_button.setObjectName(u"default_config_button")
+        self.default_config_button.setEnabled(True)
+        self.default_config_button.setGeometry(QRect(10, 130, 93, 24))
+        sizePolicy.setHeightForWidth(self.default_config_button.sizePolicy().hasHeightForWidth())
+        self.default_config_button.setSizePolicy(sizePolicy)
         self.tabWidget.addTab(self.tab_settings, "")
         self.tab_palette = QWidget()
         self.tab_palette.setObjectName(u"tab_palette")
@@ -199,6 +204,7 @@ class Ui_MainWindow(object):
         self.action_open_file.setToolTip(QCoreApplication.translate("MainWindow", u"Select Save State File", None))
 #endif // QT_CONFIG(tooltip)
         self.label_opened_file.setText(QCoreApplication.translate("MainWindow", u"opened file label", None))
+        self.__state_format.setText(QCoreApplication.translate("MainWindow", u"Save State Format", None))
         self.__bg_color_toggle_label.setText(QCoreApplication.translate("MainWindow", u"Override Background Color", None))
         self.bg_color_toggle.setText("")
         self.__bg_color_override_label.setText(QCoreApplication.translate("MainWindow", u"Override Color", None))
@@ -209,7 +215,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.output_select_button.setText("")
         self.bg_color_button.setText("")
-        self.__state_format.setText(QCoreApplication.translate("MainWindow", u"Save State Format", None))
+        self.default_config_button.setText(QCoreApplication.translate("MainWindow", u"Restore Defaults", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_layers), QCoreApplication.translate("MainWindow", u"Layers", None))
