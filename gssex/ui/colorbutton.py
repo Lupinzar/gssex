@@ -10,13 +10,12 @@ https://www.pythonguis.com/widgets/qcolorbutton-a-color-selector-tool-for-pyqt/
 class ColorButton(QPushButton):
     colorChanged: Signal = Signal(QColor)
 
-    def __init__(self, *args, color=None, **kwargs):
+    def __init__(self, *args, color=0xFFFFFF, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._color: QColor = QColor(0xFFFFFF)
-        self._default: QColor = color
+        self._color: QColor = QColor(color)
         self.pressed.connect(self.onColorPicker)
-        self.setColor(self._default)
+        self.setColor(self._color)
 
     def setColor(self, color):
         if color != self._color:
