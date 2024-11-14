@@ -107,7 +107,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         answer = QMessageBox.question(
             self, 
             "Confirmation", 
-            "Are you sure you want to restore defaults?\nYour current configuration will be lost.", QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            "Are you sure you want to restore defaults?\nYour current configuration will be lost.", 
+            QMessageBox.Yes | QMessageBox.No, 
+            QMessageBox.No
         )
 
         if answer != QMessageBox.Yes:
