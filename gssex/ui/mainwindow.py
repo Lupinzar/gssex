@@ -1,9 +1,11 @@
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
+from PySide6.QtCore import Signal
 from ..uibase.mainwindow import Ui_MainWindow
 from ..static import APPLICATION_NAME, RELEASE
 from ..state import FORMAT_NAMES, NAMES_FORMAT
 from .app import App, Config
+from .rendertab import RenderTab
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -17,6 +19,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_state_combo()
         self.refresh_config()
 
+        #tabs
+        self.tab_palette.bind_states(self.app, self.config)
+        self.tab_palette.statusMessage.connect(self.show_timed_status_message)
+        self.main_tabs.currentChanged.connect(self.handle_tab_changed)
+
         #config changes
         self.bg_color_toggle.toggled.connect(self.update_config)
         self.bg_color_button.colorChanged.connect(self.update_config)
@@ -24,13 +31,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_select_button.pressed.connect(self.select_output_dir)
         self.default_config_button.pressed.connect(self.restore_config_defaults)
 
-        #palette tab
-        self.global_swatch.show_gssex_pal(self.app.global_pal)
-
         self.action_open_folder.triggered.connect(self.open_folder)
         self.action_open_file.triggered.connect(self.open_file)
         self.action_previous_file.triggered.connect(self.previous_file)
         self.action_next_file.triggered.connect(self.next_file)
+
+        #after everything is loaded/setup, handle any tab updates
+        self.handle_tab_changed()
         
     #dynamically load the combo box based on the supported formats in state module
     def setup_state_combo(self):
@@ -120,3 +127,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config = Config()
         self.refresh_config()
         self.save_config()
+
+    def handle_tab_changed(self):
+        if isinstance(self.main_tabs.currentWidget(), RenderTab):
+            self.main_tabs.currentWidget().fullRefresh.emit()

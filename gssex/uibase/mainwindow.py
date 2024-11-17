@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QTabWidget, QToolBar, QVBoxLayout, QWidget)
 
 from ..ui.colorbutton import ColorButton
-from ..ui.paletteswatch import PaletteSwatch
+from ..ui.tabpalette import TabPalette
 from . import resource_rc
 
 class Ui_MainWindow(object):
@@ -73,8 +73,8 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.label_opened_file)
 
-        self.tabWidget = QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName(u"tabWidget")
+        self.main_tabs = QTabWidget(self.centralwidget)
+        self.main_tabs.setObjectName(u"main_tabs")
         self.tab_settings = QWidget()
         self.tab_settings.setObjectName(u"tab_settings")
         self.gridLayoutWidget = QWidget(self.tab_settings)
@@ -148,54 +148,21 @@ class Ui_MainWindow(object):
         self.default_config_button.setGeometry(QRect(10, 130, 93, 24))
         sizePolicy.setHeightForWidth(self.default_config_button.sizePolicy().hasHeightForWidth())
         self.default_config_button.setSizePolicy(sizePolicy)
-        self.tabWidget.addTab(self.tab_settings, "")
-        self.tab_palette = QWidget()
+        self.main_tabs.addTab(self.tab_settings, "")
+        self.tab_palette = TabPalette()
         self.tab_palette.setObjectName(u"tab_palette")
-        self.verticalLayout_2 = QVBoxLayout(self.tab_palette)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.__state_pal_label = QLabel(self.tab_palette)
-        self.__state_pal_label.setObjectName(u"__state_pal_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.__state_pal_label.sizePolicy().hasHeightForWidth())
-        self.__state_pal_label.setSizePolicy(sizePolicy1)
-
-        self.verticalLayout_2.addWidget(self.__state_pal_label)
-
-        self.state_swatch = PaletteSwatch(self.tab_palette)
-        self.state_swatch.setObjectName(u"state_swatch")
-        self.state_swatch.setProperty(u"editable", False)
-
-        self.verticalLayout_2.addWidget(self.state_swatch)
-
-        self.copy_palette_button = QPushButton(self.tab_palette)
-        self.copy_palette_button.setObjectName(u"copy_palette_button")
-
-        self.verticalLayout_2.addWidget(self.copy_palette_button)
-
-        self.__global_pal_label = QLabel(self.tab_palette)
-        self.__global_pal_label.setObjectName(u"__global_pal_label")
-        sizePolicy1.setHeightForWidth(self.__global_pal_label.sizePolicy().hasHeightForWidth())
-        self.__global_pal_label.setSizePolicy(sizePolicy1)
-
-        self.verticalLayout_2.addWidget(self.__global_pal_label)
-
-        self.global_swatch = PaletteSwatch(self.tab_palette)
-        self.global_swatch.setObjectName(u"global_swatch")
-        self.global_swatch.setProperty(u"editable", True)
-
-        self.verticalLayout_2.addWidget(self.global_swatch)
-
-        self.tabWidget.addTab(self.tab_palette, "")
+        self.main_tabs.addTab(self.tab_palette, "")
+        self.tab_vram = QWidget()
+        self.tab_vram.setObjectName(u"tab_vram")
+        self.main_tabs.addTab(self.tab_vram, "")
         self.tab_layers = QWidget()
         self.tab_layers.setObjectName(u"tab_layers")
-        self.tabWidget.addTab(self.tab_layers, "")
+        self.main_tabs.addTab(self.tab_layers, "")
         self.tab_hw_sprites = QWidget()
         self.tab_hw_sprites.setObjectName(u"tab_hw_sprites")
-        self.tabWidget.addTab(self.tab_hw_sprites, "")
+        self.main_tabs.addTab(self.tab_hw_sprites, "")
 
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.verticalLayout.addWidget(self.main_tabs)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -215,7 +182,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.main_tabs.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -253,13 +220,11 @@ class Ui_MainWindow(object):
         self.output_select_button.setText("")
         self.bg_color_button.setText("")
         self.default_config_button.setText(QCoreApplication.translate("MainWindow", u"Restore Defaults", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.__state_pal_label.setText(QCoreApplication.translate("MainWindow", u"State Palette - Right click to copy a single color to the Global palette", None))
-        self.copy_palette_button.setText(QCoreApplication.translate("MainWindow", u"Copy", None))
-        self.__global_pal_label.setText(QCoreApplication.translate("MainWindow", u"Global Palette - Left click a color to edit", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_layers), QCoreApplication.translate("MainWindow", u"Layers", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Hardware Sprites", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_vram), QCoreApplication.translate("MainWindow", u"VRAM", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_layers), QCoreApplication.translate("MainWindow", u"Layers", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Hardware Sprites", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
 

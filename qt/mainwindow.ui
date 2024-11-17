@@ -32,7 +32,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
        <number>1</number>
       </property>
@@ -160,59 +160,15 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_palette">
+      <widget class="TabPalette" name="tab_palette">
        <attribute name="title">
         <string>Palette</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="__state_pal_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>State Palette - Right click to copy a single color to the Global palette</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="PaletteSwatch" name="state_swatch" native="true">
-          <property name="editable" stdset="0">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="copy_palette_button">
-          <property name="text">
-           <string>Copy</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="__global_pal_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Global Palette - Left click a color to edit</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="PaletteSwatch" name="global_swatch" native="true">
-          <property name="editable" stdset="0">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_vram">
+       <attribute name="title">
+        <string>VRAM</string>
+       </attribute>
       </widget>
       <widget class="QWidget" name="tab_layers">
        <attribute name="title">
@@ -333,9 +289,9 @@
    <header>..ui.colorbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>PaletteSwatch</class>
+   <class>TabPalette</class>
    <extends>QWidget</extends>
-   <header>..ui.paletteswatch.h</header>
+   <header>..ui.tabpalette.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
