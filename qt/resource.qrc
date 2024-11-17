@@ -8,5 +8,7 @@
         <file>icons/file.svg</file>
         <file>icons/lock-open-2.svg</file>
         <file>icons/chevron-down.svg</file>
+        <file>icons/device-floppy.svg</file>
+        <file>icons/restore.svg</file>
     </qresource>
 </RCC>
