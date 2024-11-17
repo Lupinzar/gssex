@@ -59,7 +59,6 @@ class App():
         self.load_file_list()
         try:
             new_index = self.file_list.index(self.current_file) + increment
-            print(new_index)
             if new_index < 0 or new_index >= len(self.file_list):
                 return False
             self.current_file = self.file_list[new_index]
