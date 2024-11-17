@@ -3,6 +3,9 @@ from os.path import isdir, isfile, dirname, basename, realpath
 from os import scandir
 from ..state import SaveState, Palette, FORMAT_FUNCTIONS
 import json
+from PIL.ImageQt import ImageQt as ImageQt
+from PIL.Image import Image
+from PySide6.QtGui import QGuiApplication
 
 class App():
     DEFAULT_STATUS_TIMEOUT = 4000
@@ -111,3 +114,10 @@ class Config():
             return True
         except Exception as e:
             return False
+        
+def pil_to_qimage(image: Image) -> ImageQt:
+    return ImageQt(image)
+
+def pil_to_clipboard(image: Image):
+    clipboard = QGuiApplication.clipboard()
+    clipboard.setImage(pil_to_qimage(image))
