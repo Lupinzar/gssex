@@ -1,7 +1,7 @@
 from typing import Tuple
 from os.path import isdir, isfile, dirname, basename, realpath
 from os import scandir
-from ..state import SaveState, Palette, FORMAT_FUNCTIONS
+from ..state import SaveState, Palette, FORMAT_FUNCTIONS, load_wrapper
 import json
 from PIL.ImageQt import ImageQt as ImageQt
 from PIL.Image import Image
@@ -16,6 +16,7 @@ class App():
         self.savestate: SaveState = None
         self.file_list: list = []
         self.global_pal: Palette = Palette.make_unique()
+        self.state_pal: Palette
 
     def open_directory(self, path) -> bool:
         if not isdir(path):
@@ -69,7 +70,22 @@ class App():
             self.savestate = None
             return True
         except:
-            return False        
+            return False
+        
+    def load_state(self, format: str) -> bool:
+        #important to reset this
+        self.valid_file = False
+        try:
+            self.savestate = load_wrapper(self.make_path(), format)
+            self.state_pal = Palette.from_cram(self.savestate.c_ram_buffer)
+            self.valid_file = True
+        except Exception as e:
+            #TODO: logging
+            pass
+        return self.valid_file
+
+    def make_path(self) -> str:
+        return f'{self.directory}/{self.current_file}'
 
     #gens formatted for now...
     @staticmethod

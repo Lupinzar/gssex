@@ -9,6 +9,7 @@ from PySide6.QtGui import QColor
 from typing import Tuple
 from os.path import isfile, dirname
 import json
+import copy
 
 class TabPalette(RenderTab, Ui_TabPalette):
     STATE_NOT_VALID_MSG = 'No valid save state currently loaded'
@@ -21,11 +22,12 @@ class TabPalette(RenderTab, Ui_TabPalette):
         self.last_save_path = ''
         self.last_open_path = ''
         self.fullRefresh.connect(self.refresh_tab)
+        self.saveStateChanged.connect(self.update_state_swatch)
         self.global_swatch.colorChanged.connect(self.update_global_palette)
         self.copy_palette_button.pressed.connect(self.copy_all_to_global)
         self.state_swatch.colorCopy.connect(self.copy_single_to_global)
         self.global_restore_button.pressed.connect(self.restore_global)
-        self.global_export_button.pressed.connect(lambda: self.export_to_file(self.app.global_pal))
+        self.global_export_button.pressed.connect(lambda: self.export_to_file(self.app.global_pal, 'global'))
         self.global_import_button.pressed.connect(self.import_file)
         self.global_clipboard_button.pressed.connect(lambda: self.copy_to_clipboard(self.app.global_pal))
         self.state_export_button.pressed.connect(self.state_export_to_file)
@@ -35,10 +37,13 @@ class TabPalette(RenderTab, Ui_TabPalette):
         if not self.app:
             raise Exception("Application state not bound")
         if(self.app.valid_file):
-            pass #TODO: add code for save state refresh
+            self.update_state_swatch()
         else:
             self.state_swatch.empty()
         self.update_global_swatch()
+
+    def update_state_swatch(self):
+        self.state_swatch.show_gssex_pal(self.app.state_pal)
 
     def update_global_swatch(self):
         self.global_swatch.show_gssex_pal(self.app.global_pal)
@@ -50,13 +55,15 @@ class TabPalette(RenderTab, Ui_TabPalette):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
-        #TODO: code save state copy
+        self.app.global_pal.colors[index] = self.app.state_pal.colors[index]
+        self.update_global_swatch()
 
     def copy_all_to_global(self):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
-        #TODO: code save state copy
+        self.app.global_pal = copy.deepcopy(self.app.state_pal)
+        self.update_global_swatch()
 
     def restore_global(self):
         self.app.global_pal = Palette.make_unique()
@@ -88,9 +95,9 @@ class TabPalette(RenderTab, Ui_TabPalette):
         except Exception as e:
             self.statusMessage.emit(f"Could not load {dialog[0]}: {e}")
 
-    def export_to_file(self, palette: Palette):
+    def export_to_file(self, palette: Palette, name_hint: str = ''):
         suggested = self.last_save_path or f'{self.config.output_path}'
-        suggested += '/global'
+        suggested += f'/{name_hint}'
         dialog = QFileDialog.getSaveFileName(parent=self, dir=suggested, filter='JSON (*.json);;Image (*.png)')
         if not dialog[1]:
             return
@@ -110,15 +117,13 @@ class TabPalette(RenderTab, Ui_TabPalette):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
-        #TODO: state handling
-        #self.export_to_file(yada yada)
+        self.export_to_file(self.app.state_pal, f'{self.app.current_file}_pal')
 
     def state_copy_to_clipboard(self):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
-        #TODO: state handling
-        #self.copy_to_clipboard(yada yada)
+        self.copy_to_clipboard(self.app.state_pal)
 
     def save_json(self, palette: Palette, path: str):
         with open(path, 'w') as fp:

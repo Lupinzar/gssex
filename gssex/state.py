@@ -248,7 +248,13 @@ class PatternData:
 
 '''
 Savestate loading functions
-'''  
+'''
+def load_wrapper(filepath: str, format: str):
+    if not format in FORMAT_FUNCTIONS:
+        raise Exception(f'Unknown save state format {format}')
+    func = FORMAT_FUNCTIONS[format]
+    return func(filepath)
+
 def load_gens_legacy_state(filepath: str) -> SaveState:
     with open(filepath, 'rb') as f:
         cram = read_block_and_validate(f, 0x0112, SaveState.CRAM_SIZE)

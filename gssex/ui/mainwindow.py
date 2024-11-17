@@ -58,7 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_opened_file.setText(f"{self.app.directory} (no save states)")
             return
         self.update_file_ui()
-        #TODO: handle savestate opening and refresh
+        self.load_state()
 
     def open_file(self):
         file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)")
@@ -68,23 +68,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.show_timed_status_message(f"Could not open {file}")
             return
         self.update_file_ui()
-        #TODO: handle savestate opening and refresh
+        self.load_state()
 
     def next_file(self):
         if not self.app.adjust_file_index(1):
             self.show_timed_status_message("Already at last save state")
             return
         self.update_file_ui()
-        #TODO: handle savestate opening and refresh
+        self.load_state()
 
     def previous_file(self):
         if not self.app.adjust_file_index(-1):
             self.show_timed_status_message("Already at first save state")
             return
         self.update_file_ui()
+        self.load_state()
+
+    def load_state(self):
+        if not self.app.load_state(self.config.state_format):
+            self.show_timed_status_message(f"Could not load {self.app.make_path()}")
+        if isinstance(self.main_tabs.currentWidget(), RenderTab):
+            self.main_tabs.currentWidget().saveStateChanged.emit()
 
     def update_file_ui(self):
-        self.label_opened_file.setText(f"{self.app.directory}/{self.app.current_file}")
+        self.label_opened_file.setText(self.app.make_path())
 
     def refresh_config(self):
         self.bg_color_toggle.setChecked(self.config.override_background)
