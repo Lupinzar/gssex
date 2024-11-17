@@ -7,5 +7,6 @@
         <file>icons/chevron-right.svg</file>
         <file>icons/file.svg</file>
         <file>icons/lock-open-2.svg</file>
+        <file>icons/chevron-down.svg</file>
     </qresource>
 </RCC>
