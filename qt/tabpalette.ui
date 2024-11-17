@@ -54,6 +54,23 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="state_clipboard_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Clipboard</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/icons/clipboard.svg</normaloff>:/icons/clipboard.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="copy_palette_button">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -121,6 +138,23 @@
        <property name="icon">
         <iconset resource="resource.qrc">
          <normaloff>:/icons/device-floppy.svg</normaloff>:/icons/device-floppy.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="global_clipboard_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Clipboard</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/icons/clipboard.svg</normaloff>:/icons/clipboard.svg</iconset>
        </property>
       </widget>
      </item>

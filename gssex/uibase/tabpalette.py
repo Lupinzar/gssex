@@ -59,13 +59,23 @@ class Ui_TabPalette(object):
 
         self.horizontalLayout_2.addWidget(self.state_export_button)
 
+        self.state_clipboard_button = QPushButton(TabPalette)
+        self.state_clipboard_button.setObjectName(u"state_clipboard_button")
+        sizePolicy1.setHeightForWidth(self.state_clipboard_button.sizePolicy().hasHeightForWidth())
+        self.state_clipboard_button.setSizePolicy(sizePolicy1)
+        icon1 = QIcon()
+        icon1.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.state_clipboard_button.setIcon(icon1)
+
+        self.horizontalLayout_2.addWidget(self.state_clipboard_button)
+
         self.copy_palette_button = QPushButton(TabPalette)
         self.copy_palette_button.setObjectName(u"copy_palette_button")
         sizePolicy1.setHeightForWidth(self.copy_palette_button.sizePolicy().hasHeightForWidth())
         self.copy_palette_button.setSizePolicy(sizePolicy1)
-        icon1 = QIcon()
-        icon1.addFile(u":/icons/chevron-down.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.copy_palette_button.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/chevron-down.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.copy_palette_button.setIcon(icon2)
 
         self.horizontalLayout_2.addWidget(self.copy_palette_button)
 
@@ -99,13 +109,21 @@ class Ui_TabPalette(object):
 
         self.horizontalLayout.addWidget(self.global_export_button)
 
+        self.global_clipboard_button = QPushButton(TabPalette)
+        self.global_clipboard_button.setObjectName(u"global_clipboard_button")
+        sizePolicy1.setHeightForWidth(self.global_clipboard_button.sizePolicy().hasHeightForWidth())
+        self.global_clipboard_button.setSizePolicy(sizePolicy1)
+        self.global_clipboard_button.setIcon(icon1)
+
+        self.horizontalLayout.addWidget(self.global_clipboard_button)
+
         self.global_import_button = QPushButton(TabPalette)
         self.global_import_button.setObjectName(u"global_import_button")
         sizePolicy1.setHeightForWidth(self.global_import_button.sizePolicy().hasHeightForWidth())
         self.global_import_button.setSizePolicy(sizePolicy1)
-        icon2 = QIcon()
-        icon2.addFile(u":/icons/folder-open.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.global_import_button.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/icons/folder-open.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.global_import_button.setIcon(icon3)
 
         self.horizontalLayout.addWidget(self.global_import_button)
 
@@ -113,9 +131,9 @@ class Ui_TabPalette(object):
         self.global_restore_button.setObjectName(u"global_restore_button")
         sizePolicy1.setHeightForWidth(self.global_restore_button.sizePolicy().hasHeightForWidth())
         self.global_restore_button.setSizePolicy(sizePolicy1)
-        icon3 = QIcon()
-        icon3.addFile(u":/icons/restore.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.global_restore_button.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/icons/restore.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.global_restore_button.setIcon(icon4)
 
         self.horizontalLayout.addWidget(self.global_restore_button)
 
@@ -140,9 +158,11 @@ class Ui_TabPalette(object):
         TabPalette.setWindowTitle(QCoreApplication.translate("TabPalette", u"Form", None))
         self.__state_pal_label.setText(QCoreApplication.translate("TabPalette", u"State Palette - Right click to copy a single color to the Global palette", None))
         self.state_export_button.setText(QCoreApplication.translate("TabPalette", u"Export", None))
+        self.state_clipboard_button.setText(QCoreApplication.translate("TabPalette", u"Clipboard", None))
         self.copy_palette_button.setText(QCoreApplication.translate("TabPalette", u"Copy All to Global", None))
         self.__global_pal_label.setText(QCoreApplication.translate("TabPalette", u"Global Palette - Left click a color to edit", None))
         self.global_export_button.setText(QCoreApplication.translate("TabPalette", u"Export", None))
+        self.global_clipboard_button.setText(QCoreApplication.translate("TabPalette", u"Clipboard", None))
         self.global_import_button.setText(QCoreApplication.translate("TabPalette", u"Import", None))
         self.global_restore_button.setText(QCoreApplication.translate("TabPalette", u"Restore Default", None))
     # retranslateUi

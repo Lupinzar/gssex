@@ -1,7 +1,8 @@
 from .rendertab import RenderTab
 from ..uibase.tabpalette import Ui_TabPalette
-from .app import App
+from .app import App, pil_to_clipboard
 from ..state import Palette
+from ..render import PaletteImage
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtGui import QColor
@@ -26,7 +27,9 @@ class TabPalette(RenderTab, Ui_TabPalette):
         self.global_restore_button.pressed.connect(self.restore_global)
         self.global_export_button.pressed.connect(lambda: self.export_to_file(self.app.global_pal))
         self.global_import_button.pressed.connect(self.import_file)
+        self.global_clipboard_button.pressed.connect(lambda: self.copy_to_clipboard(self.app.global_pal))
         self.state_export_button.pressed.connect(self.state_export_to_file)
+        self.state_clipboard_button.pressed.connect(self.state_copy_to_clipboard)
 
     def refresh_tab(self):
         if not self.app:
@@ -89,13 +92,17 @@ class TabPalette(RenderTab, Ui_TabPalette):
         suggested = self.last_save_path or f'{self.config.output_path}'
         suggested += '/global'
         dialog = QFileDialog.getSaveFileName(parent=self, dir=suggested, filter='JSON (*.json);;Image (*.png)')
+        if not dialog[1]:
+            return
         try:
             if dialog[1] == 'JSON (*.json)':
-                self.last_save_path = dirname(dialog[0])
                 self.save_json(palette, dialog[0])
             elif dialog[1] == 'Image (*.png)':
-                self.last_save_path = dirname(dialog[0])
                 self.save_png(palette, dialog[0])
+            else:
+                raise Exception(f"Unhandled type {dialog[1]}")
+            self.last_save_path = dirname(dialog[0])
+            self.statusMessage.emit(f"Saved {dialog[0]}")
         except Exception as e:
             self.statusMessage.emit(f"Could not save {dialog[0]}: {e}")
 
@@ -106,13 +113,28 @@ class TabPalette(RenderTab, Ui_TabPalette):
         #TODO: state handling
         #self.export_to_file(yada yada)
 
+    def state_copy_to_clipboard(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
+            return
+        #TODO: state handling
+        #self.copy_to_clipboard(yada yada)
+
     def save_json(self, palette: Palette, path: str):
         with open(path, 'w') as fp:
             json.dump(palette.colors, fp)
 
     def save_png(self, palette: Palette, path: str):
-        #TODO: need to make a palette render for this...
-        pass
+        render = PaletteImage(palette)
+        img = render.get_image()
+        img.save(path)
+        img.close()
+
+    def copy_to_clipboard(self, palette: Palette):
+        render = PaletteImage(palette)
+        img = render.get_image()
+        pil_to_clipboard(img)
+        img.close()
 
     @staticmethod
     def qcolor_to_tuple(color: QColor) -> Tuple[int, int, int]:
