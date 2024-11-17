@@ -1,5 +1,5 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
-from gssex.render import SpriteImage
+from gssex.render import SpriteImage, PaletteImage
 from PIL import Image
 from pprint import pp
 
@@ -14,6 +14,9 @@ st = SpriteTable(state)
 
 pal = Palette.from_cram(state.c_ram_buffer)
 #pal = Palette.make_unique()
+
+pi = PaletteImage(pal)
+pi.get_image().save("testoutput/palrender.png")
 
 pat = PatternData(state.v_ram_buffer, use_cache=False)
 pattern = pat.get_pattern_by_number(561,0)

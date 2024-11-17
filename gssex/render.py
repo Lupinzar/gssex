@@ -1,5 +1,5 @@
-from .state import PatternData, HardwareSprite, mask_from_bytes
-from PIL import Image
+from .state import PatternData, HardwareSprite, Palette, mask_from_bytes
+from PIL import Image, ImageDraw
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -49,3 +49,27 @@ class SpriteImage:
         if not self.rendered:
             self.render()
         return self.mask
+    
+class PaletteImage():
+    def __init__(self, palette: Palette, swatch_size=16):
+        self.palette = palette
+        self.swatch_size = 16
+
+    def get_image(self) -> Image.Image:
+        image = Image.new('P', (Palette.SIZE * self.swatch_size, Palette.GROUP_SIZE * self.swatch_size))
+        draw = ImageDraw.Draw(image)
+        for k in range(0, Palette.SIZE * Palette.GROUP_SIZE):
+            x = k % Palette.SIZE
+            y = k // Palette.SIZE
+            draw.rectangle(
+                ((
+                    x * self.swatch_size,
+                    y * self.swatch_size
+                ),(
+                    x * self.swatch_size + self.swatch_size - 1,
+                    y * self.swatch_size + self.swatch_size - 1
+                )),
+                k
+            )
+        image.putpalette(self.palette.flattened_colors())
+        return image
