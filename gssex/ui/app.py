@@ -5,7 +5,7 @@ from ..state import SaveState, Palette, FORMAT_FUNCTIONS
 import json
 
 class App():
-    DEFAULT_STATUS_TIMEOUT = 3000
+    DEFAULT_STATUS_TIMEOUT = 4000
     def __init__(self):
         self.directory = None
         self.current_file = None

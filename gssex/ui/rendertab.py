@@ -10,7 +10,7 @@ class RenderTab(QWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.app: App
-        self.config: App
+        self.config: Config
     
     #need to find a better way to do this
     def bind_states(self, app: App, config: Config):
