@@ -10,5 +10,6 @@
         <file>icons/chevron-down.svg</file>
         <file>icons/device-floppy.svg</file>
         <file>icons/restore.svg</file>
+        <file>icons/clipboard.svg</file>
     </qresource>
 </RCC>
