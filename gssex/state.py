@@ -64,24 +64,24 @@ class VDPRegisters:
             return ScrollMode.CELL
         return ScrollMode.LINE
     
-    @staticmethod
-    def read_vdp_registers(buffer: Buffer) -> 'VDPRegisters':
-        vdp_struct = Struct(f'{VDPRegisters.SIZE}B')
+    @classmethod
+    def read_vdp_registers(cls, buffer: Buffer) -> 'VDPRegisters':
+        vdp_struct = Struct(f'{cls.SIZE}B')
         data = buffer.read_struct(vdp_struct, 0)
-        return VDPRegisters(
+        return cls(
             30 if data[1] & 0x08 else 28,
             (data[2] & 0x38) << 10,
             (data[3] & 0x3E) << 10,
             (data[4] & 0x07) << 13,
             (data[5] & 0x7F) << 9,
             data[7],
-            VDPRegisters.get_scroll_mode_v(data[11]),
-            VDPRegisters.get_scroll_mode_h(data[11]),
+            cls.get_scroll_mode_v(data[11]),
+            cls.get_scroll_mode_h(data[11]),
             40 if data[12] & 0x81 else 32,
             bool(data[12] & 0x3F),
             (data[13] & 0x3F) << 10,
-            VDPRegisters.get_scroll_size(data[16] & 0x03),
-            VDPRegisters.get_scroll_size((data[16] & 0x30) >> 4),
+            cls.get_scroll_size(data[16] & 0x03),
+            cls.get_scroll_size((data[16] & 0x30) >> 4),
             bool(data[17] & 0x80),
             data[17] & 0x1F,
             bool(data[18] & 0x80),
@@ -123,6 +123,33 @@ class Palette:
     def get_color_as_rgb(self, index: int) -> int:
         color = self.colors[index]
         return (color[0] << 16) | (color[1] << 8) | color[2]
+    
+    @classmethod
+    def from_cram(cls, buffer: Buffer) -> 'Palette':
+        data = buffer.read_struct(
+            Struct(f'<{cls.SIZE * cls.GROUP_SIZE}H'),
+            0
+        )
+        colors = []
+        for gen_color in data:
+            color = (
+                cls.map[gen_color & 0x000E],
+                cls.map[(gen_color & 0x00E0) >> 4],
+                cls.map[(gen_color & 0x0E00) >> 8]
+            )
+            colors.append(color)
+        return cls(colors)
+    
+    @classmethod
+    def make_unique(cls) -> 'Palette':
+        pals = [[],[],[],[]]
+        for ndx in range(0, cls.SIZE):
+            val = (ndx + 1) * 16 - 1
+            pals[0].append((val, val, val))
+            pals[1].append((val, 0, 0))
+            pals[2].append((0, val, 0))
+            pals[3].append((0, 0, val))
+        return cls(pals[0] + pals[1] + pals[2] + pals[3])
 
     @staticmethod
     def make_index(palette: int, index: int):
@@ -131,33 +158,6 @@ class Palette:
     @staticmethod
     def is_transparent(index: int):
         return bool(index & 0x0F)
-
-    @staticmethod
-    def from_cram(buffer: Buffer) -> 'Palette':
-        data = buffer.read_struct(
-            Struct(f'<{Palette.SIZE * Palette.GROUP_SIZE}H'),
-            0
-        )
-        colors = []
-        for gen_color in data:
-            color = (
-                Palette.map[gen_color & 0x000E],
-                Palette.map[(gen_color & 0x00E0) >> 4],
-                Palette.map[(gen_color & 0x0E00) >> 8]
-            )
-            colors.append(color)
-        return Palette(colors)
-    
-    @staticmethod
-    def make_unique() -> 'Palette':
-        pals = [[],[],[],[]]
-        for ndx in range(0, Palette.SIZE):
-            val = (ndx + 1) * 16 - 1
-            pals[0].append((val, val, val))
-            pals[1].append((val, 0, 0))
-            pals[2].append((0, val, 0))
-            pals[3].append((0, 0, val))
-        return Palette(pals[0] + pals[1] + pals[2] + pals[3])
     
 @dataclass
 class HardwareSprite:
