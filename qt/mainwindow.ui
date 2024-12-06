@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
@@ -165,7 +165,7 @@
         <string>Palette</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="tab_vram">
+      <widget class="TabVram" name="tab_vram">
        <attribute name="title">
         <string>VRAM</string>
        </attribute>
@@ -292,6 +292,12 @@
    <class>TabPalette</class>
    <extends>QWidget</extends>
    <header>..ui.tabpalette.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabVram</class>
+   <extends>QWidget</extends>
+   <header>..ui.tabvram.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

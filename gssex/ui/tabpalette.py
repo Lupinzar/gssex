@@ -18,7 +18,6 @@ class TabPalette(RenderTab, Ui_TabPalette):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setupUi(self)
-        self.app: App
         self.last_save_path = ''
         self.last_open_path = ''
         self.fullRefresh.connect(self.refresh_tab)

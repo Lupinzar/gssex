@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
 
 from ..ui.colorbutton import ColorButton
 from ..ui.tabpalette import TabPalette
+from ..ui.tabvram import TabVram
 from . import resource_rc
 
 class Ui_MainWindow(object):
@@ -152,7 +153,7 @@ class Ui_MainWindow(object):
         self.tab_palette = TabPalette()
         self.tab_palette.setObjectName(u"tab_palette")
         self.main_tabs.addTab(self.tab_palette, "")
-        self.tab_vram = QWidget()
+        self.tab_vram = TabVram()
         self.tab_vram.setObjectName(u"tab_vram")
         self.main_tabs.addTab(self.tab_vram, "")
         self.tab_layers = QWidget()
@@ -182,7 +183,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.main_tabs.setCurrentIndex(1)
+        self.main_tabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
