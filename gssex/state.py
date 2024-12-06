@@ -93,11 +93,11 @@ class SaveState:
     CRAM_SIZE = 128
     VSRAM_SIZE = 80
 
-    def __init__(self, c_ram_buffer: bytearray, v_ram_buffer: bytearray, vs_ram_buffer: bytearray, vdp_registers: type[VDPRegisters]):
+    def __init__(self, c_ram_buffer: bytearray, v_ram_buffer: bytearray, vs_ram_buffer: bytearray, vdp_registers: VDPRegisters):
         self.c_ram_buffer: Buffer = c_ram_buffer
         self.v_ram_buffer: Buffer = v_ram_buffer
         self.vs_ram_buffer: Buffer = vs_ram_buffer
-        self.vdp_registers: Buffer = vdp_registers
+        self.vdp_registers: VDPRegisters = vdp_registers
 
 class Palette:
     SIZE = 16
@@ -216,11 +216,13 @@ class SpriteTable:
 
 class PatternData:
 
-    def __init__(self, buffer: Buffer, tile_size: Tuple = (8, 8), use_cache=False):
+    def __init__(self, buffer: Buffer, tile_size: Tuple[int, int] = (8, 8), use_cache=False):
         self.buffer: Buffer = buffer
+        self.tile_size: Tuple[int, int] = tile_size
         self.tile_width: int = tile_size[0]
         self.tile_height: int = tile_size[1]
         self.tile_byte_size: int = (self.tile_width * self.tile_height) // 2
+        self.tile_count: int = len(self.buffer.data) // self.tile_byte_size
         self.use_cache: bool = use_cache
         self.cache: dict = {}
 
@@ -243,7 +245,6 @@ class PatternData:
 
     def get_pattern_by_number(self, number: int, palette: int) -> list:
         return self.get_pattern(number * self.tile_byte_size, palette)
-
 
 
 '''

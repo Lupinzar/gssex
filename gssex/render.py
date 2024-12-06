@@ -1,5 +1,7 @@
 from .state import PatternData, HardwareSprite, Palette, mask_from_bytes
 from PIL import Image, ImageDraw
+from dataclasses import dataclass
+from typing import Tuple
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -73,3 +75,42 @@ class PaletteImage():
             )
         image.putpalette(self.palette.flattened_colors())
         return image
+
+@dataclass
+class VramRender():
+    patterns: PatternData
+    palette: int = 0
+    bgcolor: int = 0
+    tiles_wide: int = 16
+    pivot: bool = False  #rwar
+
+    def get_image(self) -> Image.Image:
+        size_in_tiles = self.get_size_in_tiles()
+        size_in_px = (
+            size_in_tiles[0] * self.patterns.tile_width,
+            size_in_tiles[1] * self.patterns.tile_height
+        )
+        image = Image.new('P', size_in_px, self.bgcolor)
+        for tc in range(0, self.patterns.tile_count):
+            pos = (tc % self.tiles_wide, tc // self.tiles_wide)
+            if self.pivot:
+                pos = (pos[1], pos[0])
+            tile_data = self.patterns.get_pattern_by_number(tc, self.palette)
+            tile = Image.new('P', self.patterns.tile_size)
+            tile.putdata(tile_data)
+            mask = Image.new('1', self.patterns.tile_size)
+            mask.putdata(mask_from_bytes(tile_data))
+            image.paste(tile, (pos[0] * self.patterns.tile_width, pos[1] * self.patterns.tile_height), mask=mask)
+            tile.close()
+            mask.close()
+        return image
+
+    def get_size_in_tiles(self) -> Tuple[int, int]:
+        tile_count = self.patterns.tile_count
+        size = (
+            self.tiles_wide,
+            (tile_count // self.tiles_wide) + (tile_count % self.tiles_wide)
+        )
+        if self.pivot:
+            size = (size[1], size[0])
+        return size

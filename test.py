@@ -1,5 +1,5 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
-from gssex.render import SpriteImage, PaletteImage
+from gssex.render import SpriteImage, PaletteImage, VramRender
 from PIL import Image
 from pprint import pp
 
@@ -42,3 +42,8 @@ sprite = si.get_image()
 sprite.putpalette(pal.flattened_colors())
 sprite.save('testoutput/spritetest.png')
 si.get_mask().save('testoutput/spritemask.png')
+
+vr = VramRender(pat, 2, 2<<4, pivot=True)
+vr_img = vr.get_image()
+vr_img.putpalette(pal.flattened_colors())
+vr_img.save('testoutput/vram.png')
