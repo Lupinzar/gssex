@@ -43,7 +43,7 @@ sprite.putpalette(pal.flattened_colors())
 sprite.save('testoutput/spritetest.png')
 si.get_mask().save('testoutput/spritemask.png')
 
-vr = VramRender(pat, 2, 2<<4, pivot=True)
+vr = VramRender(pat, 0, 0, pivot=True)
 vr_img = vr.get_image()
 vr_img.putpalette(pal.flattened_colors())
 vr_img.save('testoutput/vram.png')

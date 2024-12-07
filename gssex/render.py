@@ -95,14 +95,10 @@ class VramRender():
             pos = (tc % self.tiles_wide, tc // self.tiles_wide)
             if self.pivot:
                 pos = (pos[1], pos[0])
-            tile_data = self.patterns.get_pattern_by_number(tc, self.palette)
-            tile = Image.new('P', self.patterns.tile_size)
-            tile.putdata(tile_data)
-            mask = Image.new('1', self.patterns.tile_size)
-            mask.putdata(mask_from_bytes(tile_data))
-            image.paste(tile, (pos[0] * self.patterns.tile_width, pos[1] * self.patterns.tile_height), mask=mask)
-            tile.close()
-            mask.close()
+            image_data = tile_image_and_mask(self.patterns.get_pattern_by_number(tc, self.palette), self.patterns.tile_size)
+            image.paste(image_data[0], (pos[0] * self.patterns.tile_width, pos[1] * self.patterns.tile_height), mask=image_data[1])
+            for img in image_data:
+                img.close()
         return image
 
     def get_size_in_tiles(self) -> Tuple[int, int]:
@@ -114,3 +110,14 @@ class VramRender():
         if self.pivot:
             size = (size[1], size[0])
         return size
+    
+'''
+Helper functions
+'''
+
+def tile_image_and_mask(pattern: list[int], size: Tuple[int, int]) -> Tuple[Image.Image, Image.Image]:
+    image = Image.new('P', size)
+    image.putdata(pattern)
+    mask = Image.new('1', size)
+    mask.putdata(mask_from_bytes(pattern))
+    return (image, mask)
