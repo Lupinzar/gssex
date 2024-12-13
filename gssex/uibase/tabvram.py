@@ -18,6 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QComboBox, QFormLayout,
     QHBoxLayout, QLabel, QPushButton, QScrollArea,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+from . import resource_rc
 
 class Ui_TabVram(object):
     def setupUi(self, TabVram):
@@ -105,6 +106,9 @@ class Ui_TabVram(object):
 
         self.copy_button = QPushButton(TabVram)
         self.copy_button.setObjectName(u"copy_button")
+        icon = QIcon()
+        icon.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.copy_button.setIcon(icon)
 
         self.horizontalLayout.addWidget(self.copy_button)
 

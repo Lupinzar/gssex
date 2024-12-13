@@ -1,7 +1,7 @@
 from .rendertab import RenderTab
 from ..uibase.tabvram import Ui_TabVram
 from ..render import VramRender
-from .app import pil_to_qimage
+from .app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
@@ -17,6 +17,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.zoom_combo.currentIndexChanged.connect(self.redraw)
         self.pal_combo.currentIndexChanged.connect(self.redraw)
         self.pivot_button.clicked.connect(self.redraw)
+        self.copy_button.clicked.connect(self.copy_to_clipboard)
 
     def redraw(self):
         if not self.app.valid_file:
@@ -35,6 +36,14 @@ class TabVram(RenderTab, Ui_TabVram):
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.FastTransformation)
         )
+        pilimg.close()
+
+    def copy_to_clipboard(self):
+        if not self.app.valid_file:
+            return
+        img = self.get_pil_image()
+        pil_to_clipboard(img)
+        img.close()
 
     def get_pil_image(self) -> Image.Image:
         pal_data = self.app.get_palette_and_background(self.config)

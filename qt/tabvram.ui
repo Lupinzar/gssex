@@ -166,6 +166,10 @@
          <property name="text">
           <string>Copy</string>
          </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/clipboard.svg</normaloff>:/icons/clipboard.svg</iconset>
+         </property>
         </widget>
        </item>
       </layout>
@@ -187,6 +191,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
