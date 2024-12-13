@@ -14,15 +14,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_opened_file.setText("(No save state opened)")
         self.setWindowTitle(f"{APPLICATION_NAME} {RELEASE}")
         self.app = App()
-        self.config = Config()
-        self.config.load()
+        self.app.config.load()
         self.setup_state_combo()
         self.refresh_config()
 
         #tabs
-        self.tab_palette.bind_states(self.app, self.config)
+        self.tab_palette.bind_states(self.app)
         self.tab_palette.statusMessage.connect(self.show_timed_status_message)
-        self.tab_vram.bind_states(self.app, self.config)
+        self.tab_vram.bind_states(self.app)
         self.tab_palette.statusMessage.connect(self.show_timed_status_message)
 
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
@@ -89,7 +88,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.load_state()
 
     def load_state(self):
-        if not self.app.load_state(self.config.state_format):
+        if not self.app.load_state(self.app.config.state_format):
             self.show_timed_status_message(f"Could not load {self.app.make_path()}")
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
             self.main_tabs.currentWidget().saveStateChanged.emit()
@@ -98,29 +97,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_opened_file.setText(self.app.make_path())
 
     def refresh_config(self):
-        self.bg_color_toggle.setChecked(self.config.override_background)
-        self.state_format_combo.setCurrentText(FORMAT_NAMES[self.config.state_format])
-        self.output_directory_line.setPlaceholderText(self.config.output_path)
-        self.bg_color_button.setColor(QColor(self.config.override_color))
+        self.bg_color_toggle.setChecked(self.app.config.override_background)
+        self.state_format_combo.setCurrentText(FORMAT_NAMES[self.app.config.state_format])
+        self.output_directory_line.setPlaceholderText(self.app.config.output_path)
+        self.bg_color_button.setColor(QColor(self.app.config.override_color))
 
     def update_config(self):
-        self.config.override_background = self.bg_color_toggle.isChecked()
-        self.config.override_color = self.bg_color_button.color().rgb()
-        self.config.output_path = self.output_directory_line.placeholderText()
-        self.config.state_format = NAMES_FORMAT[self.state_format_combo.currentText()]
+        self.app.config.override_background = self.bg_color_toggle.isChecked()
+        self.app.config.override_color = self.bg_color_button.color().rgb()
+        self.app.config.output_path = self.output_directory_line.placeholderText()
+        self.app.config.state_format = NAMES_FORMAT[self.state_format_combo.currentText()]
         self.save_config()
 
     def save_config(self):
-        if self.config.save():
+        if self.app.config.save():
             self.show_timed_status_message('Configuration saved')
         else:
             self.show_timed_status_message(f'Warning: Could not save configuration to {Config.CONFIG_PATH}')
     
     def select_output_dir(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select images output directory...", self.config.output_path)
+        directory = QFileDialog.getExistingDirectory(self, "Select images output directory...", self.app.config.output_path)
         if not directory:
             return
-        self.config.output_path = directory
+        self.app.config.output_path = directory
         self.refresh_config()
         self.update_config()
 
@@ -141,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if answer != QMessageBox.Yes:
             return
-        self.config = Config()
+        self.app.config = Config()
         self.refresh_config()
         self.save_config()
 

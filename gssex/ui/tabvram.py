@@ -46,7 +46,7 @@ class TabVram(RenderTab, Ui_TabVram):
         img.close()
 
     def get_pil_image(self) -> Image.Image:
-        pal_data = self.app.get_palette_and_background(self.config)
+        pal_data = self.app.get_palette_and_background()
         render = VramRender(self.app.savestate.pattern_data, self.pal_combo.currentIndex(), pal_data[0], pivot=self.pivot_button.isChecked())
         img = render.get_image()
         img.putpalette(pal_data[1].flattened_colors())

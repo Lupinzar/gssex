@@ -11,6 +11,7 @@ from copy import deepcopy
 class App():
     DEFAULT_STATUS_TIMEOUT = 4000
     def __init__(self):
+        self.config: Config = Config()
         self.directory: str|None = None
         self.current_file: str|None = None
         self.valid_file: bool = False
@@ -90,13 +91,13 @@ class App():
         return f'{self.directory}/{self.current_file}'
     
     #does the dirty work of figuring out which palette to use and if we need to replace the bg color based on our config
-    def get_palette_and_background(self, config: 'Config') -> Tuple[int, Palette]:
+    def get_palette_and_background(self) -> Tuple[int, Palette]:
         palref = self.global_pal if self.use_global_pal else self.state_pal
         palette = deepcopy(palref)
 
-        if config.override_background:
+        if self.config.override_background:
             bgindex = 0
-            palette.colors[0] = Palette.int_to_tuple(config.override_color)
+            palette.colors[0] = Palette.int_to_tuple(self.config.override_color)
         else:
             bgindex = self.savestate.vdp_registers.bg_color_index
         return (bgindex, palette)

@@ -69,7 +69,7 @@ class TabPalette(RenderTab, Ui_TabPalette):
         self.update_global_swatch()
 
     def import_file(self):
-        suggested = self.last_open_path or self.config.output_path
+        suggested = self.last_open_path or self.app.config.output_path
         dialog = QFileDialog.getOpenFileName(parent=self, dir=suggested, filter='JSON (*.json)')
         if not isfile(dialog[0]):
             return
@@ -95,7 +95,7 @@ class TabPalette(RenderTab, Ui_TabPalette):
             self.statusMessage.emit(f"Could not load {dialog[0]}: {e}")
 
     def export_to_file(self, palette: Palette, name_hint: str = ''):
-        suggested = self.last_save_path or f'{self.config.output_path}'
+        suggested = self.last_save_path or f'{self.app.config.output_path}'
         suggested += f'/{name_hint}'
         dialog = QFileDialog.getSaveFileName(parent=self, dir=suggested, filter='JSON (*.json);;Image (*.png)')
         if not dialog[1]:
