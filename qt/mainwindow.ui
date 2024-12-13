@@ -253,14 +253,14 @@
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/icons/lock-open-2.svg</normaloff>
-     <normalon>:/icons/lock.svg</normalon>:/icons/lock-open-2.svg</iconset>
+     <normaloff>:/icons/palette.svg</normaloff>
+     <normalon>:/icons/world.svg</normalon>:/icons/palette.svg</iconset>
    </property>
    <property name="text">
-    <string>Lock Palette</string>
+    <string>Swap Palette</string>
    </property>
    <property name="toolTip">
-    <string>Lock Palette</string>
+    <string>Swap Palette</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
