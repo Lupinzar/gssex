@@ -98,6 +98,7 @@ class SaveState:
         self.v_ram_buffer: Buffer = v_ram_buffer
         self.vs_ram_buffer: Buffer = vs_ram_buffer
         self.vdp_registers: VDPRegisters = vdp_registers
+        self.pattern_data: PatternData = PatternData(v_ram_buffer)
 
 class Palette:
     SIZE = 16
@@ -158,6 +159,14 @@ class Palette:
     @staticmethod
     def is_transparent(index: int):
         return bool(index & 0x0F)
+    
+    @staticmethod
+    def int_to_tuple(color: int) -> Tuple[int, int, int]:
+        return (
+            (color >> 16) & 0xFF,
+            (color >> 8) & 0xFF,
+            color & 0xFF
+        )
     
 @dataclass
 class HardwareSprite:

@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QHBoxLayout,
-    QLabel, QPushButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QComboBox, QFormLayout,
+    QHBoxLayout, QLabel, QPushButton, QScrollArea,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_TabVram(object):
     def setupUi(self, TabVram):
@@ -26,20 +26,42 @@ class Ui_TabVram(object):
         TabVram.resize(400, 300)
         self.horizontalLayout_2 = QHBoxLayout(TabVram)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.scrollArea = QScrollArea(TabVram)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setWidgetResizable(True)
+        self.scroll_area = QScrollArea(TabVram)
+        self.scroll_area.setObjectName(u"scroll_area")
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll_area.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.scroll_area.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 186, 280))
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents.setSizePolicy(sizePolicy)
+        self.main_label = QLabel(self.scrollAreaWidgetContents)
+        self.main_label.setObjectName(u"main_label")
+        self.main_label.setGeometry(QRect(0, 0, 69, 16))
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.main_label.sizePolicy().hasHeightForWidth())
+        self.main_label.setSizePolicy(sizePolicy1)
+        self.main_label.setScaledContents(False)
+        self.scroll_area.setWidget(self.scrollAreaWidgetContents)
 
-        self.horizontalLayout_2.addWidget(self.scrollArea)
+        self.horizontalLayout_2.addWidget(self.scroll_area)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
+        self._zoom_label = QLabel(TabVram)
+        self._zoom_label.setObjectName(u"_zoom_label")
+
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self._zoom_label)
+
         self.zoom_combo = QComboBox(TabVram)
         self.zoom_combo.addItem("")
         self.zoom_combo.addItem("")
@@ -70,11 +92,6 @@ class Ui_TabVram(object):
         self.pivot_button.setFlat(False)
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.pivot_button)
-
-        self._zoom_label = QLabel(TabVram)
-        self._zoom_label.setObjectName(u"_zoom_label")
-
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self._zoom_label)
 
 
         self.verticalLayout.addLayout(self.formLayout)
@@ -109,6 +126,8 @@ class Ui_TabVram(object):
 
     def retranslateUi(self, TabVram):
         TabVram.setWindowTitle(QCoreApplication.translate("TabVram", u"Form", None))
+        self.main_label.setText(QCoreApplication.translate("TabVram", u"VRAM Image", None))
+        self._zoom_label.setText(QCoreApplication.translate("TabVram", u"Zoom", None))
         self.zoom_combo.setItemText(0, QCoreApplication.translate("TabVram", u"1", None))
         self.zoom_combo.setItemText(1, QCoreApplication.translate("TabVram", u"2", None))
         self.zoom_combo.setItemText(2, QCoreApplication.translate("TabVram", u"4", None))
@@ -121,7 +140,6 @@ class Ui_TabVram(object):
         self.pal_combo.setItemText(3, QCoreApplication.translate("TabVram", u"3", None))
 
         self.pivot_button.setText(QCoreApplication.translate("TabVram", u"Pivot", None))
-        self._zoom_label.setText(QCoreApplication.translate("TabVram", u"Zoom", None))
         self.save_button.setText(QCoreApplication.translate("TabVram", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabVram", u"Copy", None))
     # retranslateUi

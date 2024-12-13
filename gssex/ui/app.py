@@ -6,17 +6,19 @@ import json
 from PIL.ImageQt import ImageQt as ImageQt
 from PIL.Image import Image
 from PySide6.QtGui import QGuiApplication
+from copy import deepcopy
 
 class App():
     DEFAULT_STATUS_TIMEOUT = 4000
     def __init__(self):
-        self.directory = None
-        self.current_file = None
-        self.valid_file = False
+        self.directory: str|None = None
+        self.current_file: str|None = None
+        self.valid_file: bool = False
         self.savestate: SaveState = None
         self.file_list: list = []
         self.global_pal: Palette = Palette.make_unique()
         self.state_pal: Palette
+        self.use_global_pal: bool = False
 
     def open_directory(self, path) -> bool:
         if not isdir(path):
@@ -86,6 +88,19 @@ class App():
 
     def make_path(self) -> str:
         return f'{self.directory}/{self.current_file}'
+    
+    #does the dirty work of figuring out which palette to use and if we need to replace the bg color based on our config
+    def get_palette_and_background(self, config: 'Config') -> Tuple[int, Palette]:
+        palref = self.global_pal if self.use_global_pal else self.state_pal
+        palette = deepcopy(palref)
+
+        if config.override_background:
+            bgindex = 0
+            palette.colors[0] = Palette.int_to_tuple(config.override_color)
+        else:
+            bgindex = self.savestate.vdp_registers.bg_color_index
+        return (bgindex, palette)
+
 
     #gens formatted for now...
     @staticmethod

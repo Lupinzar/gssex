@@ -22,6 +22,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #tabs
         self.tab_palette.bind_states(self.app, self.config)
         self.tab_palette.statusMessage.connect(self.show_timed_status_message)
+        self.tab_vram.bind_states(self.app, self.config)
+        self.tab_palette.statusMessage.connect(self.show_timed_status_message)
+
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
 
         #config changes
@@ -35,6 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_open_file.triggered.connect(self.open_file)
         self.action_previous_file.triggered.connect(self.previous_file)
         self.action_next_file.triggered.connect(self.next_file)
+        self.action_lock_palette.triggered.connect(self.update_pal_lock)
 
         #after everything is loaded/setup, handle any tab updates
         self.handle_tab_changed()
@@ -119,6 +123,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config.output_path = directory
         self.refresh_config()
         self.update_config()
+
+    def update_pal_lock(self):
+        self.app.use_global_pal = self.action_lock_palette.isChecked()
+        if isinstance(self.main_tabs.currentWidget(), RenderTab):
+            self.main_tabs.currentWidget().paletteSwapped.emit()
+
 
     def restore_config_defaults(self):
         answer = QMessageBox.question(

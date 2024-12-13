@@ -6,6 +6,7 @@ class RenderTab(QWidget):
     fullRefresh: Signal = Signal()
     saveStateChanged: Signal = Signal()
     statusMessage: Signal = Signal(str)
+    paletteSwapped: Signal = Signal()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
