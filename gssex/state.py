@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import BinaryIO, Tuple, Iterable
+from typing import BinaryIO, Tuple, Iterable, Self
 from struct import Struct
 from .static import ScrollMode
 
@@ -20,6 +20,12 @@ class Buffer:
         return self.data[position:end]
     def read_struct(self, struct: Struct, position: int = None) -> Tuple:
         return struct.unpack(self.read_bytes(struct.size, position))
+    def length(self) -> int:
+        return len(self.data)
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.data[index.start:index.stop:index.step]
+        return self.data[index]
 
 @dataclass
 class VDPRegisters:
@@ -231,7 +237,7 @@ class PatternData:
         self.tile_width: int = tile_size[0]
         self.tile_height: int = tile_size[1]
         self.tile_byte_size: int = (self.tile_width * self.tile_height) // 2
-        self.tile_count: int = len(self.buffer.data) // self.tile_byte_size
+        self.tile_count: int = self.buffer.length() // self.tile_byte_size
         self.use_cache: bool = use_cache
         self.cache: dict = {}
 
@@ -253,7 +259,15 @@ class PatternData:
         return mask_from_bytes(pattern)
 
     def get_pattern_by_number(self, number: int, palette: int) -> list:
-        return self.get_pattern(number * self.tile_byte_size, palette)
+        return self.get_pattern(self.number_to_offset(number), palette)
+    
+    def get_subset(self, offset: int, tiles_max: int) -> Self:
+        end = min(self.buffer.length(), tiles_max * self.tile_byte_size + offset)
+        buffer = Buffer(self.buffer[offset:end])
+        return PatternData(buffer)
+
+    def number_to_offset(self, number: int):
+        return number * self.tile_byte_size
 
 
 '''

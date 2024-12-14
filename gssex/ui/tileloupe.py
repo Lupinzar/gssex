@@ -12,7 +12,6 @@ class TileLoupe(QWidget):
     def __init__(self, parent, zoom: int = 2):
         super().__init__(parent)
         self.zoom = zoom
-        self.reference: None|int = None
         self.width_spin = QSpinBox()
         self.height_spin = QSpinBox()
         self.image_label = QLabel()
