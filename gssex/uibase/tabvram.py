@@ -101,14 +101,17 @@ class Ui_TabVram(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.save_button = QPushButton(TabVram)
         self.save_button.setObjectName(u"save_button")
+        icon = QIcon()
+        icon.addFile(u":/icons/device-floppy.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.save_button.setIcon(icon)
 
         self.horizontalLayout.addWidget(self.save_button)
 
         self.copy_button = QPushButton(TabVram)
         self.copy_button.setObjectName(u"copy_button")
-        icon = QIcon()
-        icon.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.copy_button.setIcon(icon)
+        icon1 = QIcon()
+        icon1.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.copy_button.setIcon(icon1)
 
         self.horizontalLayout.addWidget(self.copy_button)
 

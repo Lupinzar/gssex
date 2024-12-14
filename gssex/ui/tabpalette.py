@@ -12,7 +12,6 @@ import json
 import copy
 
 class TabPalette(RenderTab, Ui_TabPalette):
-    STATE_NOT_VALID_MSG = 'No valid save state currently loaded'
     globalPalChanged: Signal = Signal()
 
     def __init__(self, **kwargs):

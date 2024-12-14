@@ -102,6 +102,15 @@ class App():
             bgindex = self.savestate.vdp_registers.bg_color_index
         return (bgindex, palette)
 
+    def save_image(self, image: Image, path: str) -> bool:
+        try:
+            image.save(path)
+            return True
+        except Exception:
+            return False
+        
+    def build_image_output_path(self, key: str) -> str:
+        return f'{self.config.output_path}/{basename(self.current_file)}_{key}.png'
 
     #gens formatted for now...
     @staticmethod

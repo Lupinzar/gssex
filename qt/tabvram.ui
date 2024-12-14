@@ -159,6 +159,10 @@
          <property name="text">
           <string>Save</string>
          </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/device-floppy.svg</normaloff>:/icons/device-floppy.svg</iconset>
+         </property>
         </widget>
        </item>
        <item>

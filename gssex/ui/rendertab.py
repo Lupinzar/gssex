@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget
 from .app import App, Config
 
 class RenderTab(QWidget):
+    STATE_NOT_VALID_MSG = 'No valid save state currently loaded'
     fullRefresh: Signal = Signal()
     saveStateChanged: Signal = Signal()
     statusMessage: Signal = Signal(str)

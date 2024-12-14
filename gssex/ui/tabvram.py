@@ -18,6 +18,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.pal_combo.currentIndexChanged.connect(self.redraw)
         self.pivot_button.clicked.connect(self.redraw)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
+        self.save_button.clicked.connect(self.save_image)
 
     def redraw(self):
         if not self.app.valid_file:
@@ -40,10 +41,24 @@ class TabVram(RenderTab, Ui_TabVram):
 
     def copy_to_clipboard(self):
         if not self.app.valid_file:
+            self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
         img = self.get_pil_image()
         pil_to_clipboard(img)
         img.close()
+
+    def save_image(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
+            return
+        img = self.get_pil_image()
+        pal_type = 'global' if self.app.use_global_pal else 'local'
+        pivot = '_pivot' if self.pivot_button.isChecked() else ''
+        path = self.app.build_image_output_path(f'vram_{pal_type}_{self.pal_combo.currentText()}{pivot}')
+        if self.app.save_image(img, path):
+            self.statusMessage.emit(f"Output {path}")
+        else:
+            self.statusMessage.emit(f"Error outputting {path}")
 
     def get_pil_image(self) -> Image.Image:
         pal_data = self.app.get_palette_and_background()

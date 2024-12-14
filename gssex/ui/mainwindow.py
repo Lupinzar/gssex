@@ -22,7 +22,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tab_palette.bind_states(self.app)
         self.tab_palette.statusMessage.connect(self.show_timed_status_message)
         self.tab_vram.bind_states(self.app)
-        self.tab_palette.statusMessage.connect(self.show_timed_status_message)
+        self.tab_vram.statusMessage.connect(self.show_timed_status_message)
 
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
 
