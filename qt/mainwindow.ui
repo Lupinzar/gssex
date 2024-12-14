@@ -301,6 +301,15 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>main_tabs</tabstop>
+  <tabstop>bg_color_toggle</tabstop>
+  <tabstop>bg_color_button</tabstop>
+  <tabstop>output_directory_line</tabstop>
+  <tabstop>output_select_button</tabstop>
+  <tabstop>state_format_combo</tabstop>
+  <tabstop>default_config_button</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

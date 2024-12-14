@@ -173,6 +173,12 @@ class Ui_MainWindow(object):
         self.toolBar.setObjectName(u"toolBar")
         self.toolBar.setFloatable(True)
         MainWindow.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolBar)
+        QWidget.setTabOrder(self.main_tabs, self.bg_color_toggle)
+        QWidget.setTabOrder(self.bg_color_toggle, self.bg_color_button)
+        QWidget.setTabOrder(self.bg_color_button, self.output_directory_line)
+        QWidget.setTabOrder(self.output_directory_line, self.output_select_button)
+        QWidget.setTabOrder(self.output_select_button, self.state_format_combo)
+        QWidget.setTabOrder(self.state_format_combo, self.default_config_button)
 
         self.toolBar.addAction(self.action_open_folder)
         self.toolBar.addAction(self.action_open_file)
