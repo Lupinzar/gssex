@@ -16,8 +16,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QComboBox, QFormLayout,
-    QHBoxLayout, QLabel, QPushButton, QScrollArea,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+    QFrame, QHBoxLayout, QLabel, QPushButton,
+    QScrollArea, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
+
+from ..ui.tileloupe import TileLoupe
 from . import resource_rc
 
 class Ui_TabVram(object):
@@ -118,6 +121,23 @@ class Ui_TabVram(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+        self.line = QFrame(TabVram)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line)
+
+        self._loupe_label = QLabel(TabVram)
+        self._loupe_label.setObjectName(u"_loupe_label")
+
+        self.verticalLayout.addWidget(self._loupe_label)
+
+        self.widget = TileLoupe(TabVram)
+        self.widget.setObjectName(u"widget")
+
+        self.verticalLayout.addWidget(self.widget)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
@@ -149,5 +169,6 @@ class Ui_TabVram(object):
         self.pivot_button.setText(QCoreApplication.translate("TabVram", u"Pivot", None))
         self.save_button.setText(QCoreApplication.translate("TabVram", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabVram", u"Copy", None))
+        self._loupe_label.setText(QCoreApplication.translate("TabVram", u"Tile Loupe", None))
     # retranslateUi
 
