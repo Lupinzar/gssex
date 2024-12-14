@@ -1,3 +1,4 @@
+#Hand-made widget that does not have a Qt Creator file
 from PySide6.QtWidgets import QWidget, QSizePolicy, QGridLayout, QColorDialog
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPalette
