@@ -71,7 +71,7 @@ class VDPRegisters:
         return ScrollMode.LINE
     
     @classmethod
-    def read_vdp_registers(cls, buffer: Buffer) -> 'VDPRegisters':
+    def read_vdp_registers(cls, buffer: Buffer) -> Self:
         vdp_struct = Struct(f'{cls.SIZE}B')
         data = buffer.read_struct(vdp_struct, 0)
         return cls(
@@ -132,7 +132,7 @@ class Palette:
         return (color[0] << 16) | (color[1] << 8) | color[2]
     
     @classmethod
-    def from_cram(cls, buffer: Buffer) -> 'Palette':
+    def from_cram(cls, buffer: Buffer) -> Self:
         data = buffer.read_struct(
             Struct(f'<{cls.SIZE * cls.GROUP_SIZE}H'),
             0
@@ -148,7 +148,7 @@ class Palette:
         return cls(colors)
     
     @classmethod
-    def make_unique(cls) -> 'Palette':
+    def make_unique(cls) -> Self:
         pals = [[],[],[],[]]
         for ndx in range(0, cls.SIZE):
             val = (ndx + 1) * 16 - 1
