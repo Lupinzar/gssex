@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt, QEvent
 
 class TabVram(RenderTab, Ui_TabVram):
     TILES_WIDE = 16
+    NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setupUi(self)
@@ -21,7 +22,10 @@ class TabVram(RenderTab, Ui_TabVram):
         self.copy_button.clicked.connect(self.copy_to_clipboard)
         self.save_button.clicked.connect(self.save_image)
         self.tile_loupe.sizeChanged.connect(self.draw_loupe)
+        self.tile_loupe.copyInitiated.connect(self.loupe_copy_to_clipboard)
+        self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
         self.main_label.installEventFilter(self)
+        
 
     def eventFilter(self, obj, event):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
@@ -97,6 +101,42 @@ class TabVram(RenderTab, Ui_TabVram):
         pal_type = 'global' if self.app.use_global_pal else 'local'
         pivot = '_pivot' if self.pivot_button.isChecked() else ''
         path = self.app.build_image_output_path(f'vram_{pal_type}_{self.pal_combo.currentText()}{pivot}')
+        if self.app.save_image(img, path):
+            self.statusMessage.emit(f"Output {path}")
+        else:
+            self.statusMessage.emit(f"Error outputting {path}")
+
+    def loupe_copy_to_clipboard(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
+            return
+        if self.tile_loupe.reference is None:
+            self.statusMessage.emit(self.NO_LOUPE_SELECTED_MSG)
+            return
+        img = self.get_pil_loupe()
+        pil_to_clipboard(img)
+        img.close()
+
+    def loupe_save_image(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
+            return
+        if self.tile_loupe.reference is None:
+            self.statusMessage.emit(self.NO_LOUPE_SELECTED_MSG)
+            return
+        img = self.get_pil_loupe()
+        name_parts = [
+            'vram',
+            'loupe',
+            'global' if self.app.use_global_pal else 'local',
+            self.pal_combo.currentText(),
+            str(self.tile_loupe.get_width()),
+            str(self.tile_loupe.get_height()),
+            str(self.tile_loupe.reference)
+        ]
+        if self.pivot_button.isChecked():
+            name_parts.append('pivot')
+        path = self.app.build_image_output_path("_".join(name_parts))
         if self.app.save_image(img, path):
             self.statusMessage.emit(f"Output {path}")
         else:
