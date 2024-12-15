@@ -72,6 +72,7 @@ class TileLoupe(QWidget):
         image_scroll.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0,0,0,0)
         spin_layout = QHBoxLayout()
         spin_layout.addWidget(self.width_spin)
         spin_layout.addWidget(by_label)
