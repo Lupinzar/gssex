@@ -133,10 +133,10 @@ class Ui_TabVram(object):
 
         self.verticalLayout.addWidget(self._loupe_label)
 
-        self.widget = TileLoupe(TabVram)
-        self.widget.setObjectName(u"widget")
+        self.tile_loupe = TileLoupe(TabVram)
+        self.tile_loupe.setObjectName(u"tile_loupe")
 
-        self.verticalLayout.addWidget(self.widget)
+        self.verticalLayout.addWidget(self.tile_loupe)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 

@@ -193,7 +193,7 @@
       </widget>
      </item>
      <item>
-      <widget class="TileLoupe" name="widget" native="true"/>
+      <widget class="TileLoupe" name="tile_loupe" native="true"/>
      </item>
      <item>
       <spacer name="verticalSpacer">
