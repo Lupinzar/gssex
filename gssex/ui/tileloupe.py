@@ -1,10 +1,12 @@
 #Hand-made widget that does not have a Qt Creator file
-from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton
+from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
 from PySide6.QtCore import Signal, Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon
 from ..uibase import resource_rc
 
 class TileLoupe(QWidget):
+    MIN_SIZE = 1
+    MAX_SIZE = 4
     sizeChanged: Signal = Signal(int, int)
     saveInitiated: Signal = Signal()
     copyInitiated: Signal = Signal()
@@ -17,9 +19,11 @@ class TileLoupe(QWidget):
         self.image_label = QLabel()
         self.save_button = QPushButton("Save")
         self.copy_button = QPushButton("Copy")
+        self.reference: None|int = None
         self.setupUi()
 
         self.width_spin.valueChanged.connect(self.emit_size_change)
+        self.height_spin.valueChanged.connect(self.emit_size_change)
         self.save_button.clicked.connect(lambda: self.saveInitiated.emit())
         self.copy_button.clicked.connect(lambda: self.copyInitiated.emit())
 
@@ -40,6 +44,15 @@ class TileLoupe(QWidget):
     def reset(self):
         self.image_label.clear()
 
+    def get_tile_area(self) -> int:
+        return self.width_spin.value() * self.height_spin.value()
+    
+    def get_width(self) -> int:
+        return self.width_spin.value()
+    
+    def get_height(self) -> int:
+        return self.height_spin.value()
+
     def setupUi(self):
         by_label = QLabel('x')
         by_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -49,17 +62,22 @@ class TileLoupe(QWidget):
         copy_icon = QIcon()
         copy_icon.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.copy_button.setIcon(copy_icon)
-        self.width_spin.setMinimum(1)
-        self.width_spin.setMaximum(4)
-        self.height_spin.setMinimum(1)
-        self.height_spin.setMaximum(4)
+        self.width_spin.setMinimum(self.MIN_SIZE)
+        self.width_spin.setMaximum(self.MAX_SIZE)
+        self.height_spin.setMinimum(self.MIN_SIZE)
+        self.height_spin.setMaximum(self.MAX_SIZE)
+        image_scroll = QScrollArea()
+        image_scroll.setWidget(self.image_label)
+        image_scroll.setMinimumSize(self.MAX_SIZE * self.zoom, self.MAX_SIZE * self.zoom)
+        image_scroll.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+
         main_layout = QVBoxLayout(self)
         spin_layout = QHBoxLayout()
         spin_layout.addWidget(self.width_spin)
         spin_layout.addWidget(by_label)
         spin_layout.addWidget(self.height_spin)
         main_layout.addLayout(spin_layout)
-        main_layout.addWidget(self.image_label)
+        main_layout.addWidget(image_scroll)
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.save_button)
         button_layout.addWidget(self.copy_button)
