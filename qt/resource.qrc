@@ -10,5 +10,7 @@
         <file>icons/restore.svg</file>
         <file>icons/clipboard.svg</file>
         <file>icons/world.svg</file>
+        <file>icons/chevrons-left.svg</file>
+        <file>icons/chevrons-right.svg</file>
     </qresource>
 </RCC>
