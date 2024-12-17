@@ -39,6 +39,7 @@ class TabVram(RenderTab, Ui_TabVram):
     def clear_main_image(self):
         self.main_label.clear()
         self.main_label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.loupe_position_label.clear()
 
     def redraw(self):
         if not self.app.valid_file:
@@ -67,6 +68,7 @@ class TabVram(RenderTab, Ui_TabVram):
         img = self.get_pil_loupe()
         self.tile_loupe.set_image(QPixmap.fromImage(pil_to_qimage(img)), img.width, img.height)
         img.close()
+        self.update_loupe_position()
 
     def handle_main_label_click(self, event: QMouseEvent):
         if not self.app.valid_file:
@@ -84,6 +86,12 @@ class TabVram(RenderTab, Ui_TabVram):
             tile_num = (y // th) * self.TILES_WIDE + (x // tw)
         self.tile_loupe.reference = tile_num
         self.draw_loupe()
+        
+
+    def update_loupe_position(self):
+        tile_from = self.tile_loupe.reference
+        tile_to = self.tile_loupe.reference + self.tile_loupe.tiles_drawn - 1
+        self.loupe_position_label.setText(f'#{tile_from} - #{tile_to}')
 
     def copy_to_clipboard(self):
         if not self.app.valid_file:
@@ -154,6 +162,7 @@ class TabVram(RenderTab, Ui_TabVram):
             self.app.savestate.pattern_data.number_to_offset(self.tile_loupe.reference),
             self.tile_loupe.get_tile_area()
         )
+        self.tile_loupe.tiles_drawn = subpatterns.get_tile_count()
         pal_data = self.app.get_palette_and_background()
         tile_width = self.tile_loupe.get_height() if self.pivot_button.isChecked() else self.tile_loupe.get_width()
         render = VramRender(

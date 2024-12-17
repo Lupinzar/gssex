@@ -91,7 +91,7 @@ class VramRender():
             size_in_tiles[1] * self.patterns.tile_height
         )
         image = Image.new('P', size_in_px, self.bgcolor)
-        for tc in range(0, self.patterns.tile_count):
+        for tc in range(0, self.patterns.get_tile_count()):
             pos = (tc % self.tiles_wide, tc // self.tiles_wide)
             if self.pivot:
                 pos = (pos[1], pos[0])
@@ -102,7 +102,7 @@ class VramRender():
         return image
 
     def get_size_in_tiles(self) -> Tuple[int, int]:
-        tile_count = self.patterns.tile_count
+        tile_count = self.patterns.get_tile_count()
         size = (
             self.tiles_wide,
             (tile_count // self.tiles_wide) + (tile_count % self.tiles_wide)

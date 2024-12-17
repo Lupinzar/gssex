@@ -237,7 +237,6 @@ class PatternData:
         self.tile_width: int = tile_size[0]
         self.tile_height: int = tile_size[1]
         self.tile_byte_size: int = (self.tile_width * self.tile_height) // 2
-        self.tile_count: int = self.buffer.length() // self.tile_byte_size
         self.use_cache: bool = use_cache
         self.cache: dict = {}
 
@@ -265,6 +264,9 @@ class PatternData:
         end = min(self.buffer.length(), tiles_max * self.tile_byte_size + offset)
         buffer = Buffer(self.buffer[offset:end])
         return PatternData(buffer)
+    
+    def get_tile_count(self) -> int:
+        return self.buffer.length() // self.tile_byte_size
 
     def number_to_offset(self, number: int):
         return number * self.tile_byte_size

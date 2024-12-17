@@ -28,8 +28,8 @@ class Ui_TabVram(object):
         if not TabVram.objectName():
             TabVram.setObjectName(u"TabVram")
         TabVram.resize(400, 300)
-        self.horizontalLayout_2 = QHBoxLayout(TabVram)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_3 = QHBoxLayout(TabVram)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.scroll_area = QScrollArea(TabVram)
         self.scroll_area.setObjectName(u"scroll_area")
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -55,7 +55,7 @@ class Ui_TabVram(object):
         self.main_label.setScaledContents(False)
         self.scroll_area.setWidget(self.scrollAreaWidgetContents)
 
-        self.horizontalLayout_2.addWidget(self.scroll_area)
+        self.horizontalLayout_3.addWidget(self.scroll_area)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -128,10 +128,23 @@ class Ui_TabVram(object):
 
         self.verticalLayout.addWidget(self.line)
 
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self._loupe_label = QLabel(TabVram)
         self._loupe_label.setObjectName(u"_loupe_label")
+        sizePolicy1.setHeightForWidth(self._loupe_label.sizePolicy().hasHeightForWidth())
+        self._loupe_label.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self._loupe_label)
+        self.horizontalLayout_2.addWidget(self._loupe_label)
+
+        self.loupe_position_label = QLabel(TabVram)
+        self.loupe_position_label.setObjectName(u"loupe_position_label")
+        self.loupe_position_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_2.addWidget(self.loupe_position_label)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.tile_loupe = TileLoupe(TabVram)
         self.tile_loupe.setObjectName(u"tile_loupe")
@@ -143,7 +156,7 @@ class Ui_TabVram(object):
         self.verticalLayout.addItem(self.verticalSpacer)
 
 
-        self.horizontalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout_3.addLayout(self.verticalLayout)
 
 
         self.retranslateUi(TabVram)
@@ -170,5 +183,6 @@ class Ui_TabVram(object):
         self.save_button.setText(QCoreApplication.translate("TabVram", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabVram", u"Copy", None))
         self._loupe_label.setText(QCoreApplication.translate("TabVram", u"Tile Loupe", None))
+        self.loupe_position_label.setText(QCoreApplication.translate("TabVram", u"Position", None))
     # retranslateUi
 

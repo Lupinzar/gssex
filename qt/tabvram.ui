@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
     <widget class="QScrollArea" name="scroll_area">
      <property name="verticalScrollBarPolicy">
@@ -186,11 +186,31 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="_loupe_label">
-       <property name="text">
-        <string>Tile Loupe</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="_loupe_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Tile Loupe</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="loupe_position_label">
+         <property name="text">
+          <string>Position</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="TileLoupe" name="tile_loupe" native="true"/>

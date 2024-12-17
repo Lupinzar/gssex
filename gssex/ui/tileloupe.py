@@ -20,6 +20,7 @@ class TileLoupe(QWidget):
         self.save_button = QPushButton("Save")
         self.copy_button = QPushButton("Copy")
         self.reference: None|int = None
+        self.tiles_drawn: int = 0
         self.setupUi()
 
         self.width_spin.valueChanged.connect(self.emit_size_change)
