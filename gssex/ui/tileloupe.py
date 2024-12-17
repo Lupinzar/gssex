@@ -1,15 +1,23 @@
 #Hand-made widget that does not have a Qt Creator file
+from enum import Enum, auto
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
 from PySide6.QtCore import Signal, Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon
 from ..uibase import resource_rc
 
 class TileLoupe(QWidget):
+    class POSITION_DIRECTION(Enum):
+        INCREMENT = auto()
+        DECREMENT = auto()
+    class POSITION_SIZE(Enum):
+        SINGLE = auto()
+        WHOLE = auto()
     MIN_SIZE = 1
     MAX_SIZE = 4
     sizeChanged: Signal = Signal(int, int)
     saveInitiated: Signal = Signal()
     copyInitiated: Signal = Signal()
+    positionInitiated: Signal = Signal(Enum, Enum)
 
     def __init__(self, parent, zoom: int = 2):
         super().__init__(parent)
@@ -19,6 +27,10 @@ class TileLoupe(QWidget):
         self.image_label = QLabel()
         self.save_button = QPushButton("Save")
         self.copy_button = QPushButton("Copy")
+        self.inc_small_button = QPushButton()
+        self.inc_large_button = QPushButton()
+        self.dec_small_button = QPushButton()
+        self.dec_large_button = QPushButton()
         self.reference: None|int = None
         self.tiles_drawn: int = 0
         self.setupUi()
@@ -27,6 +39,10 @@ class TileLoupe(QWidget):
         self.height_spin.valueChanged.connect(self.emit_size_change)
         self.save_button.clicked.connect(lambda: self.saveInitiated.emit())
         self.copy_button.clicked.connect(lambda: self.copyInitiated.emit())
+        self.inc_small_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.SINGLE))
+        self.inc_large_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WHOLE))
+        self.dec_small_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
+        self.dec_large_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
 
     def emit_size_change(self):
         self.sizeChanged.emit(self.width_spin.value(), self.height_spin.value())
@@ -63,6 +79,7 @@ class TileLoupe(QWidget):
         copy_icon = QIcon()
         copy_icon.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.copy_button.setIcon(copy_icon)
+        
         self.width_spin.setMinimum(self.MIN_SIZE)
         self.width_spin.setMaximum(self.MAX_SIZE)
         self.height_spin.setMinimum(self.MIN_SIZE)
@@ -80,7 +97,20 @@ class TileLoupe(QWidget):
         spin_layout.addWidget(self.height_spin)
         main_layout.addLayout(spin_layout)
         main_layout.addWidget(image_scroll)
+
+        pos_buttons = [self.dec_large_button, self.dec_small_button, self.inc_small_button, self.inc_large_button]
+        pos_icons = ['chevrons-left.svg', 'chevron-left.svg', 'chevron-right.svg', 'chevrons-right']
+        pos_layout = QHBoxLayout()
+        for ndx, btn in enumerate(pos_buttons):
+            icon = QIcon()
+            icon.addFile(f":/icons/{pos_icons[ndx]}", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+            btn.setIcon(icon)
+            pos_layout.addWidget(btn)
+
+        main_layout.addLayout(pos_layout)
+
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.save_button)
         button_layout.addWidget(self.copy_button)
+
         main_layout.addLayout(button_layout)
