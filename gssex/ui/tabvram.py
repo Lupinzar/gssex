@@ -1,10 +1,12 @@
 from .rendertab import RenderTab
+from .tileloupe import TileLoupe
 from ..uibase.tabvram import Ui_TabVram
 from ..render import VramRender
 from .app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
 from PySide6.QtGui import QPixmap, QCursor, QMouseEvent
 from PySide6.QtCore import Qt, QEvent
+from enum import Enum
 
 class TabVram(RenderTab, Ui_TabVram):
     TILES_WIDE = 16
@@ -24,6 +26,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.sizeChanged.connect(self.draw_loupe)
         self.tile_loupe.copyInitiated.connect(self.loupe_copy_to_clipboard)
         self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
+        self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
         
 
@@ -86,7 +89,20 @@ class TabVram(RenderTab, Ui_TabVram):
             tile_num = (y // th) * self.TILES_WIDE + (x // tw)
         self.tile_loupe.reference = tile_num
         self.draw_loupe()
-        
+    
+    def handle_loupe_position(self, direction: Enum, size: Enum):
+        if not self.app.valid_file:
+            return
+        #if they haven't chosen a tile yet, just start at 0
+        start = 0 if self.tile_loupe.reference is None else self.tile_loupe.reference
+        amount = 1 if size == TileLoupe.POSITION_SIZE.SINGLE else self.tile_loupe.get_tile_area()
+        if direction == TileLoupe.POSITION_DIRECTION.DECREMENT:
+            amount = -amount
+        new = start + amount
+        if new < 0 or new >= self.app.savestate.pattern_data.get_tile_count():
+            return
+        self.tile_loupe.reference = new
+        self.draw_loupe()
 
     def update_loupe_position(self):
         tile_from = self.tile_loupe.reference
