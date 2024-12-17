@@ -115,7 +115,7 @@ class VramRender():
 Helper functions
 '''
 
-def tile_image_and_mask(pattern: list[int], size: Tuple[int, int]) -> Tuple[Image.Image, Image.Image]:
+def tile_image_and_mask(pattern: bytearray, size: Tuple[int, int]) -> Tuple[Image.Image, Image.Image]:
     image = Image.new('P', size)
     image.putdata(pattern)
     mask = Image.new('1', size)

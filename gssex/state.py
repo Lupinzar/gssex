@@ -241,12 +241,12 @@ class PatternData:
         self.use_cache: bool = use_cache
         self.cache: dict = {}
 
-    def get_pattern(self, address: int, palette: int) -> list:
+    def get_pattern(self, address: int, palette: int) -> bytearray:
         cache_key = f'{address}_{palette}'
         if self.use_cache and cache_key in self.cache:
             #print('cache hit')
             return self.cache[cache_key]
-        data = []
+        data = bytearray()
         bytes = self.buffer.read_bytes(self.tile_byte_size, address)
         for b in bytes:
             data.append(((b & 0xF0) >> 4) | (palette << 4))
@@ -255,10 +255,10 @@ class PatternData:
             self.cache[cache_key] = data
         return data
         
-    def to_mask(self, pattern: list) -> list:
+    def to_mask(self, pattern: bytearray) -> bytearray:
         return mask_from_bytes(pattern)
 
-    def get_pattern_by_number(self, number: int, palette: int) -> list:
+    def get_pattern_by_number(self, number: int, palette: int) -> bytearray:
         return self.get_pattern(self.number_to_offset(number), palette)
     
     def get_subset(self, offset: int, tiles_max: int) -> Self:
@@ -313,5 +313,5 @@ def read_block_and_validate(handle: BinaryIO, offset: int, length: int) -> bytea
         raise Exception('Bytes read was not bytes requested')
     return data
 
-def mask_from_bytes(data: Iterable) -> list:
-    return [1 if b & 0x0F else 0 for b in data]
+def mask_from_bytes(data: Iterable) -> bytearray:
+    return bytearray([1 if b & 0x0F else 0 for b in data])
