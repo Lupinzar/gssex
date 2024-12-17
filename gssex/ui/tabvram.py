@@ -178,14 +178,15 @@ class TabVram(RenderTab, Ui_TabVram):
             self.app.savestate.pattern_data.number_to_offset(self.tile_loupe.reference),
             self.tile_loupe.get_tile_area()
         )
-        self.tile_loupe.tiles_drawn = subpatterns.get_tile_count()
+        tiles_to_draw = subpatterns.get_tile_count()
+        self.tile_loupe.tiles_drawn = tiles_to_draw
         pal_data = self.app.get_palette_and_background()
         tile_width = self.tile_loupe.get_height() if self.pivot_button.isChecked() else self.tile_loupe.get_width()
         render = VramRender(
             subpatterns, 
             self.pal_combo.currentIndex(), 
             pal_data[0], 
-            tile_width,
+            min(tiles_to_draw, tile_width),  #e.g. if tile area is 1x2 but we only have 1 tile left to draw
             self.pivot_button.isChecked()
         )
         img = render.get_image()
