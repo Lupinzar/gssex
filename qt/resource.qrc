@@ -12,5 +12,6 @@
         <file>icons/world.svg</file>
         <file>icons/chevrons-left.svg</file>
         <file>icons/chevrons-right.svg</file>
+        <file>icons/search.svg</file>
     </qresource>
 </RCC>
