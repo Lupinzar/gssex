@@ -58,7 +58,7 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="opened_file_line">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -70,7 +70,7 @@
           <string/>
          </property>
          <property name="readOnly">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="placeholderText">
           <string>No File Selected</string>
