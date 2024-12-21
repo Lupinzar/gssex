@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
@@ -170,6 +170,11 @@
         <string>VRAM</string>
        </attribute>
       </widget>
+      <widget class="TabRaw" name="tab_raw">
+       <attribute name="title">
+        <string>RAW Tiles</string>
+       </attribute>
+      </widget>
       <widget class="QWidget" name="tab_layers">
        <attribute name="title">
         <string>Layers</string>
@@ -298,6 +303,12 @@
    <class>TabVram</class>
    <extends>QWidget</extends>
    <header>..ui.tabvram.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabRaw</class>
+   <extends>QWidget</extends>
+   <header>..ui.tabraw.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
