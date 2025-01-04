@@ -92,7 +92,10 @@ class App():
     
     #does the dirty work of figuring out which palette to use and if we need to replace the bg color based on our config
     def get_palette_and_background(self) -> Tuple[int, Palette]:
-        palref = self.global_pal if self.use_global_pal else self.state_pal
+        if self.use_global_pal or not self.valid_file:
+            palref = self.global_pal
+        else:
+            palref = self.state_pal
         palette = deepcopy(palref)
 
         if self.config.override_background:
