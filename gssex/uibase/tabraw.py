@@ -36,9 +36,9 @@ class Ui_TabRaw(object):
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 186, 320))
-        self.label = QLabel(self.scrollAreaWidgetContents)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 0, 71, 16))
+        self.main_label = QLabel(self.scrollAreaWidgetContents)
+        self.main_label.setObjectName(u"main_label")
+        self.main_label.setGeometry(QRect(0, 0, 71, 16))
         self.scroll_area.setWidget(self.scrollAreaWidgetContents)
 
         self.horizontalLayout_2.addWidget(self.scroll_area)
@@ -54,13 +54,13 @@ class Ui_TabRaw(object):
 
         self.opened_file_line = QLineEdit(TabRaw)
         self.opened_file_line.setObjectName(u"opened_file_line")
-        self.opened_file_line.setEnabled(True)
+        self.opened_file_line.setEnabled(False)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.opened_file_line.sizePolicy().hasHeightForWidth())
         self.opened_file_line.setSizePolicy(sizePolicy)
-        self.opened_file_line.setReadOnly(True)
+        self.opened_file_line.setReadOnly(False)
 
         self.formLayout.setWidget(0, QFormLayout.FieldRole, self.opened_file_line)
 
@@ -225,7 +225,7 @@ class Ui_TabRaw(object):
 
     def retranslateUi(self, TabRaw):
         TabRaw.setWindowTitle(QCoreApplication.translate("TabRaw", u"Form", None))
-        self.label.setText(QCoreApplication.translate("TabRaw", u"RAW Image", None))
+        self.main_label.setText(QCoreApplication.translate("TabRaw", u"RAW Image", None))
         self._opened_file.setText(QCoreApplication.translate("TabRaw", u"File", None))
         self.opened_file_line.setText("")
         self.opened_file_line.setPlaceholderText(QCoreApplication.translate("TabRaw", u"No File Selected", None))
