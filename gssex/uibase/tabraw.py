@@ -72,19 +72,10 @@ class Ui_TabRaw(object):
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.open_file_button)
 
-        self.zoom_combo = QComboBox(TabRaw)
-        self.zoom_combo.addItem("")
-        self.zoom_combo.addItem("")
-        self.zoom_combo.addItem("")
-        self.zoom_combo.addItem("")
-        self.zoom_combo.setObjectName(u"zoom_combo")
+        self._size_label = QLabel(TabRaw)
+        self._size_label.setObjectName(u"_size_label")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.zoom_combo)
-
-        self._zoom_label = QLabel(TabRaw)
-        self._zoom_label.setObjectName(u"_zoom_label")
-
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._zoom_label)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._size_label)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -111,12 +102,26 @@ class Ui_TabRaw(object):
         self.horizontalLayout.addWidget(self.height_spin)
 
 
-        self.formLayout.setLayout(2, QFormLayout.FieldRole, self.horizontalLayout)
+        self.formLayout.setLayout(3, QFormLayout.FieldRole, self.horizontalLayout)
 
-        self._size_label = QLabel(TabRaw)
-        self._size_label.setObjectName(u"_size_label")
+        self._zoom_label = QLabel(TabRaw)
+        self._zoom_label.setObjectName(u"_zoom_label")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self._size_label)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self._zoom_label)
+
+        self.zoom_combo = QComboBox(TabRaw)
+        self.zoom_combo.addItem("")
+        self.zoom_combo.addItem("")
+        self.zoom_combo.addItem("")
+        self.zoom_combo.addItem("")
+        self.zoom_combo.setObjectName(u"zoom_combo")
+
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.zoom_combo)
+
+        self._pal_label = QLabel(TabRaw)
+        self._pal_label.setObjectName(u"_pal_label")
+
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self._pal_label)
 
         self.pal_combo = QComboBox(TabRaw)
         self.pal_combo.addItem("")
@@ -125,12 +130,7 @@ class Ui_TabRaw(object):
         self.pal_combo.addItem("")
         self.pal_combo.setObjectName(u"pal_combo")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.pal_combo)
-
-        self._pal_label = QLabel(TabRaw)
-        self._pal_label.setObjectName(u"_pal_label")
-
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self._pal_label)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.pal_combo)
 
         self.pivot_button = QPushButton(TabRaw)
         self.pivot_button.setObjectName(u"pivot_button")
@@ -138,7 +138,19 @@ class Ui_TabRaw(object):
         self.pivot_button.setChecked(True)
         self.pivot_button.setFlat(False)
 
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.pivot_button)
+        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.pivot_button)
+
+        self._offset_label = QLabel(TabRaw)
+        self._offset_label.setObjectName(u"_offset_label")
+
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self._offset_label)
+
+        self.offset_line = QLineEdit(TabRaw)
+        self.offset_line.setObjectName(u"offset_line")
+        sizePolicy.setHeightForWidth(self.offset_line.sizePolicy().hasHeightForWidth())
+        self.offset_line.setSizePolicy(sizePolicy)
+
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.offset_line)
 
 
         self.verticalLayout.addLayout(self.formLayout)
@@ -230,21 +242,22 @@ class Ui_TabRaw(object):
         self.opened_file_line.setText("")
         self.opened_file_line.setPlaceholderText(QCoreApplication.translate("TabRaw", u"No File Selected", None))
         self.open_file_button.setText(QCoreApplication.translate("TabRaw", u"Open File", None))
+        self._size_label.setText(QCoreApplication.translate("TabRaw", u"Size", None))
+        self._cross_label.setText(QCoreApplication.translate("TabRaw", u"x", None))
+        self._zoom_label.setText(QCoreApplication.translate("TabRaw", u"Zoom", None))
         self.zoom_combo.setItemText(0, QCoreApplication.translate("TabRaw", u"1", None))
         self.zoom_combo.setItemText(1, QCoreApplication.translate("TabRaw", u"2", None))
         self.zoom_combo.setItemText(2, QCoreApplication.translate("TabRaw", u"4", None))
         self.zoom_combo.setItemText(3, QCoreApplication.translate("TabRaw", u"8", None))
 
-        self._zoom_label.setText(QCoreApplication.translate("TabRaw", u"Zoom", None))
-        self._cross_label.setText(QCoreApplication.translate("TabRaw", u"x", None))
-        self._size_label.setText(QCoreApplication.translate("TabRaw", u"Size", None))
+        self._pal_label.setText(QCoreApplication.translate("TabRaw", u"Palette", None))
         self.pal_combo.setItemText(0, QCoreApplication.translate("TabRaw", u"0", None))
         self.pal_combo.setItemText(1, QCoreApplication.translate("TabRaw", u"1", None))
         self.pal_combo.setItemText(2, QCoreApplication.translate("TabRaw", u"2", None))
         self.pal_combo.setItemText(3, QCoreApplication.translate("TabRaw", u"3", None))
 
-        self._pal_label.setText(QCoreApplication.translate("TabRaw", u"Palette", None))
         self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
+        self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset", None))
         self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
         self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
