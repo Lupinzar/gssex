@@ -27,7 +27,7 @@ class Ui_TabRaw(object):
     def setupUi(self, TabRaw):
         if not TabRaw.objectName():
             TabRaw.setObjectName(u"TabRaw")
-        TabRaw.resize(400, 340)
+        TabRaw.resize(400, 400)
         self.horizontalLayout_2 = QHBoxLayout(TabRaw)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.scroll_area = QScrollArea(TabRaw)
@@ -35,7 +35,7 @@ class Ui_TabRaw(object):
         self.scroll_area.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 186, 320))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 186, 380))
         self.main_label = QLabel(self.scrollAreaWidgetContents)
         self.main_label.setObjectName(u"main_label")
         self.main_label.setGeometry(QRect(0, 0, 71, 16))
@@ -147,8 +147,10 @@ class Ui_TabRaw(object):
 
         self.offset_line = QLineEdit(TabRaw)
         self.offset_line.setObjectName(u"offset_line")
+        self.offset_line.setEnabled(False)
         sizePolicy.setHeightForWidth(self.offset_line.sizePolicy().hasHeightForWidth())
         self.offset_line.setSizePolicy(sizePolicy)
+        self.offset_line.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.offset_line)
 
@@ -257,7 +259,7 @@ class Ui_TabRaw(object):
         self.pal_combo.setItemText(3, QCoreApplication.translate("TabRaw", u"3", None))
 
         self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
-        self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset", None))
+        self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset (Hex)", None))
         self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
         self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
