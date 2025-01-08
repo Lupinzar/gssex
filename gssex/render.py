@@ -1,7 +1,7 @@
 from .state import PatternData, HardwareSprite, Palette, mask_from_bytes
 from PIL import Image, ImageDraw
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, BinaryIO
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -110,6 +110,17 @@ class VramRender():
         if self.pivot:
             size = (size[1], size[0])
         return size
+    
+class RawRender:
+    def __init__(self, file_handle: BinaryIO):
+        self.handle = file_handle
+
+    def get_image(offset: int, tiles_wide: int, tiles_tall: int, palette: int, tile_height: int = 8) -> Image.Image:
+        tile_width = 8
+        tile_bytes = tile_width * tile_height // 2
+
+        image = Image.new('P', tile_width * tiles_wide, tile_height * tiles_tall)
+        return image
     
 '''
 Helper functions

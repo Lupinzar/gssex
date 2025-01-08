@@ -47,7 +47,6 @@ class TabRaw(RenderTab, Ui_TabRaw):
         except ValueError:
             pass
 
-
     def clear_main_image(self):
         self.main_label.clear()
         self.main_label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
