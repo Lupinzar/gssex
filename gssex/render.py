@@ -105,22 +105,57 @@ class VramRender():
         tile_count = self.patterns.get_tile_count()
         size = (
             self.tiles_wide,
-            (tile_count // self.tiles_wide) + (tile_count % self.tiles_wide)
+            (tile_count // self.tiles_wide) + bool(tile_count % self.tiles_wide)
         )
         if self.pivot:
             size = (size[1], size[0])
         return size
     
 class RawRender:
-    def __init__(self, file_handle: BinaryIO):
+    def __init__(self, file_handle: BinaryIO, file_size: int):
         self.handle = file_handle
+        self.file_size = file_size
 
-    def get_image(offset: int, tiles_wide: int, tiles_tall: int, palette: int, tile_height: int = 8) -> Image.Image:
+    def get_image(self, offset: int, tiles_wide: int, tiles_tall: int, palette: int, bgcolor: int = 0, tile_height: int = 8, pivot: bool = False) -> Image.Image:
         tile_width = 8
         tile_bytes = tile_width * tile_height // 2
+        data_to_read = tile_bytes * tiles_wide * tiles_tall
 
-        image = Image.new('P', tile_width * tiles_wide, tile_height * tiles_tall)
+        #clamp if we need to
+        if offset + data_to_read >= self.file_size:
+            data_to_read = self.file_size - offset
+            tile_count = data_to_read // tile_bytes
+            if tile_count < tiles_wide:
+                tiles_wide = tile_count
+                tiles_tall = 1
+            else:
+                tiles_tall = tile_count // tiles_wide + bool(tile_count % tiles_wide)
+        else:
+            tile_count = tiles_wide * tiles_tall
+        tile_size = (tiles_wide, tiles_tall)
+        if pivot:
+            tile_size = (tile_size[1], tile_size[0])
+
+        image = Image.new('P', (tile_width * tile_size[0], tile_height * tile_size[1]), bgcolor)
+        self.handle.seek(offset)
+        for ndx in range(0, tile_count):
+            pos = (ndx % tiles_wide, ndx // tiles_wide)
+            if pivot:
+                pos = (pos[1], pos[0])
+            image_data = tile_image_and_mask(self.expand_tile(self.handle.read(tile_bytes), palette), (tile_width, tile_height))
+            image.paste(image_data[0], (pos[0] * tile_width, pos[1] * tile_height), mask=image_data[1])
+            for img in image_data:
+                img.close()
         return image
+    
+    def expand_tile(self, bytes: bytearray, palette: int) -> bytearray:
+        data = bytearray()
+        for b in bytes:
+            data.append(((b & 0xF0) >> 4) | (palette << 4))
+            data.append((b & 0x0F) | (palette << 4))
+        return data
+
+
     
 '''
 Helper functions
