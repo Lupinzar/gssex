@@ -75,7 +75,7 @@ class Ui_TabRaw(object):
         self._size_label = QLabel(TabRaw)
         self._size_label.setObjectName(u"_size_label")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._size_label)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self._size_label)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -102,12 +102,12 @@ class Ui_TabRaw(object):
         self.horizontalLayout.addWidget(self.height_spin)
 
 
-        self.formLayout.setLayout(3, QFormLayout.FieldRole, self.horizontalLayout)
+        self.formLayout.setLayout(4, QFormLayout.FieldRole, self.horizontalLayout)
 
         self._zoom_label = QLabel(TabRaw)
         self._zoom_label.setObjectName(u"_zoom_label")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self._zoom_label)
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self._zoom_label)
 
         self.zoom_combo = QComboBox(TabRaw)
         self.zoom_combo.addItem("")
@@ -116,12 +116,12 @@ class Ui_TabRaw(object):
         self.zoom_combo.addItem("")
         self.zoom_combo.setObjectName(u"zoom_combo")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.zoom_combo)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.zoom_combo)
 
         self._pal_label = QLabel(TabRaw)
         self._pal_label.setObjectName(u"_pal_label")
 
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self._pal_label)
+        self.formLayout.setWidget(6, QFormLayout.LabelRole, self._pal_label)
 
         self.pal_combo = QComboBox(TabRaw)
         self.pal_combo.addItem("")
@@ -130,7 +130,7 @@ class Ui_TabRaw(object):
         self.pal_combo.addItem("")
         self.pal_combo.setObjectName(u"pal_combo")
 
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.pal_combo)
+        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.pal_combo)
 
         self.pivot_button = QPushButton(TabRaw)
         self.pivot_button.setObjectName(u"pivot_button")
@@ -138,7 +138,7 @@ class Ui_TabRaw(object):
         self.pivot_button.setChecked(True)
         self.pivot_button.setFlat(False)
 
-        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.pivot_button)
+        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.pivot_button)
 
         self._offset_label = QLabel(TabRaw)
         self._offset_label.setObjectName(u"_offset_label")
@@ -153,6 +153,18 @@ class Ui_TabRaw(object):
         self.offset_line.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.offset_line)
+
+        self._tile_height_label = QLabel(TabRaw)
+        self._tile_height_label.setObjectName(u"_tile_height_label")
+
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._tile_height_label)
+
+        self.tile_height_combo = QComboBox(TabRaw)
+        self.tile_height_combo.addItem("")
+        self.tile_height_combo.addItem("")
+        self.tile_height_combo.setObjectName(u"tile_height_combo")
+
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.tile_height_combo)
 
 
         self.verticalLayout.addLayout(self.formLayout)
@@ -260,6 +272,10 @@ class Ui_TabRaw(object):
 
         self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
         self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset (Hex)", None))
+        self._tile_height_label.setText(QCoreApplication.translate("TabRaw", u"Tile Height", None))
+        self.tile_height_combo.setItemText(0, QCoreApplication.translate("TabRaw", u"8", None))
+        self.tile_height_combo.setItemText(1, QCoreApplication.translate("TabRaw", u"16", None))
+
         self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
         self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
         self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
