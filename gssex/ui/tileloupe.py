@@ -84,9 +84,12 @@ class TileLoupe(QWidget):
         self.width_spin.setMaximum(self.MAX_SIZE)
         self.height_spin.setMinimum(self.MIN_SIZE)
         self.height_spin.setMaximum(self.MAX_SIZE)
+
         image_scroll = QScrollArea()
+        #make sure widget can show at least a 4x4 sprite with 8x8 tiles
+        minsize = self.MAX_SIZE * self.zoom * 8 + image_scroll.frameWidth() * 2
         image_scroll.setWidget(self.image_label)
-        image_scroll.setMinimumSize(self.MAX_SIZE * self.zoom, self.MAX_SIZE * self.zoom)
+        image_scroll.setMinimumSize(minsize, minsize)
         image_scroll.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         main_layout = QVBoxLayout(self)
