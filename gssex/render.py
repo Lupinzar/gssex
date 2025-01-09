@@ -115,8 +115,10 @@ class RawRender:
     def __init__(self, file_handle: BinaryIO, file_size: int):
         self.handle = file_handle
         self.file_size = file_size
+        self.tiles_drawn: int = 0
 
     def get_image(self, offset: int, tiles_wide: int, tiles_tall: int, palette: int, bgcolor: int = 0, tile_height: int = 8, pivot: bool = False) -> Image.Image:
+        self.tiles_drawn = 0
         tile_width = 8
         tile_bytes = tile_width * tile_height // 2
         data_to_read = tile_bytes * tiles_wide * tiles_tall
@@ -140,6 +142,7 @@ class RawRender:
             image.paste(image_data[0], (pos[0] * tile_width, pos[1] * tile_height), mask=image_data[1])
             for img in image_data:
                 img.close()
+            self.tiles_drawn += 1
         return image
     
     def expand_tile(self, bytes: bytearray, palette: int) -> bytearray:
@@ -148,6 +151,9 @@ class RawRender:
             data.append(((b & 0xF0) >> 4) | (palette << 4))
             data.append((b & 0x0F) | (palette << 4))
         return data
+    
+    def get_tiles_drawn(self) -> int:
+        return self.tiles_drawn
 
 
     

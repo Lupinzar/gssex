@@ -25,6 +25,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
     DEFAULT_SPIN_HEIGHT = 16
     OFFSET_PROCESS_DELAY = 500
     NO_FILE_LOADED_MSG = "No file is currently opened"
+    NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.file_handle: BinaryIO | None = None
@@ -43,6 +44,8 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.offset_line.setValidator(QRegularExpressionValidator('[a-fA-F0-9]+'))
         self.width_spin.setValue(self.DEFAULT_SPIN_WIDTH)
         self.height_spin.setValue(self.DEFAULT_SPIN_HEIGHT)
+
+        self.main_label.installEventFilter(self)
 
         self.open_file_button.clicked.connect(self.open_file)
         self.offset_line.textEdited.connect(lambda: self.offset_timer.start(self.OFFSET_PROCESS_DELAY))
@@ -63,6 +66,32 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.register_shortcuts()
         self.clear_main_image()
         self.update_offset()
+
+    def eventFilter(self, obj, event):
+        if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
+            self.handle_main_label_click(event)
+        return super().eventFilter(obj, event)
+    
+    def handle_main_label_click(self, event: QMouseEvent):
+        if self.file_handle is None:
+            return
+        if event.button() != Qt.MouseButton.LeftButton:
+            return
+        zoom = int(self.zoom_combo.currentText())
+        tw = 8
+        th = int(self.tile_height_combo.currentText())
+        x = event.x() // zoom
+        y = event.y() // zoom
+        if self.pivot_button.isChecked():
+            tile_num = (x // tw) * self.width_spin.value() + (y // th)
+        else:
+            tile_num = (y // th) * self.height_spin.value() + (x // tw)
+        offset = tile_num * self.get_tile_bytes() + self.offset
+        #sanity check
+        if offset > self.file_size:
+            return
+        self.tile_loupe.reference = offset
+        self.draw_loupe()
     
     def register_shortcuts(self):
         self.new_shortcut(QKeySequence("Right"), 
@@ -120,6 +149,11 @@ class TabRaw(RenderTab, Ui_TabRaw):
 
     def update_offset(self):
         self.offset_line.setText(f'{self.offset:X}')
+
+    def update_loupe_position(self):
+        offset_from = self.tile_loupe.reference
+        offset_to = self.tile_loupe.reference + self.tile_loupe.tiles_drawn * self.get_tile_bytes() - 1
+        self.loupe_position_label.setText(f'{offset_from:X}h - {offset_to:X}h')
 
     def process_offset(self):
         try:
@@ -182,9 +216,17 @@ class TabRaw(RenderTab, Ui_TabRaw):
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.FastTransformation)
         )
-        #self.main_label.setCursor(QCursor(Qt.CursorShape.CrossCursor))
+        self.main_label.setCursor(QCursor(Qt.CursorShape.CrossCursor))
         pilimg.close()
         #self.draw_loupe()
+
+    def draw_loupe(self):
+        if self.tile_loupe.reference is None or self.file_handle is None:
+            return
+        img = self.get_pil_loupe()
+        self.tile_loupe.set_image(QPixmap.fromImage(pil_to_qimage(img)), img.width, img.height)
+        img.close()
+        self.update_loupe_position()
 
     def copy_to_clipboard(self):
         if self.file_handle is None:
@@ -230,6 +272,21 @@ class TabRaw(RenderTab, Ui_TabRaw):
             int(self.tile_height_combo.currentText()),
             self.pivot_button.isChecked()
         )
+        img.putpalette(pal_data[1].flattened_colors())
+        return img
+    
+    def get_pil_loupe(self) -> Image.Image:
+        pal_data = self.app.get_palette_and_background()
+        img = self.renderer.get_image(
+            self.tile_loupe.reference,
+            self.tile_loupe.get_width(),
+            self.tile_loupe.get_height(),
+            self.pal_combo.currentIndex(),
+            pal_data[0],
+            int(self.tile_height_combo.currentText()),
+            self.pivot_button.isChecked()
+        )
+        self.tile_loupe.tiles_drawn = self.renderer.get_tiles_drawn()
         img.putpalette(pal_data[1].flattened_colors())
         return img
     
