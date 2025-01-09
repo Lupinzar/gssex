@@ -18,11 +18,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_state_combo()
         self.refresh_config()
 
-        #tabs
-        self.tab_palette.bind_states(self.app)
-        self.tab_palette.statusMessage.connect(self.show_timed_status_message)
-        self.tab_vram.bind_states(self.app)
-        self.tab_vram.statusMessage.connect(self.show_timed_status_message)
+        #do some setup for our tabs that inherit RenderTab
+        rtab: RenderTab
+        for rtab in self.main_tabs.findChildren(RenderTab):
+            rtab.bind_states(self.app)
+            rtab.statusMessage.connect(self.show_timed_status_message)
 
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
 
