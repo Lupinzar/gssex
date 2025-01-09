@@ -121,27 +121,21 @@ class RawRender:
         tile_bytes = tile_width * tile_height // 2
         data_to_read = tile_bytes * tiles_wide * tiles_tall
 
-        #clamp if we need to
+        #adjust tiles to read if we need to
         if offset + data_to_read >= self.file_size:
             data_to_read = self.file_size - offset
             tile_count = data_to_read // tile_bytes
-            if tile_count < tiles_wide:
-                tiles_wide = tile_count
-                tiles_tall = 1
-            else:
-                tiles_tall = tile_count // tiles_wide + bool(tile_count % tiles_wide)
         else:
             tile_count = tiles_wide * tiles_tall
         tile_size = (tiles_wide, tiles_tall)
-        if pivot:
-            tile_size = (tile_size[1], tile_size[0])
 
         image = Image.new('P', (tile_width * tile_size[0], tile_height * tile_size[1]), bgcolor)
         self.handle.seek(offset)
         for ndx in range(0, tile_count):
-            pos = (ndx % tiles_wide, ndx // tiles_wide)
             if pivot:
-                pos = (pos[1], pos[0])
+                pos = (ndx // tiles_tall, ndx % tiles_tall)
+            else:
+                pos = (ndx % tiles_wide, ndx // tiles_wide)
             image_data = tile_image_and_mask(self.expand_tile(self.handle.read(tile_bytes), palette), (tile_width, tile_height))
             image.paste(image_data[0], (pos[0] * tile_width, pos[1] * tile_height), mask=image_data[1])
             for img in image_data:
