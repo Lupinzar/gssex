@@ -5,13 +5,22 @@ from ..render import RawRender
 from .app import pil_to_qimage, pil_to_clipboard
 from typing import BinaryIO
 from PySide6.QtCore import Qt, QEvent, QTimer
-from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator
+from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence
 from PySide6.QtWidgets import QFileDialog
 from os.path import isfile, dirname, basename
 from os import fstat
 from PIL import Image
+from enum import Enum, auto
 
 class TabRaw(RenderTab, Ui_TabRaw):
+    class POSITION_DIRECTION(Enum):
+        INCREMENT = auto()
+        DECREMENT = auto()
+    class POSITION_SIZE(Enum):
+        SINGLE = auto()
+        TILE = auto()
+        LINE = auto()
+        WINDOW = auto()
     DEFAULT_SPIN_WIDTH = 16
     DEFAULT_SPIN_HEIGHT = 16
     OFFSET_PROCESS_DELAY = 500
@@ -23,6 +32,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.file_size: int = 0
         self.offset: int = 0
         self.renderer: RawRender | None = None
+        self.shortcuts: list[QShortcut] = []
         self.setupUi(self)
 
         #add a delay to offset line edit so we only update after X seconds of no typing
@@ -41,6 +51,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.paletteSwapped.connect(self.draw_main)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
         self.save_button.clicked.connect(self.save_image)
+        self.keyboard_button.toggled.connect(self.toggle_shortcuts)
         #input changes, redraw
         self.tile_height_combo.currentIndexChanged.connect(self.draw_main)
         self.width_spin.valueChanged.connect(self.draw_main)
@@ -48,21 +59,79 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.zoom_combo.currentIndexChanged.connect(self.draw_main)
         self.pal_combo.currentIndexChanged.connect(self.draw_main)
         self.pivot_button.clicked.connect(self.draw_main)
-
+        
+        self.register_shortcuts()
         self.clear_main_image()
         self.update_offset()
+    
+    def register_shortcuts(self):
+        self.new_shortcut(QKeySequence("Right"), 
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT))
+        self.new_shortcut(QKeySequence("Left"), 
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT))
+        self.new_shortcut(QKeySequence("Down"), 
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.LINE))
+        self.new_shortcut(QKeySequence("Up"),
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.LINE))
+        self.new_shortcut(QKeySequence("Shift+Right"),
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.TILE))
+        self.new_shortcut(QKeySequence("Shift+Left"),
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.TILE))
+        self.new_shortcut(QKeySequence("Shift+Down"),
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WINDOW))
+        self.new_shortcut(QKeySequence("Shift+Up"),
+                          lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WINDOW))
+        
+    def new_shortcut(self, sequence: QKeySequence, callback: callable):
+        shortcut = QShortcut(sequence, self)
+        shortcut.activated.connect(callback)
+        shortcut.setEnabled(self.keyboard_button.isChecked())
+        self.shortcuts.append(shortcut)
+
+    def toggle_shortcuts(self, checked):
+        for shortcut in self.shortcuts:
+            shortcut.setEnabled(checked)
+        #get focus off the form elements
+        if checked:
+            self.scroll_area.setFocus()
+
+    def adjust_offset(self, dir: POSITION_DIRECTION, size: POSITION_SIZE = POSITION_SIZE.SINGLE):
+        if self.file_handle is None:
+            return
+        adjustment: int = 1 if dir == self.POSITION_DIRECTION.INCREMENT else -1
+        multiple: int
+        match size:
+            case self.POSITION_SIZE.TILE:
+                multiple = self.get_tile_bytes()
+            case self.POSITION_SIZE.LINE:
+                multiple = self.get_tile_bytes() * self.width_spin.value()
+            case self.POSITION_SIZE.WINDOW:
+                multiple = self.get_tile_bytes() * self.width_spin.value() * self.height_spin.value()
+            case _:
+                multiple = 1
+        
+        new = self.clamp_offset(self.offset + adjustment * multiple)
+        #skip redraw if we clamped and went nowhere
+        if new == self.offset:
+            return
+        self.offset = new
+        self.update_offset()
+        self.draw_main()
 
     def update_offset(self):
         self.offset_line.setText(f'{self.offset:X}')
 
     def process_offset(self):
         try:
-            new_offset = min(int(self.offset_line.text(), 16), self.file_size)
+            new_offset = self.clamp_offset(int(self.offset_line.text(), 16))
             self.offset = new_offset
             self.update_offset()
             self.draw_main()
         except ValueError:
             pass
+
+    def clamp_offset(self, offset: int) -> int:
+        return max(0, min(offset, self.file_size))
 
     def clear_main_image(self):
         self.main_label.clear()
@@ -163,6 +232,9 @@ class TabRaw(RenderTab, Ui_TabRaw):
         )
         img.putpalette(pal_data[1].flattened_colors())
         return img
+    
+    def get_tile_bytes(self) -> int:
+        return 8 * int(self.tile_height_combo.currentText()) // 2
 
     def __del__(self):
         self.close_file()

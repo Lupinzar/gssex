@@ -52,25 +52,34 @@ class Ui_TabRaw(object):
 
         self.formLayout.setWidget(0, QFormLayout.LabelRole, self._opened_file)
 
-        self.opened_file_line = QLineEdit(TabRaw)
-        self.opened_file_line.setObjectName(u"opened_file_line")
-        self.opened_file_line.setEnabled(False)
+        self._offset_label = QLabel(TabRaw)
+        self._offset_label.setObjectName(u"_offset_label")
+
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self._offset_label)
+
+        self.offset_line = QLineEdit(TabRaw)
+        self.offset_line.setObjectName(u"offset_line")
+        self.offset_line.setEnabled(False)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.opened_file_line.sizePolicy().hasHeightForWidth())
-        self.opened_file_line.setSizePolicy(sizePolicy)
-        self.opened_file_line.setReadOnly(False)
+        sizePolicy.setHeightForWidth(self.offset_line.sizePolicy().hasHeightForWidth())
+        self.offset_line.setSizePolicy(sizePolicy)
+        self.offset_line.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.opened_file_line)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.offset_line)
 
-        self.open_file_button = QPushButton(TabRaw)
-        self.open_file_button.setObjectName(u"open_file_button")
-        icon = QIcon()
-        icon.addFile(u":/icons/file.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.open_file_button.setIcon(icon)
+        self._tile_height_label = QLabel(TabRaw)
+        self._tile_height_label.setObjectName(u"_tile_height_label")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.open_file_button)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._tile_height_label)
+
+        self.tile_height_combo = QComboBox(TabRaw)
+        self.tile_height_combo.addItem("")
+        self.tile_height_combo.addItem("")
+        self.tile_height_combo.setObjectName(u"tile_height_combo")
+
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.tile_height_combo)
 
         self._size_label = QLabel(TabRaw)
         self._size_label.setObjectName(u"_size_label")
@@ -132,76 +141,73 @@ class Ui_TabRaw(object):
 
         self.formLayout.setWidget(6, QFormLayout.FieldRole, self.pal_combo)
 
-        self.pivot_button = QPushButton(TabRaw)
-        self.pivot_button.setObjectName(u"pivot_button")
-        self.pivot_button.setCheckable(True)
-        self.pivot_button.setChecked(True)
-        self.pivot_button.setFlat(False)
+        self.open_file_button = QPushButton(TabRaw)
+        self.open_file_button.setObjectName(u"open_file_button")
+        icon = QIcon()
+        icon.addFile(u":/icons/file.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.open_file_button.setIcon(icon)
 
-        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.pivot_button)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.open_file_button)
 
-        self._offset_label = QLabel(TabRaw)
-        self._offset_label.setObjectName(u"_offset_label")
+        self.opened_file_line = QLineEdit(TabRaw)
+        self.opened_file_line.setObjectName(u"opened_file_line")
+        self.opened_file_line.setEnabled(False)
+        sizePolicy.setHeightForWidth(self.opened_file_line.sizePolicy().hasHeightForWidth())
+        self.opened_file_line.setSizePolicy(sizePolicy)
+        self.opened_file_line.setReadOnly(False)
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self._offset_label)
-
-        self.offset_line = QLineEdit(TabRaw)
-        self.offset_line.setObjectName(u"offset_line")
-        self.offset_line.setEnabled(False)
-        sizePolicy.setHeightForWidth(self.offset_line.sizePolicy().hasHeightForWidth())
-        self.offset_line.setSizePolicy(sizePolicy)
-        self.offset_line.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.offset_line)
-
-        self._tile_height_label = QLabel(TabRaw)
-        self._tile_height_label.setObjectName(u"_tile_height_label")
-
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self._tile_height_label)
-
-        self.tile_height_combo = QComboBox(TabRaw)
-        self.tile_height_combo.addItem("")
-        self.tile_height_combo.addItem("")
-        self.tile_height_combo.setObjectName(u"tile_height_combo")
-
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.tile_height_combo)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.opened_file_line)
 
 
         self.verticalLayout.addLayout(self.formLayout)
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.save_button = QPushButton(TabRaw)
-        self.save_button.setObjectName(u"save_button")
-        icon1 = QIcon()
-        icon1.addFile(u":/icons/device-floppy.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.save_button.setIcon(icon1)
-
-        self.gridLayout.addWidget(self.save_button, 1, 0, 1, 1)
-
         self.copy_button = QPushButton(TabRaw)
         self.copy_button.setObjectName(u"copy_button")
-        icon2 = QIcon()
-        icon2.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.copy_button.setIcon(icon2)
+        icon1 = QIcon()
+        icon1.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.copy_button.setIcon(icon1)
 
-        self.gridLayout.addWidget(self.copy_button, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.copy_button, 2, 1, 1, 1)
 
         self.find_previous_button = QPushButton(TabRaw)
         self.find_previous_button.setObjectName(u"find_previous_button")
         self.find_previous_button.setEnabled(False)
-        icon3 = QIcon()
-        icon3.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.find_previous_button.setIcon(icon3)
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.find_previous_button.setIcon(icon2)
 
-        self.gridLayout.addWidget(self.find_previous_button, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.find_previous_button, 1, 0, 1, 1)
+
+        self.save_button = QPushButton(TabRaw)
+        self.save_button.setObjectName(u"save_button")
+        icon3 = QIcon()
+        icon3.addFile(u":/icons/device-floppy.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.save_button.setIcon(icon3)
+
+        self.gridLayout.addWidget(self.save_button, 2, 0, 1, 1)
 
         self.find_next_button = QPushButton(TabRaw)
         self.find_next_button.setObjectName(u"find_next_button")
         self.find_next_button.setEnabled(False)
-        self.find_next_button.setIcon(icon3)
+        self.find_next_button.setIcon(icon2)
 
-        self.gridLayout.addWidget(self.find_next_button, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.find_next_button, 1, 1, 1, 1)
+
+        self.pivot_button = QPushButton(TabRaw)
+        self.pivot_button.setObjectName(u"pivot_button")
+        self.pivot_button.setCheckable(True)
+        self.pivot_button.setChecked(True)
+        self.pivot_button.setFlat(False)
+
+        self.gridLayout.addWidget(self.pivot_button, 0, 0, 1, 1)
+
+        self.keyboard_button = QPushButton(TabRaw)
+        self.keyboard_button.setObjectName(u"keyboard_button")
+        self.keyboard_button.setCheckable(True)
+
+        self.gridLayout.addWidget(self.keyboard_button, 0, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
@@ -253,9 +259,11 @@ class Ui_TabRaw(object):
         TabRaw.setWindowTitle(QCoreApplication.translate("TabRaw", u"Form", None))
         self.main_label.setText(QCoreApplication.translate("TabRaw", u"RAW Image", None))
         self._opened_file.setText(QCoreApplication.translate("TabRaw", u"File", None))
-        self.opened_file_line.setText("")
-        self.opened_file_line.setPlaceholderText(QCoreApplication.translate("TabRaw", u"No File Selected", None))
-        self.open_file_button.setText(QCoreApplication.translate("TabRaw", u"Open File", None))
+        self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset (Hex)", None))
+        self._tile_height_label.setText(QCoreApplication.translate("TabRaw", u"Tile Height", None))
+        self.tile_height_combo.setItemText(0, QCoreApplication.translate("TabRaw", u"8", None))
+        self.tile_height_combo.setItemText(1, QCoreApplication.translate("TabRaw", u"16", None))
+
         self._size_label.setText(QCoreApplication.translate("TabRaw", u"Size", None))
         self._cross_label.setText(QCoreApplication.translate("TabRaw", u"x", None))
         self._zoom_label.setText(QCoreApplication.translate("TabRaw", u"Zoom", None))
@@ -270,16 +278,15 @@ class Ui_TabRaw(object):
         self.pal_combo.setItemText(2, QCoreApplication.translate("TabRaw", u"2", None))
         self.pal_combo.setItemText(3, QCoreApplication.translate("TabRaw", u"3", None))
 
-        self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
-        self._offset_label.setText(QCoreApplication.translate("TabRaw", u"Offset (Hex)", None))
-        self._tile_height_label.setText(QCoreApplication.translate("TabRaw", u"Tile Height", None))
-        self.tile_height_combo.setItemText(0, QCoreApplication.translate("TabRaw", u"8", None))
-        self.tile_height_combo.setItemText(1, QCoreApplication.translate("TabRaw", u"16", None))
-
-        self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
+        self.open_file_button.setText(QCoreApplication.translate("TabRaw", u"Open File", None))
+        self.opened_file_line.setText("")
+        self.opened_file_line.setPlaceholderText(QCoreApplication.translate("TabRaw", u"No File Selected", None))
         self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
         self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
+        self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
         self.find_next_button.setText(QCoreApplication.translate("TabRaw", u"Next", None))
+        self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
+        self.keyboard_button.setText(QCoreApplication.translate("TabRaw", u"Keyboard", None))
         self._loupe_label.setText(QCoreApplication.translate("TabRaw", u"Tile Loupe", None))
         self.loupe_position_label.setText(QCoreApplication.translate("TabRaw", u"Position", None))
     # retranslateUi
