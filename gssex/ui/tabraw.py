@@ -218,7 +218,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         )
         self.main_label.setCursor(QCursor(Qt.CursorShape.CrossCursor))
         pilimg.close()
-        #self.draw_loupe()
+        self.draw_loupe()
 
     def draw_loupe(self):
         if self.tile_loupe.reference is None or self.file_handle is None:
