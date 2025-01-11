@@ -62,6 +62,11 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.zoom_combo.currentIndexChanged.connect(self.draw_main)
         self.pal_combo.currentIndexChanged.connect(self.draw_main)
         self.pivot_button.clicked.connect(self.draw_main)
+
+        self.tile_loupe.sizeChanged.connect(self.draw_loupe)
+        self.tile_loupe.copyInitiated.connect(self.loupe_copy_to_clipboard)
+        self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
+        self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         
         self.register_shortcuts()
         self.clear_main_image()
@@ -247,6 +252,45 @@ class TabRaw(RenderTab, Ui_TabRaw):
         else:
             self.statusMessage.emit(f"Error outputting {path}")
 
+    def loupe_copy_to_clipboard(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
+            return
+        if self.tile_loupe.reference is None:
+            self.statusMessage.emit(self.NO_LOUPE_SELECTED_MSG)
+            return
+        img = self.get_pil_loupe()
+        pil_to_clipboard(img)
+        img.close()
+
+    def loupe_save_image(self):
+        if not self.app.valid_file:
+            self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
+            return
+        if self.tile_loupe.reference is None:
+            self.statusMessage.emit(self.NO_LOUPE_SELECTED_MSG)
+            return
+        img = self.get_pil_loupe()
+        path = self.build_loupe_image_path()
+        if self.app.save_image(img, path):
+            self.statusMessage.emit(f"Output {path}")
+        else:
+            self.statusMessage.emit(f"Error outputting {path}")
+
+    def handle_loupe_position(self, direction: Enum, size: Enum):
+        if self.file_handle is None:
+            return
+        #if they haven't chosen a tile yet, just start at current offset
+        start = self.offset if self.tile_loupe.reference is None else self.tile_loupe.reference
+        amount = self.get_tile_bytes() if size == TileLoupe.POSITION_SIZE.SINGLE else self.tile_loupe.get_tile_area() * self.get_tile_bytes()
+        if direction == TileLoupe.POSITION_DIRECTION.DECREMENT:
+            amount = -amount
+        new = start + amount
+        if new < 0 or new >= self.file_size:
+            return
+        self.tile_loupe.reference = new
+        self.draw_loupe()
+
     def build_image_path(self):
         parts = [
             f'{self.offset:08X}',
@@ -255,6 +299,20 @@ class TabRaw(RenderTab, Ui_TabRaw):
             str(self.width_spin.value()),
             'global' if self.app.use_global_pal else 'state',
             self.pal_combo.currentText(),
+        ]
+        if self.pivot_button.isChecked():
+            parts.append('pivot')
+        key = "_".join(parts)
+        return f'{self.app.config.output_path}/{basename(self.file_path)}_{key}.png'
+    
+    def build_loupe_image_path(self):
+        parts = [
+            f'{self.tile_loupe.reference:08X}',
+            self.tile_height_combo.currentText(),
+            str(self.tile_loupe.get_width()),
+            str(self.tile_loupe.get_height()),
+            'global' if self.app.use_global_pal else 'state',
+            self.pal_combo.currentText()
         ]
         if self.pivot_button.isChecked():
             parts.append('pivot')
