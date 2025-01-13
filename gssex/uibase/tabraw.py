@@ -158,56 +158,50 @@ class Ui_TabRaw(object):
 
         self.formLayout.setWidget(0, QFormLayout.FieldRole, self.opened_file_line)
 
-
-        self.verticalLayout.addLayout(self.formLayout)
-
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.copy_button = QPushButton(TabRaw)
-        self.copy_button.setObjectName(u"copy_button")
-        icon1 = QIcon()
-        icon1.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.copy_button.setIcon(icon1)
-
-        self.gridLayout.addWidget(self.copy_button, 2, 1, 1, 1)
-
-        self.find_previous_button = QPushButton(TabRaw)
-        self.find_previous_button.setObjectName(u"find_previous_button")
-        self.find_previous_button.setEnabled(False)
-        icon2 = QIcon()
-        icon2.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.find_previous_button.setIcon(icon2)
-
-        self.gridLayout.addWidget(self.find_previous_button, 1, 0, 1, 1)
-
-        self.save_button = QPushButton(TabRaw)
-        self.save_button.setObjectName(u"save_button")
-        icon3 = QIcon()
-        icon3.addFile(u":/icons/device-floppy.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.save_button.setIcon(icon3)
-
-        self.gridLayout.addWidget(self.save_button, 2, 0, 1, 1)
-
-        self.find_next_button = QPushButton(TabRaw)
-        self.find_next_button.setObjectName(u"find_next_button")
-        self.find_next_button.setEnabled(False)
-        self.find_next_button.setIcon(icon2)
-
-        self.gridLayout.addWidget(self.find_next_button, 1, 1, 1, 1)
-
         self.pivot_button = QPushButton(TabRaw)
         self.pivot_button.setObjectName(u"pivot_button")
         self.pivot_button.setCheckable(True)
         self.pivot_button.setChecked(True)
         self.pivot_button.setFlat(False)
 
-        self.gridLayout.addWidget(self.pivot_button, 0, 0, 1, 1)
+        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.pivot_button)
 
-        self.keyboard_button = QPushButton(TabRaw)
-        self.keyboard_button.setObjectName(u"keyboard_button")
-        self.keyboard_button.setCheckable(True)
 
-        self.gridLayout.addWidget(self.keyboard_button, 0, 1, 1, 1)
+        self.verticalLayout.addLayout(self.formLayout)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.find_next_button = QPushButton(TabRaw)
+        self.find_next_button.setObjectName(u"find_next_button")
+        self.find_next_button.setEnabled(False)
+        icon1 = QIcon()
+        icon1.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.find_next_button.setIcon(icon1)
+
+        self.gridLayout.addWidget(self.find_next_button, 0, 1, 1, 1)
+
+        self.save_button = QPushButton(TabRaw)
+        self.save_button.setObjectName(u"save_button")
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/device-floppy.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.save_button.setIcon(icon2)
+
+        self.gridLayout.addWidget(self.save_button, 1, 0, 1, 1)
+
+        self.find_previous_button = QPushButton(TabRaw)
+        self.find_previous_button.setObjectName(u"find_previous_button")
+        self.find_previous_button.setEnabled(False)
+        self.find_previous_button.setIcon(icon1)
+
+        self.gridLayout.addWidget(self.find_previous_button, 0, 0, 1, 1)
+
+        self.copy_button = QPushButton(TabRaw)
+        self.copy_button.setObjectName(u"copy_button")
+        icon3 = QIcon()
+        icon3.addFile(u":/icons/clipboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.copy_button.setIcon(icon3)
+
+        self.gridLayout.addWidget(self.copy_button, 1, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
@@ -281,12 +275,11 @@ class Ui_TabRaw(object):
         self.open_file_button.setText(QCoreApplication.translate("TabRaw", u"Open File", None))
         self.opened_file_line.setText("")
         self.opened_file_line.setPlaceholderText(QCoreApplication.translate("TabRaw", u"No File Selected", None))
-        self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
-        self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
-        self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
-        self.find_next_button.setText(QCoreApplication.translate("TabRaw", u"Next", None))
         self.pivot_button.setText(QCoreApplication.translate("TabRaw", u"Pivot", None))
-        self.keyboard_button.setText(QCoreApplication.translate("TabRaw", u"Keyboard", None))
+        self.find_next_button.setText(QCoreApplication.translate("TabRaw", u"Next", None))
+        self.save_button.setText(QCoreApplication.translate("TabRaw", u"Save", None))
+        self.find_previous_button.setText(QCoreApplication.translate("TabRaw", u"Previous", None))
+        self.copy_button.setText(QCoreApplication.translate("TabRaw", u"Copy", None))
         self._loupe_label.setText(QCoreApplication.translate("TabRaw", u"Tile Loupe", None))
         self.loupe_position_label.setText(QCoreApplication.translate("TabRaw", u"Position", None))
     # retranslateUi

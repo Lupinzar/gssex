@@ -46,6 +46,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.height_spin.setValue(self.DEFAULT_SPIN_HEIGHT)
 
         self.main_label.installEventFilter(self)
+        self.scroll_area.installEventFilter(self)
 
         self.open_file_button.clicked.connect(self.open_file)
         self.offset_line.textEdited.connect(lambda: self.offset_timer.start(self.OFFSET_PROCESS_DELAY))
@@ -54,7 +55,6 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.paletteSwapped.connect(self.draw_main)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
         self.save_button.clicked.connect(self.save_image)
-        self.keyboard_button.toggled.connect(self.toggle_shortcuts)
         #input changes, redraw
         self.tile_height_combo.currentIndexChanged.connect(self.draw_main)
         self.width_spin.valueChanged.connect(self.draw_main)
@@ -75,6 +75,11 @@ class TabRaw(RenderTab, Ui_TabRaw):
     def eventFilter(self, obj, event):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
             self.handle_main_label_click(event)
+        if obj == self.scroll_area:
+            if event.type() == QEvent.Type.Enter:
+                self.toggle_shortcuts(True)
+            if event.type() == QEvent.Type.Leave:
+                self.toggle_shortcuts(False)
         return super().eventFilter(obj, event)
     
     def handle_main_label_click(self, event: QMouseEvent):
@@ -119,15 +124,12 @@ class TabRaw(RenderTab, Ui_TabRaw):
     def new_shortcut(self, sequence: QKeySequence, callback: callable):
         shortcut = QShortcut(sequence, self)
         shortcut.activated.connect(callback)
-        shortcut.setEnabled(self.keyboard_button.isChecked())
+        shortcut.setEnabled(False)
         self.shortcuts.append(shortcut)
 
-    def toggle_shortcuts(self, checked):
+    def toggle_shortcuts(self, checked: bool):
         for shortcut in self.shortcuts:
             shortcut.setEnabled(checked)
-        #get focus off the form elements
-        if checked:
-            self.scroll_area.setFocus()
 
     def adjust_offset(self, dir: POSITION_DIRECTION, size: POSITION_SIZE = POSITION_SIZE.SINGLE):
         if self.file_handle is None:
