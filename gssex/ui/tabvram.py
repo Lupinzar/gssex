@@ -132,8 +132,13 @@ class TabVram(RenderTab, Ui_TabVram):
         self.loupe_position_label.setText(f'#{tile_from} - #{tile_to}')
 
     def find_in_raw(self):
-        pass
-        #TODO get binary data, switch tab, initiate search
+        bytedata = bytearray()
+        tile_start = self.tile_loupe.reference
+        tile_end = self.tile_loupe.tiles_drawn + tile_start
+        for tilenum in range(tile_start, tile_end):
+            offset = self.app.savestate.pattern_data.number_to_offset(tilenum)
+            bytedata += self.app.savestate.pattern_data.get_raw(offset)
+        #TODO switch tab, initiate search
 
     def copy_to_clipboard(self):
         if not self.app.valid_file:
