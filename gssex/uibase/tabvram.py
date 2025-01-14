@@ -151,6 +151,14 @@ class Ui_TabVram(object):
 
         self.verticalLayout.addWidget(self.tile_loupe)
 
+        self.find_button = QPushButton(TabVram)
+        self.find_button.setObjectName(u"find_button")
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.find_button.setIcon(icon2)
+
+        self.verticalLayout.addWidget(self.find_button)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
@@ -184,5 +192,6 @@ class Ui_TabVram(object):
         self.copy_button.setText(QCoreApplication.translate("TabVram", u"Copy", None))
         self._loupe_label.setText(QCoreApplication.translate("TabVram", u"Tile Loupe", None))
         self.loupe_position_label.setText(QCoreApplication.translate("TabVram", u"Position", None))
+        self.find_button.setText(QCoreApplication.translate("TabVram", u"Find in RAW", None))
     # retranslateUi
 

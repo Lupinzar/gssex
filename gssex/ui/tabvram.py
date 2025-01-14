@@ -1,4 +1,5 @@
 from .rendertab import RenderTab
+from .tabraw import TabRaw
 from .tileloupe import TileLoupe
 from ..uibase.tabvram import Ui_TabVram
 from ..render import VramRender
@@ -16,19 +17,22 @@ class TabVram(RenderTab, Ui_TabVram):
         self.setupUi(self)
         self.clear_main_image()
         self.saveStateChanged.connect(self.state_changed)
-        self.fullRefresh.connect(self.redraw)
+        self.fullRefresh.connect(self.full_refresh)
         self.paletteSwapped.connect(self.redraw)
         self.zoom_combo.currentIndexChanged.connect(self.redraw)
         self.pal_combo.currentIndexChanged.connect(self.redraw)
         self.pivot_button.clicked.connect(self.redraw)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
         self.save_button.clicked.connect(self.save_image)
+        self.find_button.clicked.connect(self.find_in_raw)
         self.tile_loupe.sizeChanged.connect(self.draw_loupe)
         self.tile_loupe.copyInitiated.connect(self.loupe_copy_to_clipboard)
         self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
         self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
-        
+    
+    def link_raw_tab(self, tab: TabRaw):
+        self.raw_tab = tab
 
     def eventFilter(self, obj, event):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
@@ -37,12 +41,29 @@ class TabVram(RenderTab, Ui_TabVram):
 
     def state_changed(self):
         self.tile_loupe.reset()
+        self.update_find_button()
         self.redraw()
 
     def clear_main_image(self):
         self.main_label.clear()
         self.main_label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         self.loupe_position_label.clear()
+
+    def full_refresh(self):
+        self.update_find_button()
+        self.redraw()
+
+    def find_in_raw_allowed(self) -> bool:
+        if self.raw_tab is None:
+            return False
+        if not self.app.valid_file:
+            return False
+        if self.tile_loupe.reference is None:
+            return False
+        return True
+    
+    def update_find_button(self):
+        self.find_button.setEnabled(self.find_in_raw_allowed())
 
     def redraw(self):
         if not self.app.valid_file:
@@ -66,6 +87,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.draw_loupe()
 
     def draw_loupe(self):
+        self.update_find_button()
         if self.tile_loupe.reference is None or not self.app.valid_file:
             return
         img = self.get_pil_loupe()
@@ -108,6 +130,10 @@ class TabVram(RenderTab, Ui_TabVram):
         tile_from = self.tile_loupe.reference
         tile_to = self.tile_loupe.reference + self.tile_loupe.tiles_drawn - 1
         self.loupe_position_label.setText(f'#{tile_from} - #{tile_to}')
+
+    def find_in_raw(self):
+        pass
+        #TODO get binary data, switch tab, initiate search
 
     def copy_to_clipboard(self):
         if not self.app.valid_file:

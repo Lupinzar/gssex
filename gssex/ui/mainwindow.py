@@ -25,6 +25,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             rtab.statusMessage.connect(self.show_timed_status_message)
 
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
+        #needed for "Find in RAW" feature
+        self.tab_vram.link_raw_tab(self.tab_raw)
 
         #config changes
         self.bg_color_toggle.toggled.connect(self.update_config)
