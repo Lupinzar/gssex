@@ -231,28 +231,23 @@ class SpriteTable:
 
 class PatternData:
 
-    def __init__(self, buffer: Buffer, tile_size: Tuple[int, int] = (8, 8), use_cache=False):
+    def __init__(self, buffer: Buffer, tile_size: Tuple[int, int] = (8, 8)):
         self.buffer: Buffer = buffer
         self.tile_size: Tuple[int, int] = tile_size
         self.tile_width: int = tile_size[0]
         self.tile_height: int = tile_size[1]
         self.tile_byte_size: int = (self.tile_width * self.tile_height) // 2
-        self.use_cache: bool = use_cache
-        self.cache: dict = {}
 
     def get_pattern(self, address: int, palette: int) -> bytearray:
-        cache_key = f'{address}_{palette}'
-        if self.use_cache and cache_key in self.cache:
-            #print('cache hit')
-            return self.cache[cache_key]
         data = bytearray()
-        bytes = self.buffer.read_bytes(self.tile_byte_size, address)
+        bytes = self.get_raw(address)
         for b in bytes:
             data.append(((b & 0xF0) >> 4) | (palette << 4))
             data.append((b & 0x0F) | (palette << 4))
-        if self.use_cache:
-            self.cache[cache_key] = data
         return data
+    
+    def get_raw(self, address: int) -> bytearray:
+        return self.buffer.read_bytes(self.tile_byte_size, address)
         
     def to_mask(self, pattern: bytearray) -> bytearray:
         return mask_from_bytes(pattern)
