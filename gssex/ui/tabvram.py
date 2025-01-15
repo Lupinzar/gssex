@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt, QEvent
 from enum import Enum
 
 class TabVram(RenderTab, Ui_TabVram):
-    TILES_WIDE = 16
+    TILES_WIDE = 32
     NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
