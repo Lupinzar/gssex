@@ -120,6 +120,14 @@ class TabRaw(RenderTab, Ui_TabRaw):
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WINDOW))
         self.new_shortcut(QKeySequence("Shift+Up"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WINDOW))
+        self.new_shortcut(QKeySequence("Ctrl+Right"),
+                          lambda: self.width_spin.setValue(self.width_spin.value() + 1))
+        self.new_shortcut(QKeySequence("Ctrl+Left"),
+                          lambda: self.width_spin.setValue(self.width_spin.value() - 1))
+        self.new_shortcut(QKeySequence("Ctrl+Down"),
+                          lambda: self.height_spin.setValue(self.height_spin.value() + 1))
+        self.new_shortcut(QKeySequence("Ctrl+Up"),
+                          lambda: self.height_spin.setValue(self.height_spin.value() - 1))
         
     def new_shortcut(self, sequence: QKeySequence, callback: callable):
         shortcut = QShortcut(sequence, self)

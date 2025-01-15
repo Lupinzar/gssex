@@ -1,8 +1,8 @@
 #Hand-made widget that does not have a Qt Creator file
 from enum import Enum, auto
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
-from PySide6.QtCore import Signal, Qt, QSize
-from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtCore import Signal, Qt, QSize, QEvent
+from PySide6.QtGui import QPixmap, QIcon, QKeySequence, QShortcut
 from ..uibase import resource_rc
 
 class TileLoupe(QWidget):
@@ -31,8 +31,11 @@ class TileLoupe(QWidget):
         self.inc_large_button = QPushButton()
         self.dec_small_button = QPushButton()
         self.dec_large_button = QPushButton()
+        self.image_scroll = QScrollArea()
         self.reference: None|int = None
         self.tiles_drawn: int = 0
+        self.shortcuts: list[QShortcut] = []
+        self.image_scroll.installEventFilter(self)
         self.setupUi()
 
         self.width_spin.valueChanged.connect(self.emit_size_change)
@@ -44,8 +47,46 @@ class TileLoupe(QWidget):
         self.dec_small_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
         self.dec_large_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
 
+        self.register_shortcuts()
+
+    def eventFilter(self, obj, event):
+        if obj == self.image_scroll:
+            if event.type() == QEvent.Type.Enter:
+                self.toggle_shortcuts(True)
+            if event.type() == QEvent.Type.Leave:
+                self.toggle_shortcuts(False)
+        return super().eventFilter(obj, event)
+
     def emit_size_change(self):
         self.sizeChanged.emit(self.width_spin.value(), self.height_spin.value())
+
+    def register_shortcuts(self):
+        self.new_shortcut(QKeySequence("Right"), 
+                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.SINGLE))
+        self.new_shortcut(QKeySequence("Left"), 
+                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
+        self.new_shortcut(QKeySequence("Down"), 
+                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WHOLE))
+        self.new_shortcut(QKeySequence("Up"),
+                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
+        self.new_shortcut(QKeySequence("Ctrl+Right"),
+                          lambda: self.width_spin.setValue(self.width_spin.value() + 1))
+        self.new_shortcut(QKeySequence("Ctrl+Left"),
+                          lambda: self.width_spin.setValue(self.width_spin.value() - 1))
+        self.new_shortcut(QKeySequence("Ctrl+Down"),
+                          lambda: self.height_spin.setValue(self.height_spin.value() + 1))
+        self.new_shortcut(QKeySequence("Ctrl+Up"),
+                          lambda: self.height_spin.setValue(self.height_spin.value() - 1))
+        
+    def new_shortcut(self, sequence: QKeySequence, callback: callable):
+        shortcut = QShortcut(sequence, self)
+        shortcut.activated.connect(callback)
+        shortcut.setEnabled(False)
+        self.shortcuts.append(shortcut)
+
+    def toggle_shortcuts(self, checked: bool):
+        for shortcut in self.shortcuts:
+            shortcut.setEnabled(checked)
 
     def set_image(self, image: QPixmap, width: int, height: int):
         width *= self.zoom
@@ -85,12 +126,11 @@ class TileLoupe(QWidget):
         self.height_spin.setMinimum(self.MIN_SIZE)
         self.height_spin.setMaximum(self.MAX_SIZE)
 
-        image_scroll = QScrollArea()
         #make sure widget can show at least a 4x4 sprite with 8x8 tiles
-        minsize = self.MAX_SIZE * self.zoom * 8 + image_scroll.frameWidth() * 2
-        image_scroll.setWidget(self.image_label)
-        image_scroll.setMinimumSize(minsize, minsize)
-        image_scroll.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        minsize = self.MAX_SIZE * self.zoom * 8 + self.image_scroll.frameWidth() * 2
+        self.image_scroll.setWidget(self.image_label)
+        self.image_scroll.setMinimumSize(minsize, minsize)
+        self.image_scroll.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0,0,0,0)
@@ -99,7 +139,7 @@ class TileLoupe(QWidget):
         spin_layout.addWidget(by_label)
         spin_layout.addWidget(self.height_spin)
         main_layout.addLayout(spin_layout)
-        main_layout.addWidget(image_scroll)
+        main_layout.addWidget(self.image_scroll)
 
         pos_buttons = [self.dec_large_button, self.dec_small_button, self.inc_small_button, self.inc_large_button]
         pos_icons = ['chevrons-left.svg', 'chevron-left.svg', 'chevron-right.svg', 'chevrons-right']
