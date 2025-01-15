@@ -54,7 +54,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.redraw()
 
     def find_in_raw_allowed(self) -> bool:
-        if self.raw_tab is None:
+        if self.raw_tab.file is None:
             return False
         if not self.app.valid_file:
             return False

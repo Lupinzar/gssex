@@ -2,13 +2,12 @@ from .rendertab import RenderTab
 from .tileloupe import TileLoupe
 from ..uibase.tabraw import Ui_TabRaw
 from ..render import RawRender
+from ..rawfile import RawFile
 from .app import pil_to_qimage, pil_to_clipboard
-from typing import BinaryIO
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence
 from PySide6.QtWidgets import QFileDialog
-from os.path import isfile, dirname, basename
-from os import fstat
+from os.path import isfile
 from PIL import Image
 from enum import Enum, auto
 
@@ -28,9 +27,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
     NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.file_handle: BinaryIO | None = None
-        self.file_path: str | None = None
-        self.file_size: int = 0
+        self.file: RawFile | None = None
         self.offset: int = 0
         self.renderer: RawRender | None = None
         self.shortcuts: list[QShortcut] = []
@@ -83,7 +80,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         return super().eventFilter(obj, event)
     
     def handle_main_label_click(self, event: QMouseEvent):
-        if self.file_handle is None:
+        if self.file is None:
             return
         if event.button() != Qt.MouseButton.LeftButton:
             return
@@ -98,7 +95,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             tile_num = (y // th) * self.height_spin.value() + (x // tw)
         offset = tile_num * self.get_tile_bytes() + self.offset
         #sanity check
-        if offset > self.file_size:
+        if offset > self.file.size:
             return
         self.tile_loupe.reference = offset
         self.draw_loupe()
@@ -132,7 +129,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             shortcut.setEnabled(checked)
 
     def adjust_offset(self, dir: POSITION_DIRECTION, size: POSITION_SIZE = POSITION_SIZE.SINGLE):
-        if self.file_handle is None:
+        if self.file is None:
             return
         adjustment: int = 1 if dir == self.POSITION_DIRECTION.INCREMENT else -1
         multiple: int
@@ -172,7 +169,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             pass
 
     def clamp_offset(self, offset: int) -> int:
-        return max(0, min(offset, self.file_size))
+        return max(0, min(offset, self.file.size))
 
     def clear_main_image(self):
         self.main_label.clear()
@@ -180,34 +177,27 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.loupe_position_label.clear()
 
     def open_file(self):
-        suggested = dirname(self.file_path) if self.file_path else None
+        suggested = self.file.dirname() if self.file else None
         dialog = QFileDialog.getOpenFileName(parent=self, dir=suggested)
         if not isfile(dialog[0]):
             return
         self.offset = 0
         self.update_offset()
-        self.close_file()
+        if self.file:
+            self.file.close()
         try:
-            self.file_handle = open(dialog[0], 'rb')
-            self.file_path = dialog[0]
-            self.opened_file_line.setText(self.file_path)
-            self.file_size = fstat(self.file_handle.fileno()).st_size
+            self.file = RawFile(dialog[0])
+            if self.file.size == 0:
+                raise Exception("File is empty")
+            self.opened_file_line.setText(self.file.path)
             self.offset_line.setEnabled(True)
-            self.renderer = RawRender(self.file_handle, self.file_size)
+            self.renderer = RawRender(self.file)
             self.draw_main()
         except Exception as e:
             self.statusMessage.emit(f"Could not load {dialog[0]}: {e}")
 
-    def close_file(self):
-        try:
-            if self.file_handle is not None:
-                self.file_handle.close()
-            self.file_path = None
-        except Exception:
-            pass
-
     def draw_main(self):
-        if self.file_handle is None:
+        if self.file is None:
             self.clear_main_image()
             return
         pilimg = self.get_pil_image()
@@ -228,7 +218,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.draw_loupe()
 
     def draw_loupe(self):
-        if self.tile_loupe.reference is None or self.file_handle is None:
+        if self.tile_loupe.reference is None or self.file is None:
             return
         img = self.get_pil_loupe()
         self.tile_loupe.set_image(QPixmap.fromImage(pil_to_qimage(img)), img.width, img.height)
@@ -236,7 +226,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.update_loupe_position()
 
     def copy_to_clipboard(self):
-        if self.file_handle is None:
+        if self.file is None:
             self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
             return
         img = self.get_pil_image()
@@ -244,7 +234,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         img.close()
 
     def save_image(self):
-        if self.file_handle is None:
+        if self.file is None:
             self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
             return
         img = self.get_pil_image()
@@ -280,7 +270,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             self.statusMessage.emit(f"Error outputting {path}")
 
     def handle_loupe_position(self, direction: Enum, size: Enum):
-        if self.file_handle is None:
+        if self.file is None:
             return
         #if they haven't chosen a tile yet, just start at current offset
         start = self.offset if self.tile_loupe.reference is None else self.tile_loupe.reference
@@ -288,7 +278,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         if direction == TileLoupe.POSITION_DIRECTION.DECREMENT:
             amount = -amount
         new = start + amount
-        if new < 0 or new >= self.file_size:
+        if new < 0 or new >= self.file.size:
             return
         self.tile_loupe.reference = new
         self.draw_loupe()
@@ -305,7 +295,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         if self.pivot_button.isChecked():
             parts.append('pivot')
         key = "_".join(parts)
-        return f'{self.app.config.output_path}/{basename(self.file_path)}_{key}.png'
+        return f'{self.app.config.output_path}/{self.file.basename()}_{key}.png'
     
     def build_loupe_image_path(self):
         parts = [
@@ -319,7 +309,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         if self.pivot_button.isChecked():
             parts.append('pivot')
         key = "_".join(parts)
-        return f'{self.app.config.output_path}/{basename(self.file_path)}_{key}.png'
+        return f'{self.app.config.output_path}/{self.file.basename()}_{key}.png'
 
     def get_pil_image(self) -> Image.Image:
         pal_data = self.app.get_palette_and_background()
@@ -352,6 +342,3 @@ class TabRaw(RenderTab, Ui_TabRaw):
     
     def get_tile_bytes(self) -> int:
         return 8 * int(self.tile_height_combo.currentText()) // 2
-
-    def __del__(self):
-        self.close_file()

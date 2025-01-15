@@ -1,7 +1,8 @@
 from .state import PatternData, HardwareSprite, Palette, mask_from_bytes
+from .rawfile import RawFile
 from PIL import Image, ImageDraw
 from dataclasses import dataclass
-from typing import Tuple, BinaryIO
+from typing import Tuple
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -112,9 +113,8 @@ class VramRender():
         return size
     
 class RawRender:
-    def __init__(self, file_handle: BinaryIO, file_size: int):
-        self.handle = file_handle
-        self.file_size = file_size
+    def __init__(self, file: RawFile):
+        self.file: RawFile = file
         self.tiles_drawn: int = 0
 
     def get_image(self, offset: int, tiles_wide: int, tiles_tall: int, palette: int, bgcolor: int = 0, tile_height: int = 8, pivot: bool = False) -> Image.Image:
@@ -124,21 +124,21 @@ class RawRender:
         data_to_read = tile_bytes * tiles_wide * tiles_tall
 
         #adjust tiles to read if we need to
-        if offset + data_to_read >= self.file_size:
-            data_to_read = self.file_size - offset
+        if offset + data_to_read >= self.file.size:
+            data_to_read = self.file.size - offset
             tile_count = data_to_read // tile_bytes
         else:
             tile_count = tiles_wide * tiles_tall
         tile_size = (tiles_wide, tiles_tall)
 
         image = Image.new('P', (tile_width * tile_size[0], tile_height * tile_size[1]), bgcolor)
-        self.handle.seek(offset)
+        self.file.handle.seek(offset)
         for ndx in range(0, tile_count):
             if pivot:
                 pos = (ndx // tiles_tall, ndx % tiles_tall)
             else:
                 pos = (ndx % tiles_wide, ndx // tiles_wide)
-            image_data = tile_image_and_mask(self.expand_tile(self.handle.read(tile_bytes), palette), (tile_width, tile_height))
+            image_data = tile_image_and_mask(self.expand_tile(self.file.handle.read(tile_bytes), palette), (tile_width, tile_height))
             image.paste(image_data[0], (pos[0] * tile_width, pos[1] * tile_height), mask=image_data[1])
             for img in image_data:
                 img.close()
