@@ -132,13 +132,13 @@ class RawRender:
         tile_size = (tiles_wide, tiles_tall)
 
         image = Image.new('P', (tile_width * tile_size[0], tile_height * tile_size[1]), bgcolor)
-        self.file.handle.seek(offset)
+        self.file.mmap.seek(offset)
         for ndx in range(0, tile_count):
             if pivot:
                 pos = (ndx // tiles_tall, ndx % tiles_tall)
             else:
                 pos = (ndx % tiles_wide, ndx // tiles_wide)
-            image_data = tile_image_and_mask(self.expand_tile(self.file.handle.read(tile_bytes), palette), (tile_width, tile_height))
+            image_data = tile_image_and_mask(self.expand_tile(self.file.mmap.read(tile_bytes), palette), (tile_width, tile_height))
             image.paste(image_data[0], (pos[0] * tile_width, pos[1] * tile_height), mask=image_data[1])
             for img in image_data:
                 img.close()

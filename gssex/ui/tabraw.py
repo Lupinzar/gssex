@@ -2,7 +2,7 @@ from .rendertab import RenderTab
 from .tileloupe import TileLoupe
 from ..uibase.tabraw import Ui_TabRaw
 from ..render import RawRender
-from ..rawfile import RawFile
+from ..rawfile import RawFile, BinarySearch
 from .app import pil_to_qimage, pil_to_clipboard
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence
@@ -32,6 +32,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.renderer: RawRender | None = None
         self.shortcuts: list[QShortcut] = []
         self.setupUi(self)
+        self.search: BinarySearch | None = None
 
         #add a delay to offset line edit so we only update after X seconds of no typing
         self.offset_timer = QTimer(self)
@@ -52,6 +53,8 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.paletteSwapped.connect(self.draw_main)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
         self.save_button.clicked.connect(self.save_image)
+        self.find_next_button.clicked.connect(self.data_search_next)
+        self.find_previous_button.clicked.connect(self.data_serach_prev)
         #input changes, redraw
         self.tile_height_combo.currentIndexChanged.connect(self.draw_main)
         self.width_spin.valueChanged.connect(self.draw_main)
@@ -147,12 +150,15 @@ class TabRaw(RenderTab, Ui_TabRaw):
         #skip redraw if we clamped and went nowhere
         if new == self.offset:
             return
-        self.offset = new
-        self.update_offset()
-        self.draw_main()
+        self.set_offset(new)
 
     def update_offset(self):
         self.offset_line.setText(f'{self.offset:X}')
+
+    def update_find_buttons(self):
+        enabled = self.search is not None and self.search.found
+        self.find_next_button.setEnabled(enabled)
+        self.find_previous_button.setEnabled(enabled)
 
     def update_loupe_position(self):
         offset_from = self.tile_loupe.reference
@@ -162,11 +168,14 @@ class TabRaw(RenderTab, Ui_TabRaw):
     def process_offset(self):
         try:
             new_offset = self.clamp_offset(int(self.offset_line.text(), 16))
-            self.offset = new_offset
-            self.update_offset()
-            self.draw_main()
+            self.set_offset(new_offset)
         except ValueError:
             pass
+
+    def set_offset(self, offset: int):
+        self.offset = offset
+        self.update_offset()
+        self.draw_main()
 
     def clamp_offset(self, offset: int) -> int:
         return max(0, min(offset, self.file.size))
@@ -183,6 +192,8 @@ class TabRaw(RenderTab, Ui_TabRaw):
             return
         self.offset = 0
         self.update_offset()
+        self.search = None
+        self.update_find_buttons()
         if self.file:
             self.file.close()
         try:
@@ -342,3 +353,26 @@ class TabRaw(RenderTab, Ui_TabRaw):
     
     def get_tile_bytes(self) -> int:
         return 8 * int(self.tile_height_combo.currentText()) // 2
+    
+    def data_search(self, term: bytearray):
+        self.search = BinarySearch(self.file, term)
+        self.search.first()
+        if not self.search.found:
+            self.statusMessage.emit("Data not found in file")
+            return False
+        self.set_offset(self.search.last)
+        self.update_find_buttons()
+
+    def data_search_next(self):
+        self.search.next()
+        if self.search.looped:
+            self.statusMessage.emit("Search looped from start of file")
+        if self.search.last != self.offset:
+            self.set_offset(self.search.last)
+
+    def data_serach_prev(self):
+        self.search.prev()
+        if self.search.looped:
+            self.statusMessage.emit("Search looped from end of file")
+        if self.search.last != self.offset:
+            self.set_offset(self.search.last)

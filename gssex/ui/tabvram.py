@@ -138,7 +138,9 @@ class TabVram(RenderTab, Ui_TabVram):
         for tilenum in range(tile_start, tile_end):
             offset = self.app.savestate.pattern_data.number_to_offset(tilenum)
             bytedata += self.app.savestate.pattern_data.get_raw(offset)
-        #TODO switch tab, initiate search
+        tabs = self.parent().parent()
+        tabs.setCurrentWidget(self.raw_tab)
+        self.raw_tab.data_search(bytedata)
 
     def copy_to_clipboard(self):
         if not self.app.valid_file:
