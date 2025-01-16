@@ -17,10 +17,15 @@ class RawFile():
         return dirname(self.path)
 
     def close(self):
-        if self.mmap:
-            self.mmap.close()
-        if self.handle:
-            self.handle.close()
+        try:
+            if not self.mmap.closed:
+                self.mmap.close()
+            if not self.handle.closed:
+                self.handle.close()
+        except:
+            #slient failure for now
+            #TODO log me
+            pass
 
     def __del__(self):
         self.close()
