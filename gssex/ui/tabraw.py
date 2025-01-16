@@ -85,23 +85,41 @@ class TabRaw(RenderTab, Ui_TabRaw):
     def handle_main_label_click(self, event: QMouseEvent):
         if self.file is None:
             return
-        if event.button() != Qt.MouseButton.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.set_loupe_from_click(event)
             return
+        if event.button() == Qt.MouseButton.RightButton:
+            self.set_offset_from_click(event)
+            return
+        
+    def set_loupe_from_click(self, event: QMouseEvent):
+        offset = self.click_to_offset(event)
+        if offset > self.file.size:
+            return
+        self.tile_loupe.reference = offset
+        self.draw_loupe()
+
+    def set_offset_from_click(self, event: QMouseEvent):
+        offset = self.click_to_offset(event, tile_mode=False)
+        if offset > self.file.size or offset == self.offset:
+            return
+        self.set_offset(offset)
+
+    def click_to_offset(self, event: QMouseEvent, tile_mode: bool = True) -> int:
         zoom = int(self.zoom_combo.currentText())
         tw = 8
         th = int(self.tile_height_combo.currentText())
         x = event.x() // zoom
         y = event.y() // zoom
+
         if self.pivot_button.isChecked():
-            tile_num = (x // tw) * self.width_spin.value() + (y // th)
+            tile_num = (x // tw) * self.height_spin.value() + (y // th)
         else:
-            tile_num = (y // th) * self.height_spin.value() + (x // tw)
+            tile_num = (y // th) * self.width_spin.value() + (x // tw)
         offset = tile_num * self.get_tile_bytes() + self.offset
-        #sanity check
-        if offset > self.file.size:
-            return
-        self.tile_loupe.reference = offset
-        self.draw_loupe()
+        if tile_mode:
+            return offset
+        return offset + x % tw // 2 + y % th * (tw // 2)
     
     def register_shortcuts(self):
         self.new_shortcut(QKeySequence("Right"), 
@@ -148,7 +166,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             case self.POSITION_SIZE.TILE:
                 multiple = self.get_tile_bytes()
             case self.POSITION_SIZE.LINE:
-                multiple = self.get_tile_bytes() * self.width_spin.value()
+                multiple = self.get_tile_bytes() * (self.height_spin.value() if self.pivot_button.isChecked() else self.width_spin.value())
             case self.POSITION_SIZE.WINDOW:
                 multiple = self.get_tile_bytes() * self.width_spin.value() * self.height_spin.value()
             case _:
