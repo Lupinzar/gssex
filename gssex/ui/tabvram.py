@@ -5,7 +5,7 @@ from ..uibase.tabvram import Ui_TabVram
 from ..render import VramRender
 from .app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
-from PySide6.QtGui import QPixmap, QCursor, QMouseEvent
+from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, QEvent
 from enum import Enum
 
@@ -30,6 +30,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
         self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
+        self.register_shortcuts()
     
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -38,6 +39,12 @@ class TabVram(RenderTab, Ui_TabVram):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
             self.handle_main_label_click(event)
         return super().eventFilter(obj, event)
+    
+    def register_shortcuts(self):
+        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_image())
+        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_to_clipboard())
+        QShortcut(QKeySequence("Ctrl+Shift+S"), self, lambda: self.loupe_save_image())
+        QShortcut(QKeySequence("Ctrl+Shift+C"), self, lambda: self.loupe_copy_to_clipboard())
 
     def state_changed(self):
         self.tile_loupe.reset()

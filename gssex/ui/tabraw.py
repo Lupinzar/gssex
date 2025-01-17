@@ -30,7 +30,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.file: RawFile | None = None
         self.offset: int = 0
         self.renderer: RawRender | None = None
-        self.shortcuts: list[QShortcut] = []
+        self.context_shortcuts: list[QShortcut] = []
         self.setupUi(self)
         self.search: BinarySearch | None = None
 
@@ -77,9 +77,9 @@ class TabRaw(RenderTab, Ui_TabRaw):
             self.handle_main_label_click(event)
         if obj == self.scroll_area:
             if event.type() == QEvent.Type.Enter:
-                self.toggle_shortcuts(True)
+                self.toggle_context_shortcuts(True)
             if event.type() == QEvent.Type.Leave:
-                self.toggle_shortcuts(False)
+                self.toggle_context_shortcuts(False)
         return super().eventFilter(obj, event)
     
     def handle_main_label_click(self, event: QMouseEvent):
@@ -122,39 +122,45 @@ class TabRaw(RenderTab, Ui_TabRaw):
         return offset + x % tw // 2 + y % th * (tw // 2)
     
     def register_shortcuts(self):
-        self.new_shortcut(QKeySequence("Right"), 
+        #tab
+        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_image())
+        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_to_clipboard())
+        QShortcut(QKeySequence("Ctrl+Shift+S"), self, lambda: self.loupe_save_image())
+        QShortcut(QKeySequence("Ctrl+Shift+C"), self, lambda: self.loupe_copy_to_clipboard())
+        #context
+        self.new_context_shortcut(QKeySequence("Right"), 
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT))
-        self.new_shortcut(QKeySequence("Left"), 
+        self.new_context_shortcut(QKeySequence("Left"), 
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT))
-        self.new_shortcut(QKeySequence("Down"), 
+        self.new_context_shortcut(QKeySequence("Down"), 
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.LINE))
-        self.new_shortcut(QKeySequence("Up"),
+        self.new_context_shortcut(QKeySequence("Up"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.LINE))
-        self.new_shortcut(QKeySequence("Shift+Right"),
+        self.new_context_shortcut(QKeySequence("Shift+Right"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.TILE))
-        self.new_shortcut(QKeySequence("Shift+Left"),
+        self.new_context_shortcut(QKeySequence("Shift+Left"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.TILE))
-        self.new_shortcut(QKeySequence("Shift+Down"),
+        self.new_context_shortcut(QKeySequence("Shift+Down"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WINDOW))
-        self.new_shortcut(QKeySequence("Shift+Up"),
+        self.new_context_shortcut(QKeySequence("Shift+Up"),
                           lambda: self.adjust_offset(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WINDOW))
-        self.new_shortcut(QKeySequence("Ctrl+Right"),
+        self.new_context_shortcut(QKeySequence("Ctrl+Right"),
                           lambda: self.width_spin.setValue(self.width_spin.value() + 1))
-        self.new_shortcut(QKeySequence("Ctrl+Left"),
+        self.new_context_shortcut(QKeySequence("Ctrl+Left"),
                           lambda: self.width_spin.setValue(self.width_spin.value() - 1))
-        self.new_shortcut(QKeySequence("Ctrl+Down"),
+        self.new_context_shortcut(QKeySequence("Ctrl+Down"),
                           lambda: self.height_spin.setValue(self.height_spin.value() + 1))
-        self.new_shortcut(QKeySequence("Ctrl+Up"),
+        self.new_context_shortcut(QKeySequence("Ctrl+Up"),
                           lambda: self.height_spin.setValue(self.height_spin.value() - 1))
         
-    def new_shortcut(self, sequence: QKeySequence, callback: callable):
+    def new_context_shortcut(self, sequence: QKeySequence, callback: callable):
         shortcut = QShortcut(sequence, self)
         shortcut.activated.connect(callback)
         shortcut.setEnabled(False)
-        self.shortcuts.append(shortcut)
+        self.context_shortcuts.append(shortcut)
 
-    def toggle_shortcuts(self, checked: bool):
-        for shortcut in self.shortcuts:
+    def toggle_context_shortcuts(self, checked: bool):
+        for shortcut in self.context_shortcuts:
             shortcut.setEnabled(checked)
 
     def adjust_offset(self, dir: POSITION_DIRECTION, size: POSITION_SIZE = POSITION_SIZE.SINGLE):
@@ -282,7 +288,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
             self.statusMessage.emit(f"Error outputting {path}")
 
     def loupe_copy_to_clipboard(self):
-        if not self.app.valid_file:
+        if self.file is None:
             self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
             return
         if self.tile_loupe.reference is None:
@@ -293,7 +299,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         img.close()
 
     def loupe_save_image(self):
-        if not self.app.valid_file:
+        if self.file is None:
             self.statusMessage.emit(self.NO_FILE_LOADED_MSG)
             return
         if self.tile_loupe.reference is None:
