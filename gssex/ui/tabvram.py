@@ -5,8 +5,9 @@ from ..uibase.tabvram import Ui_TabVram
 from ..render import VramRender
 from .app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
-from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QKeySequence
+from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QKeySequence, QHoverEvent
 from PySide6.QtCore import Qt, QEvent
+from PySide6.QtWidgets import QFrame
 from enum import Enum
 
 class TabVram(RenderTab, Ui_TabVram):
@@ -16,10 +17,17 @@ class TabVram(RenderTab, Ui_TabVram):
         super().__init__(**kwargs)
         self.setupUi(self)
         self.clear_main_image()
+
+        self.reticle = QFrame(self.main_label)
+        self.reticle.setFixedSize(8, 8)
+        self.reticle.setStyleSheet("border: 1px solid yellow")
+        self.reticle.setFrameShape(QFrame.Shape.Box)
+        self.toggle_reticle(False)
+
         self.saveStateChanged.connect(self.state_changed)
         self.fullRefresh.connect(self.full_refresh)
         self.paletteSwapped.connect(self.redraw)
-        self.zoom_combo.currentIndexChanged.connect(self.redraw)
+        self.zoom_combo.currentIndexChanged.connect(self.zoom_changed)
         self.pal_combo.currentIndexChanged.connect(self.redraw)
         self.pivot_button.clicked.connect(self.redraw)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
@@ -30,6 +38,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.saveInitiated.connect(self.loupe_save_image)
         self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
+        self.main_label.setAttribute(Qt.WidgetAttribute.WA_Hover)
         self.register_shortcuts()
     
     def link_raw_tab(self, tab: TabRaw):
@@ -38,6 +47,12 @@ class TabVram(RenderTab, Ui_TabVram):
     def eventFilter(self, obj, event):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
             self.handle_main_label_click(event)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverEnter:
+            self.toggle_reticle(True)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverLeave:
+            self.toggle_reticle(False)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverMove:
+            self.handle_main_label_hover(event)
         return super().eventFilter(obj, event)
     
     def register_shortcuts(self):
@@ -49,6 +64,11 @@ class TabVram(RenderTab, Ui_TabVram):
     def state_changed(self):
         self.tile_loupe.reset()
         self.update_find_button()
+        self.resize_reticle()
+        self.redraw()
+
+    def zoom_changed(self):
+        self.resize_reticle()
         self.redraw()
 
     def clear_main_image(self):
@@ -118,6 +138,18 @@ class TabVram(RenderTab, Ui_TabVram):
             tile_num = (y // th) * self.TILES_WIDE + (x // tw)
         self.tile_loupe.reference = tile_num
         self.draw_loupe()
+
+    def handle_main_label_hover(self, event: QHoverEvent):
+        if not self.app.valid_file:
+            return
+        zoom = int(self.zoom_combo.currentText())
+        tw = self.app.savestate.pattern_data.tile_width
+        th = self.app.savestate.pattern_data.tile_height
+        x = event.pos().x() // (tw * zoom) * tw * zoom
+        y = event.pos().y() // (th * zoom) * th * zoom
+        if x != self.reticle.pos().x() or y != self.reticle.pos().y():
+            self.reticle.move(x, y)
+        
     
     def handle_loupe_position(self, direction: Enum, size: Enum):
         if not self.app.valid_file:
@@ -132,6 +164,16 @@ class TabVram(RenderTab, Ui_TabVram):
             return
         self.tile_loupe.reference = new
         self.draw_loupe()
+
+    def resize_reticle(self):
+        if not self.app.valid_file:
+            return
+        self.reticle.setFixedSize(
+            self.app.savestate.pattern_data.tile_width * int(self.zoom_combo.currentText()), 
+            self.app.savestate.pattern_data.tile_height * int(self.zoom_combo.currentText()))
+        
+    def toggle_reticle(self, show: bool):
+        self.reticle.show() if show else self.reticle.hide()
 
     def update_loupe_position(self):
         tile_from = self.tile_loupe.reference
