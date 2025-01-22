@@ -5,8 +5,8 @@ from ..render import RawRender
 from ..rawfile import RawFile, BinarySearch
 from .app import pil_to_qimage, pil_to_clipboard
 from PySide6.QtCore import Qt, QEvent, QTimer
-from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence, QHoverEvent
+from PySide6.QtWidgets import QFileDialog, QFrame
 from os.path import isfile
 from PIL import Image
 from enum import Enum, auto
@@ -34,6 +34,12 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.setupUi(self)
         self.search: BinarySearch | None = None
 
+        self.reticle = QFrame(self.main_label)
+        self.reticle.setFixedSize(8, 8)
+        self.reticle.setStyleSheet("border: 1px solid yellow")
+        self.reticle.setFrameShape(QFrame.Shape.Box)
+        self.toggle_reticle(False)
+
         #add a delay to offset line edit so we only update after X seconds of no typing
         self.offset_timer = QTimer(self)
         self.offset_timer.setSingleShot(True)
@@ -44,6 +50,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.height_spin.setValue(self.DEFAULT_SPIN_HEIGHT)
 
         self.main_label.installEventFilter(self)
+        self.main_label.setAttribute(Qt.WidgetAttribute.WA_Hover)
         self.scroll_area.installEventFilter(self)
 
         self.open_file_button.clicked.connect(self.open_file)
@@ -56,10 +63,10 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.find_next_button.clicked.connect(self.data_search_next)
         self.find_previous_button.clicked.connect(self.data_serach_prev)
         #input changes, redraw
-        self.tile_height_combo.currentIndexChanged.connect(self.draw_main)
+        self.tile_height_combo.currentIndexChanged.connect(self.change_tile_height)
         self.width_spin.valueChanged.connect(self.draw_main)
         self.height_spin.valueChanged.connect(self.draw_main)
-        self.zoom_combo.currentIndexChanged.connect(self.draw_main)
+        self.zoom_combo.currentIndexChanged.connect(self.change_zoom)
         self.pal_combo.currentIndexChanged.connect(self.draw_main)
         self.pivot_button.clicked.connect(self.draw_main)
 
@@ -75,6 +82,12 @@ class TabRaw(RenderTab, Ui_TabRaw):
     def eventFilter(self, obj, event):
         if obj == self.main_label and event.type() == QEvent.Type.MouseButtonRelease:
             self.handle_main_label_click(event)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverEnter:
+            self.toggle_reticle(True)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverLeave:
+            self.toggle_reticle(False)
+        if obj == self.main_label and event.type() == QEvent.Type.HoverMove:
+            self.handle_main_label_hover(event)
         if obj == self.scroll_area:
             if event.type() == QEvent.Type.Enter:
                 self.toggle_context_shortcuts(True)
@@ -91,6 +104,34 @@ class TabRaw(RenderTab, Ui_TabRaw):
         if event.button() == Qt.MouseButton.RightButton:
             self.set_offset_from_click(event)
             return
+        
+    def change_zoom(self):
+        self.resize_reticle()
+        self.draw_main()
+
+    def change_tile_height(self):
+        self.resize_reticle()
+        self.draw_main()
+        
+    def handle_main_label_hover(self, event: QHoverEvent):
+        if self.file is None:
+            return
+        zoom = int(self.zoom_combo.currentText())
+        tw = 8
+        th = int(self.tile_height_combo.currentText())
+        x = event.pos().x() // (tw * zoom) * tw * zoom
+        y = event.pos().y() // (th * zoom) * th * zoom
+        if x != self.reticle.pos().x() or y != self.reticle.pos().y():
+            self.reticle.move(x, y)
+        
+    def resize_reticle(self):
+        zoom = int(self.zoom_combo.currentText())
+        self.reticle.setFixedSize(
+            8 * zoom,
+            int(self.tile_height_combo.currentText()) * zoom)
+        
+    def toggle_reticle(self, show: bool):
+        self.reticle.show() if show else self.reticle.hide()
         
     def set_loupe_from_click(self, event: QMouseEvent):
         offset = self.click_to_offset(event)
