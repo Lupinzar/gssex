@@ -39,6 +39,7 @@ class VDPRegisters:
     scroll_mode_h: int
     cells_wide: int
     shadow_enable: bool
+    tile_height: int
     address_scroll_h: int
     scroll_width: int
     scroll_height: int
@@ -84,7 +85,8 @@ class VDPRegisters:
             cls.get_scroll_mode_v(data[11]),
             cls.get_scroll_mode_h(data[11]),
             40 if data[12] & 0x81 else 32,
-            bool(data[12] & 0x3F),
+            bool(data[12] & 0x08),
+            16 if data[12] & 0x04 else 8,
             (data[13] & 0x3F) << 10,
             cls.get_scroll_size(data[16] & 0x03),
             cls.get_scroll_size((data[16] & 0x30) >> 4),
@@ -104,7 +106,7 @@ class SaveState:
         self.v_ram_buffer: Buffer = v_ram_buffer
         self.vs_ram_buffer: Buffer = vs_ram_buffer
         self.vdp_registers: VDPRegisters = vdp_registers
-        self.pattern_data: PatternData = PatternData(v_ram_buffer)
+        self.pattern_data: PatternData = PatternData(v_ram_buffer, (8, vdp_registers.tile_height))
 
 class Palette:
     SIZE = 16

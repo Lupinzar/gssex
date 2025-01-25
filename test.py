@@ -1,5 +1,6 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
 from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender
+from gssex.rawfile import RawFile
 from PIL import Image
 from pprint import pp
 from os import fstat
@@ -19,7 +20,7 @@ pal = Palette.from_cram(state.c_ram_buffer)
 pi = PaletteImage(pal)
 pi.get_image().save("testoutput/palrender.png")
 
-pat = PatternData(state.v_ram_buffer, use_cache=False)
+pat = state.pattern_data
 pattern = pat.get_pattern_by_number(561,0)
 #pattern = pat.get_pattern_by_number(561,1)
 
@@ -56,8 +57,8 @@ vrs_img.putpalette(pal.flattened_colors())
 vrs_img.save('testoutput/vram_sub.png')
 
 #should produce the same output as VramRender
-fp = open('testsaves/kidscroll.gs0', 'rb')
-rr = RawRender(fp, fstat(fp.fileno()).st_size)
+rawfile = RawFile('testsaves/kidscroll.gs0')
+rr = RawRender(rawfile)
 rr_img = rr.get_image(0x012478, 16, 128, 0, 0, pivot=True)
 rr_img.putpalette(pal.flattened_colors())
 rr_img.save('testoutput/raw.png')
