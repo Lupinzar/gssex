@@ -1,4 +1,5 @@
-from .state import PatternData, HardwareSprite, Palette, mask_from_bytes
+from .state import SaveState, PatternData, HardwareSprite, Palette, mask_from_bytes
+from .static import Plane
 from .rawfile import RawFile
 from PIL import Image, ImageDraw
 from dataclasses import dataclass
@@ -154,8 +155,40 @@ class RawRender:
     
     def get_tiles_drawn(self) -> int:
         return self.tiles_drawn
+    
+class Map:
+    """
+    Represents a tilemap as indexed pixel values
+    """
+    def __init__(self, width: int, height: int):
+        self.width: int = width
+        self.height: int = height
+        self.bytes: bytearray = bytearray(width * height)
 
+    def __len__(self) -> int:
+        return len(self.bytes)
 
+class Mapper:
+    """
+    Generates Map objects from a SaveState
+    """
+    def __init__(self, savestate: SaveState, enable_cache: bool = True):
+        self.savestate: SaveState = savestate
+        self.enable_cache: bool = enable_cache
+        self.cache: dict[Plane, Map] = {}
+    
+    def get_map(self, plane: Plane) -> Map:
+        if self.enable_cache and plane in self.cache:
+            return self.cache[plane]
+        regs = self.savestate.vdp_registers
+        map = Map(regs.cells_wide * 8, regs.tile_height * regs.cells_high)
+
+        #TODO tile assembly and flipping code
+
+        if self.enable_cache:
+            self.cache[plane] = map
+        return map
+        
     
 '''
 Helper functions

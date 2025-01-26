@@ -8,3 +8,8 @@ class ScrollMode(Enum):
     COLUMN = auto() #v-scroll only
     CELL = auto()
     LINE = auto()
+
+class Plane(Enum):
+    SCROLL_A = auto()
+    SCROLL_B = auto()
+    WINDOW = auto()

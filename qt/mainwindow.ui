@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
@@ -175,9 +175,9 @@
         <string>RAW Tiles</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="tab_layers">
+      <widget class="QWidget" name="tab_maps">
        <attribute name="title">
-        <string>Layers</string>
+        <string>Tile Maps</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tab_hw_sprites">
