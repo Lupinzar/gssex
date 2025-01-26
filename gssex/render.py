@@ -2,8 +2,10 @@ from .state import SaveState, PatternData, HardwareSprite, Palette, mask_from_by
 from .static import Plane
 from .rawfile import RawFile
 from PIL import Image, ImageDraw
+from struct import Struct
 from dataclasses import dataclass
 from typing import Tuple
+import enum
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -167,27 +169,87 @@ class Map:
 
     def __len__(self) -> int:
         return len(self.bytes)
+    
+    def get_bytes(self, bg_replace: None|int = None):
+        if bg_replace is None:
+            return self.bytes
+        return bytearray([b if b & 0x0F else bg_replace for b in self.bytes])
 
 class Mapper:
     """
     Generates Map objects from a SaveState
     """
+    DATA_STRUCT = Struct('>H')
+    class PRIORITY(enum.Flag):
+        LOW = 0x1
+        HIGH = 0x2
+        BOTH = 0x3
     def __init__(self, savestate: SaveState, enable_cache: bool = True):
         self.savestate: SaveState = savestate
         self.enable_cache: bool = enable_cache
         self.cache: dict[Plane, Map] = {}
     
-    def get_map(self, plane: Plane) -> Map:
-        if self.enable_cache and plane in self.cache:
-            return self.cache[plane]
+    def get_map(self, plane: Plane, priorities: PRIORITY = PRIORITY.BOTH) -> Map:
+        cache_key = f'{plane.value}_{priorities.value}'
+        if self.enable_cache and cache_key in self.cache:
+            return self.cache[cache_key]
         regs = self.savestate.vdp_registers
-        map = Map(regs.cells_wide * 8, regs.tile_height * regs.cells_high)
+        #TODO Window testing/handling
+        map = Map(regs.scroll_width * 8, regs.scroll_height * regs.tile_height)
+        entries = regs.scroll_width * regs.scroll_height
+        base_address = self.get_base_address(plane)
 
-        #TODO tile assembly and flipping code
+        for ndx in range(0, entries):
+            raw_bytes = self.savestate.v_ram_buffer.read_struct(
+                self.DATA_STRUCT, 
+                ndx * self.DATA_STRUCT.size + base_address)[0]
+            td = self.decode_tile_data(raw_bytes)
+            if not self.include_tile(td['priority'], priorities):
+                continue
+            pattern = self.savestate.pattern_data.get_pattern(td['address'], td['pal'])
+            tile_x = ndx % regs.scroll_width
+            tile_y = ndx // regs.scroll_width
+
+            for pndx, pixel in enumerate(pattern):
+                px = pndx % 8
+                py = pndx // 8
+                if td['hflip']:
+                    px = 7 - px
+                if td['vflip']:
+                    py = regs.tile_height - 1 - py
+                byte_address = tile_x * 8 + px + (tile_y * regs.tile_height * map.width + py * map.width)
+                map.bytes[byte_address] = pixel
 
         if self.enable_cache:
-            self.cache[plane] = map
+            self.cache[cache_key] = map
         return map
+    
+    def get_base_address(self, plane: Plane):
+        match plane:
+            case Plane.SCROLL_A:
+                return self.savestate.vdp_registers.address_scroll_a
+            case Plane.SCROLL_B:
+                return self.savestate.vdp_registers.address_scroll_b
+            case _:
+                return self.savestate.vdp_registers.address_window
+            
+    def decode_tile_data(self, raw_bytes: int) -> dict:
+        return {
+            'pal': (raw_bytes & 0x6000) >> 13,
+            'address': (raw_bytes & 0x07FF) << 5,
+            'priority': bool(raw_bytes & 0x8000),
+            'vflip': bool(raw_bytes & 0x1000),
+            'hflip': bool(raw_bytes & 0x0800)
+        }
+    
+    def include_tile(self, priority: bool, priorities: PRIORITY) -> bool:
+        if priorities == self.PRIORITY.BOTH:
+            return True
+        if priority and priorities & self.PRIORITY.HIGH:
+            return True
+        if not priority and priorities & self.PRIORITY.LOW:
+            return True
+        return False
         
     
 '''

@@ -17,6 +17,7 @@ class Buffer:
         end = position + length
         if position >= len(self.data) or end > len(self.data):
             raise Exception('Tried to read beyond buffer')
+        self.position += length
         return self.data[position:end]
     def read_struct(self, struct: Struct, position: int = None) -> Tuple:
         return struct.unpack(self.read_bytes(struct.size, position))

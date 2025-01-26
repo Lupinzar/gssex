@@ -1,6 +1,7 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
-from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender
+from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, Mapper, mask_from_bytes
 from gssex.rawfile import RawFile
+from gssex.static import Plane
 from PIL import Image
 from pprint import pp
 from os import fstat
@@ -62,3 +63,10 @@ rr = RawRender(rawfile)
 rr_img = rr.get_image(0x012478, 16, 128, 0, 0, pivot=True)
 rr_img.putpalette(pal.flattened_colors())
 rr_img.save('testoutput/raw.png')
+
+mapper = Mapper(state)
+map = mapper.get_map(Plane.SCROLL_B, Mapper.PRIORITY.BOTH)
+map_img = Image.new('P', (map.width, map.height))
+map_img.putdata(map.get_bytes(0))
+map_img.putpalette(pal.flattened_colors())
+map_img.save('testoutput/mapper_test.png')
