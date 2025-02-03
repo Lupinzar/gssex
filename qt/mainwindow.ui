@@ -175,7 +175,7 @@
         <string>RAW Tiles</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="tab_maps">
+      <widget class="TabTileMap" name="tab_tilemap">
        <attribute name="title">
         <string>Tile Maps</string>
        </attribute>
@@ -309,6 +309,12 @@
    <class>TabRaw</class>
    <extends>QWidget</extends>
    <header>..ui.tabraw.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabTileMap</class>
+   <extends>QWidget</extends>
+   <header>..ui.tabtilemap.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

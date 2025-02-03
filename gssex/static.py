@@ -10,6 +10,6 @@ class ScrollMode(Enum):
     LINE = auto()
 
 class Plane(Enum):
-    SCROLL_A = auto()
-    SCROLL_B = auto()
-    WINDOW = auto()
+    SCROLL_A = 0
+    SCROLL_B = 1
+    WINDOW = 2

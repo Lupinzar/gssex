@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
 from ..ui.colorbutton import ColorButton
 from ..ui.tabpalette import TabPalette
 from ..ui.tabraw import TabRaw
+from ..ui.tabtilemap import TabTileMap
 from ..ui.tabvram import TabVram
 from . import resource_rc
 
@@ -160,9 +161,9 @@ class Ui_MainWindow(object):
         self.tab_raw = TabRaw()
         self.tab_raw.setObjectName(u"tab_raw")
         self.main_tabs.addTab(self.tab_raw, "")
-        self.tab_layers = QWidget()
-        self.tab_layers.setObjectName(u"tab_layers")
-        self.main_tabs.addTab(self.tab_layers, "")
+        self.tab_tilemap = TabTileMap()
+        self.tab_tilemap.setObjectName(u"tab_tilemap")
+        self.main_tabs.addTab(self.tab_tilemap, "")
         self.tab_hw_sprites = QWidget()
         self.tab_hw_sprites.setObjectName(u"tab_hw_sprites")
         self.main_tabs.addTab(self.tab_hw_sprites, "")
@@ -193,7 +194,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.main_tabs.setCurrentIndex(3)
+        self.main_tabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -235,7 +236,7 @@ class Ui_MainWindow(object):
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_vram), QCoreApplication.translate("MainWindow", u"VRAM", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_raw), QCoreApplication.translate("MainWindow", u"RAW Tiles", None))
-        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_layers), QCoreApplication.translate("MainWindow", u"Layers", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_tilemap), QCoreApplication.translate("MainWindow", u"Tile Maps", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Hardware Sprites", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
