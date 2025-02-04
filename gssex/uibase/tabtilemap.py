@@ -33,6 +33,9 @@ class Ui_TabTileMap(object):
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 297, 416))
+        self.main_label = QLabel(self.scrollAreaWidgetContents)
+        self.main_label.setObjectName(u"main_label")
+        self.main_label.setGeometry(QRect(0, 0, 81, 16))
         self.plane_scroll.setWidget(self.scrollAreaWidgetContents)
 
         self.horizontalLayout_3.addWidget(self.plane_scroll)
@@ -53,6 +56,28 @@ class Ui_TabTileMap(object):
         self.plane_combo.setObjectName(u"plane_combo")
 
         self.verticalLayout_2.addWidget(self.plane_combo)
+
+        self.label_5 = QLabel(TabTileMap)
+        self.label_5.setObjectName(u"label_5")
+
+        self.verticalLayout_2.addWidget(self.label_5)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.mode_map_radio = QRadioButton(TabTileMap)
+        self.mode_map_radio.setObjectName(u"mode_map_radio")
+        self.mode_map_radio.setChecked(True)
+
+        self.horizontalLayout_4.addWidget(self.mode_map_radio)
+
+        self.mode_screen_button = QRadioButton(TabTileMap)
+        self.mode_screen_button.setObjectName(u"mode_screen_button")
+        self.mode_screen_button.setChecked(False)
+
+        self.horizontalLayout_4.addWidget(self.mode_screen_button)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
 
         self.label_4 = QLabel(TabTileMap)
         self.label_4.setObjectName(u"label_4")
@@ -156,7 +181,11 @@ class Ui_TabTileMap(object):
 
     def retranslateUi(self, TabTileMap):
         TabTileMap.setWindowTitle(QCoreApplication.translate("TabTileMap", u"Form", None))
+        self.main_label.setText(QCoreApplication.translate("TabTileMap", u"Tile Map Image", None))
         self.label.setText(QCoreApplication.translate("TabTileMap", u"Plane", None))
+        self.label_5.setText(QCoreApplication.translate("TabTileMap", u"Render Mode", None))
+        self.mode_map_radio.setText(QCoreApplication.translate("TabTileMap", u"Map", None))
+        self.mode_screen_button.setText(QCoreApplication.translate("TabTileMap", u"Screen", None))
         self.label_4.setText(QCoreApplication.translate("TabTileMap", u"Priority", None))
         self.priority_both_radio.setText(QCoreApplication.translate("TabTileMap", u"Both", None))
         self.priority_high_radio.setText(QCoreApplication.translate("TabTileMap", u"High", None))

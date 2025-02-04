@@ -28,6 +28,19 @@
         <height>416</height>
        </rect>
       </property>
+      <widget class="QLabel" name="main_label">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Tile Map Image</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
@@ -48,6 +61,37 @@
      </item>
      <item>
       <widget class="QComboBox" name="plane_combo"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Render Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QRadioButton" name="mode_map_radio">
+         <property name="text">
+          <string>Map</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="mode_screen_button">
+         <property name="text">
+          <string>Screen</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QLabel" name="label_4">
