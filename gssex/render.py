@@ -1,11 +1,10 @@
 from .state import SaveState, PatternData, HardwareSprite, Palette, mask_from_bytes
-from .static import Plane
+from .static import Plane, Priority, ScrollMode
 from .rawfile import RawFile
 from PIL import Image, ImageDraw
 from struct import Struct
 from dataclasses import dataclass
 from typing import Tuple
-import enum
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -180,21 +179,17 @@ class Mapper:
     Generates Map objects from a SaveState
     """
     DATA_STRUCT = Struct('>H')
-    class PRIORITY(enum.Flag):
-        LOW = 0x1
-        HIGH = 0x2
-        BOTH = 0x3
+    
     def __init__(self, savestate: SaveState, enable_cache: bool = True):
         self.savestate: SaveState = savestate
         self.enable_cache: bool = enable_cache
         self.cache: dict[Plane, Map] = {}
     
-    def get_map(self, plane: Plane, priorities: PRIORITY = PRIORITY.BOTH) -> Map:
+    def get_map(self, plane: Plane, priorities: Priority = Priority.BOTH) -> Map:
         cache_key = f'{plane.value}_{priorities.value}'
         if self.enable_cache and cache_key in self.cache:
             return self.cache[cache_key]
         regs = self.savestate.vdp_registers
-        #TODO Window testing/handling
         map = Map(regs.scroll_width * 8, regs.scroll_height * regs.tile_height)
         entries = regs.scroll_width * regs.scroll_height
         base_address = self.get_base_address(plane)
@@ -242,14 +237,108 @@ class Mapper:
             'hflip': bool(raw_bytes & 0x0800)
         }
     
-    def include_tile(self, priority: bool, priorities: PRIORITY) -> bool:
-        if priorities == self.PRIORITY.BOTH:
+    def include_tile(self, priority: bool, priorities: Priority) -> bool:
+        if priorities == Priority.BOTH:
             return True
-        if priority and priorities & self.PRIORITY.HIGH:
+        if priority and priorities & Priority.HIGH:
             return True
-        if not priority and priorities & self.PRIORITY.LOW:
+        if not priority and priorities & Priority.LOW:
             return True
         return False
+    
+class MapRender:
+    def __init__(self, savestate: SaveState):
+        self.savestate = savestate
+        self.mapper = Mapper(self.savestate, True)
+
+    def render_map(self, plane: Plane, priority: Priority, bgcolor: int) -> Image.Image:
+        map = self.mapper.get_map(plane, priority)
+        img = Image.new('P', (map.width, map.height))
+        img.putdata(map.get_bytes(bgcolor))
+        return img
+    
+    def render_screen(self, plane: Plane, priority: Priority, bgcolor: int) -> Image.Image:
+        #TODO WINDOW special handling, test modes other than FULL
+        map = self.mapper.get_map(plane, priority)
+        vdp = self.savestate.vdp_registers
+        size = vdp.get_screen_size()
+        img = Image.new('P', size)
+        scroll = ScrollTable(self.savestate, plane, map.width, map.height)
+        map_bytes = map.get_bytes(bgcolor)
+        data = bytearray()
+
+        for pix in range(0, size[0] * size[1]):
+        #for pix in range(8):
+            x = pix % size[0]
+            y = pix // size[0]
+            mx, my = scroll.translate(x, y)
+            address = mx + my * map.width
+            data.append(map_bytes[address])
+        img.putdata(data)
+        return img
+    
+class ScrollTable:
+    V_DATA_STRUCT = Struct('<h')
+    H_DATA_STRUCT = Struct('>h')
+    def __init__(self, savestate: SaveState, plane: Plane, map_width: int, map_height: int):
+        self.savestate = savestate
+        self.map_width = map_width
+        self.map_height = map_height
+        self.screen_width = savestate.vdp_registers.cells_wide * 8
+        self.screen_height = savestate.vdp_registers.cells_high * savestate.vdp_registers.tile_height
+        self.h_mode = savestate.vdp_registers.scroll_mode_h
+        self.v_mode = savestate.vdp_registers.scroll_mode_v
+        self.plane = plane
+        self.layer_offset = 0
+        self.address = savestate.vdp_registers.address_scroll_h
+        if plane == Plane.SCROLL_B:
+            self.layer_offset = 2
+        self.v_table = []
+        self.h_table = []
+        self.load_table()
+        
+    def load_table(self):
+        v_total = 1 if self.v_mode == ScrollMode.FULL else self.savestate.vdp_registers.cells_wide
+        for k in range(0, v_total):
+            self.v_table.append(self.savestate.vs_ram_buffer.read_struct(self.V_DATA_STRUCT, k + self.layer_offset)[0])
+        
+        match self.h_mode:
+            case ScrollMode.FULL:
+                h_total = 1
+            case ScrollMode.CELL:
+                h_total = self.savestate.vdp_registers.cells_high
+            case _:
+                h_total = self.screen_height
+        for k in range(0, h_total):
+            self.h_table.append(self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k + self.layer_offset + self.address)[0])
+        
+    def translate(self, x: int, y: int) -> Tuple[int, int]:
+        if self.plane == Plane.WINDOW:
+            return x, y
+        v_ndx = 0 if self.v_mode == ScrollMode.FULL else x // 16
+        match self.h_mode:
+            case ScrollMode.FULL:
+                h_ndx = 0
+            case ScrollMode.CELL:
+                h_ndx = y // self.savestate.vdp_registers.tile_height
+            case _:
+                h_ndx = y
+
+        v_off = self.v_table[v_ndx] % self.screen_height
+        h_off = (self.h_table[h_ndx] % self.screen_width) * -1
+
+        if v_off < 0:
+            v_off += self.screen_height
+        if h_off < 0:
+            h_off += self.screen_width
+
+        map_x = (x + h_off) % self.map_width
+        map_y = (y + v_off) % self.map_height
+
+        #print(f'{x}, {y} -> {h_off}, {v_off} to {map_x}, {map_y}')
+
+        return map_x, map_y
+
         
     
 '''

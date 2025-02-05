@@ -1,7 +1,7 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
-from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, Mapper, mask_from_bytes
+from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, MapRender, mask_from_bytes
 from gssex.rawfile import RawFile
-from gssex.static import Plane
+from gssex.static import Plane, Priority
 from PIL import Image
 from pprint import pp
 from os import fstat
@@ -64,9 +64,26 @@ rr_img = rr.get_image(0x012478, 16, 128, 0, 0, pivot=True)
 rr_img.putpalette(pal.flattened_colors())
 rr_img.save('testoutput/raw.png')
 
+'''
 mapper = Mapper(state)
 map = mapper.get_map(Plane.SCROLL_B, Mapper.PRIORITY.BOTH)
 map_img = Image.new('P', (map.width, map.height))
 map_img.putdata(map.get_bytes(0))
 map_img.putpalette(pal.flattened_colors())
 map_img.save('testoutput/mapper_test.png')
+'''
+
+map_state = load_gens_legacy_state("testsaves/langrisser_portrait.gs0")
+map_pal = Palette.from_cram(map_state.c_ram_buffer)
+mapper = MapRender(map_state)
+map_img = mapper.render_map(Plane.SCROLL_B, Priority.BOTH, 0)
+map_img.putpalette(map_pal.flattened_colors())
+map_img.save('testoutput/mapper_map_test.png')
+
+map_scr_img = mapper.render_screen(Plane.SCROLL_B, Priority.BOTH, 0)
+map_scr_img.putpalette(map_pal.flattened_colors())
+map_scr_img.save('testoutput/mapper_screen_test.png')
+
+map_win_img = mapper.render_screen(Plane.WINDOW, Priority.BOTH, 0)
+map_win_img.putpalette(map_pal.flattened_colors())
+map_win_img.save('testoutput/mapper_window_test.png')

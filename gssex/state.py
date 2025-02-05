@@ -50,6 +50,9 @@ class VDPRegisters:
     window_split_v: int
     SIZE = 24 #in bytes
 
+    def get_screen_size(self) -> Tuple[int, int]:
+        return (self.cells_wide * 8, self.cells_high * self.tile_height)
+
     @staticmethod
     def get_scroll_size(bits: int) -> int:
         if bits & 3 == 3:
