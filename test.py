@@ -73,7 +73,10 @@ map_img.putpalette(pal.flattened_colors())
 map_img.save('testoutput/mapper_test.png')
 '''
 
-map_state = load_gens_legacy_state("testsaves/langrisser_portrait.gs0")
+#map_state = load_gens_legacy_state("testsaves/langrisser_portrait.gs0")
+#map_state = load_gens_legacy_state("testsaves/kidscroll.gs0")
+#map_state = load_gens_legacy_state("testsaves/juju_vscrollb.gs0")
+map_state = load_gens_legacy_state("testsaves/valis3_slider.gs1")
 map_pal = Palette.from_cram(map_state.c_ram_buffer)
 mapper = MapRender(map_state)
 map_img = mapper.render_map(Plane.SCROLL_B, Priority.BOTH, 0)

@@ -250,6 +250,7 @@ class MapRender:
     def __init__(self, savestate: SaveState):
         self.savestate = savestate
         self.mapper = Mapper(self.savestate, True)
+        self.scroll_table: ScrollTable = ScrollTable(savestate)
 
     def render_map(self, plane: Plane, priority: Priority, bgcolor: int) -> Image.Image:
         map = self.mapper.get_map(plane, priority)
@@ -263,7 +264,6 @@ class MapRender:
         vdp = self.savestate.vdp_registers
         size = vdp.get_screen_size()
         img = Image.new('P', size)
-        scroll = ScrollTable(self.savestate, plane, map.width, map.height)
         map_bytes = map.get_bytes(bgcolor)
         data = bytearray()
 
@@ -271,36 +271,43 @@ class MapRender:
         #for pix in range(8):
             x = pix % size[0]
             y = pix // size[0]
-            mx, my = scroll.translate(x, y)
+            mx, my = self.scroll_table.translate(plane, x, y)
             address = mx + my * map.width
             data.append(map_bytes[address])
         img.putdata(data)
         return img
-    
+
+#TODO still not 100% accruate, needs investigation in Hor. Cell, and some Y column + H scroll stuff
 class ScrollTable:
-    V_DATA_STRUCT = Struct('<h')
-    H_DATA_STRUCT = Struct('>h')
-    def __init__(self, savestate: SaveState, plane: Plane, map_width: int, map_height: int):
+    V_DATA_STRUCT = Struct('<2h')
+    H_DATA_STRUCT = Struct('>2h')
+    def __init__(self, savestate: SaveState):
         self.savestate = savestate
-        self.map_width = map_width
-        self.map_height = map_height
-        self.screen_width = savestate.vdp_registers.cells_wide * 8
-        self.screen_height = savestate.vdp_registers.cells_high * savestate.vdp_registers.tile_height
+        self.map_width = savestate.vdp_registers.scroll_width * 8
+        self.map_height = savestate.vdp_registers.scroll_height * savestate.vdp_registers.tile_height
         self.h_mode = savestate.vdp_registers.scroll_mode_h
         self.v_mode = savestate.vdp_registers.scroll_mode_v
-        self.plane = plane
         self.layer_offset = 0
         self.address = savestate.vdp_registers.address_scroll_h
-        if plane == Plane.SCROLL_B:
-            self.layer_offset = 2
-        self.v_table = []
-        self.h_table = []
+        self.v_table = {
+            Plane.SCROLL_A: [],
+            Plane.SCROLL_B: []
+        }
+        self.h_table = {
+            Plane.SCROLL_A: [],
+            Plane.SCROLL_B: []
+        }
+        self.h_index_callback: callable
+        self.v_index_callback: callable
         self.load_table()
+        self.set_callbacks()
         
     def load_table(self):
-        v_total = 1 if self.v_mode == ScrollMode.FULL else self.savestate.vdp_registers.cells_wide
+        v_total = 1 if self.v_mode == ScrollMode.FULL else (self.savestate.vdp_registers.cells_wide // 2)
         for k in range(0, v_total):
-            self.v_table.append(self.savestate.vs_ram_buffer.read_struct(self.V_DATA_STRUCT, k + self.layer_offset)[0])
+            values = self.savestate.vs_ram_buffer.read_struct(self.V_DATA_STRUCT, k * self.V_DATA_STRUCT.size)
+            self.v_table[Plane.SCROLL_A].append(values[0])
+            self.v_table[Plane.SCROLL_B].append(values[1])
         
         match self.h_mode:
             case ScrollMode.FULL:
@@ -308,29 +315,52 @@ class ScrollTable:
             case ScrollMode.CELL:
                 h_total = self.savestate.vdp_registers.cells_high
             case _:
-                h_total = self.screen_height
+                h_total = self.savestate.vdp_registers.cells_high * self.savestate.vdp_registers.tile_height
         for k in range(0, h_total):
-            self.h_table.append(self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k + self.layer_offset + self.address)[0])
-        
-    def translate(self, x: int, y: int) -> Tuple[int, int]:
-        if self.plane == Plane.WINDOW:
-            return x, y
-        v_ndx = 0 if self.v_mode == ScrollMode.FULL else x // 16
+            values = self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k * self.H_DATA_STRUCT.size + self.address)
+            self.h_table[Plane.SCROLL_A].append(values[0])
+            self.h_table[Plane.SCROLL_B].append(values[1])
+
+    def set_callbacks(self):
+        if self.v_mode == ScrollMode.FULL:
+            self.v_index_callback = self.get_index_full
+        else:
+            self.v_index_callback = self.get_index_column
         match self.h_mode:
             case ScrollMode.FULL:
-                h_ndx = 0
+                self.h_index_callback = self.get_index_full
             case ScrollMode.CELL:
-                h_ndx = y // self.savestate.vdp_registers.tile_height
+                self.h_index_callback = self.get_index_cell
             case _:
-                h_ndx = y
+                self.h_index_callback = self.get_index_line
+        
 
-        v_off = self.v_table[v_ndx] % self.screen_height
-        h_off = (self.h_table[h_ndx] % self.screen_width) * -1
+    def get_index_full(self, index: int) -> int:
+        return 0
+    
+    def get_index_column(self, index: int) -> int:
+        return index // 16
+    
+    def get_index_cell(self, index: int) -> int:
+        return index // self.savestate.vdp_registers.tile_height
+    
+    def get_index_line(self, index: int) -> int:
+        return index
+        
+    def translate(self, plane: Plane, x: int, y: int) -> Tuple[int, int]:
+        if plane == Plane.WINDOW:
+            return x, y
+        v_ndx = self.v_index_callback(x)
+        h_ndx = self.h_index_callback(y)
 
-        if v_off < 0:
-            v_off += self.screen_height
-        if h_off < 0:
-            h_off += self.screen_width
+        v_off = self.v_table[plane][v_ndx]
+        h_off = self.h_table[plane][h_ndx] * -1
+
+        #make negative offsets positive
+        while v_off < 0:
+            v_off += self.map_height
+        while h_off < 0:
+            h_off += self.map_width
 
         map_x = (x + h_off) % self.map_width
         map_y = (y + v_off) % self.map_height
