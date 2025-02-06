@@ -74,11 +74,12 @@ map_img.save('testoutput/mapper_test.png')
 '''
 
 map_save_path = "testsaves/langrisser_portrait.gs0"
-map_save_path = "testsaves/kidscroll.gs0"
-map_save_path = "testsaves/juju_vscrollb.gs0"
-map_save_path = "testsaves/valis3_slider.gs1"
+#map_save_path = "testsaves/kidscroll.gs0"
+#map_save_path = "testsaves/juju_vscrollb.gs0"
+#map_save_path = "testsaves/valis3_slider.gs1"
 map_state = load_gens_legacy_state(map_save_path)
 map_pal = Palette.from_cram(map_state.c_ram_buffer)
+map_pal.colors.append((255, 0, 255))
 mapper = MapRender(map_state)
 map_img = mapper.render_map(Plane.SCROLL_B, Priority.BOTH, 0)
 map_img.putpalette(map_pal.flattened_colors())
@@ -88,6 +89,10 @@ map_scr_img = mapper.render_screen(Plane.SCROLL_B, Priority.BOTH, 0)
 map_scr_img.putpalette(map_pal.flattened_colors())
 map_scr_img.save('testoutput/mapper_screen_test.png')
 
-map_win_img = mapper.render_screen(Plane.WINDOW, Priority.BOTH, 0)
+map_wm_img = mapper.render_map(Plane.WINDOW, Priority.BOTH, 0)
+map_wm_img.putpalette(map_pal.flattened_colors())
+map_wm_img.save('testoutput/mapper_window_map_test.png')
+
+map_win_img = mapper.render_screen(Plane.WINDOW, Priority.BOTH, 64)
 map_win_img.putpalette(map_pal.flattened_colors())
 map_win_img.save('testoutput/mapper_window_test.png')

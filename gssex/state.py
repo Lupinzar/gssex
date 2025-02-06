@@ -51,7 +51,13 @@ class VDPRegisters:
     SIZE = 24 #in bytes
 
     def get_screen_size(self) -> Tuple[int, int]:
-        return (self.cells_wide * 8, self.cells_high * self.tile_height)
+        return self.cells_wide * 8, self.cells_high * self.tile_height
+    
+    #I think...
+    def get_window_cell_size(self) -> Tuple[int, int]:
+        if self.cells_wide == 40:
+            return 64, 32
+        return 32, 32
 
     @staticmethod
     def get_scroll_size(bits: int) -> int:
@@ -95,7 +101,7 @@ class VDPRegisters:
             cls.get_scroll_size(data[16] & 0x03),
             cls.get_scroll_size((data[16] & 0x30) >> 4),
             bool(data[17] & 0x80),
-            data[17] & 0x1F,
+            (data[17] & 0x1F) * 2,
             bool(data[18] & 0x80),
             data[18] & 0x1F
         )

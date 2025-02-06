@@ -190,8 +190,13 @@ class Mapper:
         if self.enable_cache and cache_key in self.cache:
             return self.cache[cache_key]
         regs = self.savestate.vdp_registers
-        map = Map(regs.scroll_width * 8, regs.scroll_height * regs.tile_height)
-        entries = regs.scroll_width * regs.scroll_height
+        if plane == Plane.WINDOW:
+            cell_width, cell_height = regs.get_window_cell_size()
+        else:
+            cell_width = regs.scroll_width
+            cell_height = regs.scroll_height
+        map = Map(cell_width * 8, cell_height * regs.tile_height)
+        entries = cell_width * cell_height
         base_address = self.get_base_address(plane)
 
         for ndx in range(0, entries):
@@ -202,8 +207,8 @@ class Mapper:
             if not self.include_tile(td['priority'], priorities):
                 continue
             pattern = self.savestate.pattern_data.get_pattern(td['address'], td['pal'])
-            tile_x = ndx % regs.scroll_width
-            tile_y = ndx // regs.scroll_width
+            tile_x = ndx % cell_width
+            tile_y = ndx // cell_width
 
             for pndx, pixel in enumerate(pattern):
                 px = pndx % 8
@@ -245,8 +250,11 @@ class Mapper:
         if not priority and priorities & Priority.LOW:
             return True
         return False
-    
+
 class MapRender:
+    """
+    Does the actual rendering of Tile Maps either raw, or as they appear on screen
+    """
     def __init__(self, savestate: SaveState):
         self.savestate = savestate
         self.mapper = Mapper(self.savestate, True)
@@ -259,16 +267,18 @@ class MapRender:
         return img
     
     def render_screen(self, plane: Plane, priority: Priority, bgcolor: int) -> Image.Image:
-        #TODO WINDOW special handling, test modes other than FULL
+        if plane == Plane.WINDOW:
+            return self.render_screen_window(priority, bgcolor)
+        return self.render_screen_scroll(plane, priority, bgcolor)
+    
+    def render_screen_scroll(self, plane: Plane, priority: Priority, bgcolor: int) -> Image.Image:
         map = self.mapper.get_map(plane, priority)
-        vdp = self.savestate.vdp_registers
-        size = vdp.get_screen_size()
+        size = self.savestate.vdp_registers.get_screen_size()
         img = Image.new('P', size)
         map_bytes = map.get_bytes(bgcolor)
         data = bytearray()
 
         for pix in range(0, size[0] * size[1]):
-        #for pix in range(8):
             x = pix % size[0]
             y = pix // size[0]
             mx, my = self.scroll_table.translate(plane, x, y)
@@ -276,8 +286,40 @@ class MapRender:
             data.append(map_bytes[address])
         img.putdata(data)
         return img
+    
+    def render_screen_window(self, priority: Priority, bgcolor: int) -> Image.Image:
+        map = self.mapper.get_map(Plane.WINDOW, priority)
+        vdp = self.savestate.vdp_registers
+        size = self.savestate.vdp_registers.get_screen_size()
+        width = vdp.window_split_h * 8
+        height = vdp.window_split_v * vdp.tile_height
+        img = Image.new('P', size, bgcolor)
+        map_img = Image.new('P', (map.width, map.height))
+        map_img.putdata(map.get_bytes(bgcolor))
 
+        img.paste(map_img, (0, 0))
+
+        no_draw = (0, 0, size[0], size[1])
+        if vdp.window_down:
+            if vdp.window_right:
+                no_draw = (0, 0, width - 1, height - 1)
+            else:
+                no_draw = (width, 0, size[0] - 1, height - 1)
+        elif not vdp.window_down:
+            if vdp.window_right:
+                no_draw = (0, height, width - 1, size[1] - 1)
+            else:
+                no_draw = (width, height, size[0] - 1, size[1] - 1)
+
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(no_draw, fill=bgcolor)
+
+        return img
+        
 class ScrollTable:
+    """
+    Reads in the scroll tables for A/B planes and does scroll translations
+    """
     V_DATA_STRUCT = Struct('<2h')
     H_DATA_STRUCT = Struct('>2h')
     def __init__(self, savestate: SaveState):
@@ -350,7 +392,7 @@ class ScrollTable:
         return index
     
     '''
-    TODO 
+    TODO V Column + H Scroll
     This algo doesn't do Ver. Column scroll plus any Hor. Scroll correctly.
     Not sure if any commercial software uses such a combo, but I'm sure
     there are 1-2 corner cases to prove me wrong. I'll either come back
