@@ -277,7 +277,6 @@ class MapRender:
         img.putdata(data)
         return img
 
-#TODO still not 100% accruate, needs investigation in Hor. Cell, and some Y column + H scroll stuff
 class ScrollTable:
     V_DATA_STRUCT = Struct('<2h')
     H_DATA_STRUCT = Struct('>2h')
@@ -309,15 +308,18 @@ class ScrollTable:
             self.v_table[Plane.SCROLL_A].append(values[0])
             self.v_table[Plane.SCROLL_B].append(values[1])
         
+        multi = 1
         match self.h_mode:
             case ScrollMode.FULL:
                 h_total = 1
             case ScrollMode.CELL:
                 h_total = self.savestate.vdp_registers.cells_high
+                #CELL mode stores its values in VRAM with gaps, we need to account for that
+                multi = self.savestate.vdp_registers.tile_height
             case _:
                 h_total = self.savestate.vdp_registers.cells_high * self.savestate.vdp_registers.tile_height
         for k in range(0, h_total):
-            values = self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k * self.H_DATA_STRUCT.size + self.address)
+            values = self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k * self.H_DATA_STRUCT.size * multi + self.address)
             self.h_table[Plane.SCROLL_A].append(values[0])
             self.h_table[Plane.SCROLL_B].append(values[1])
 
@@ -346,7 +348,16 @@ class ScrollTable:
     
     def get_index_line(self, index: int) -> int:
         return index
-        
+    
+    '''
+    TODO 
+    This algo doesn't do Ver. Column scroll plus any Hor. Scroll correctly.
+    Not sure if any commercial software uses such a combo, but I'm sure
+    there are 1-2 corner cases to prove me wrong. I'll either come back
+    to this later, or someone else can solve it. I'd need to spend more
+    time reading emulator source code or doing tests and I'd rather get
+    the tool released first. sin_counter++;
+    '''
     def translate(self, plane: Plane, x: int, y: int) -> Tuple[int, int]:
         if plane == Plane.WINDOW:
             return x, y
@@ -364,8 +375,6 @@ class ScrollTable:
 
         map_x = (x + h_off) % self.map_width
         map_y = (y + v_off) % self.map_height
-
-        #print(f'{x}, {y} -> {h_off}, {v_off} to {map_x}, {map_y}')
 
         return map_x, map_y
 
