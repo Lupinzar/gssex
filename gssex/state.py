@@ -36,8 +36,8 @@ class VDPRegisters:
     address_scroll_b: int
     address_sprites: int
     bg_color_index: int
-    scroll_mode_v: int
-    scroll_mode_h: int
+    scroll_mode_v: ScrollMode
+    scroll_mode_h: ScrollMode
     cells_wide: int
     shadow_enable: bool
     tile_height: int
