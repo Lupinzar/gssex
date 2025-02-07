@@ -18,3 +18,7 @@ class Priority(Flag):
     LOW = 0x1
     HIGH = 0x2
     BOTH = 0x3
+
+class Endian(Enum):
+    BIG = auto()
+    LITTLE = auto()

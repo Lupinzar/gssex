@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import BinaryIO, Tuple, Iterable, Self
 from struct import Struct
-from .static import ScrollMode
+from .static import ScrollMode, Endian
 
 class Buffer:
     def __init__(self, data: bytearray):
@@ -111,12 +111,13 @@ class SaveState:
     CRAM_SIZE = 128
     VSRAM_SIZE = 80
 
-    def __init__(self, c_ram_buffer: bytearray, v_ram_buffer: bytearray, vs_ram_buffer: bytearray, vdp_registers: VDPRegisters):
+    def __init__(self, c_ram_buffer: bytearray, v_ram_buffer: bytearray, vs_ram_buffer: bytearray, vdp_registers: VDPRegisters, vs_ram_endian: Endian):
         self.c_ram_buffer: Buffer = c_ram_buffer
         self.v_ram_buffer: Buffer = v_ram_buffer
         self.vs_ram_buffer: Buffer = vs_ram_buffer
         self.vdp_registers: VDPRegisters = vdp_registers
         self.pattern_data: PatternData = PatternData(v_ram_buffer, (8, vdp_registers.tile_height))
+        self.vs_ram_endian: Endian = vs_ram_endian
 
 class Palette:
     SIZE = 16
@@ -299,15 +300,33 @@ def load_gens_legacy_state(filepath: str) -> SaveState:
         Buffer(cram),
         Buffer(vram),
         Buffer(vsram),
-        VDPRegisters.read_vdp_registers(Buffer(vdp_regs))
+        VDPRegisters.read_vdp_registers(Buffer(vdp_regs)),
+        Endian.LITTLE
+    )
+
+def load_kega_fusion_state(filepath: str) -> SaveState:
+    with open(filepath, 'rb') as f:
+        cram = read_block_and_validate(f, 0x0112, SaveState.CRAM_SIZE)
+        vram = read_block_and_validate(f, 0x012478, SaveState.VRAM_SIZE)
+        vsram = read_block_and_validate(f, 0x0192, SaveState.VSRAM_SIZE)
+        vdp_regs = read_block_and_validate(f, 0xFA, VDPRegisters.SIZE)
+
+    return SaveState(
+        Buffer(cram),
+        Buffer(vram),
+        Buffer(vsram),
+        VDPRegisters.read_vdp_registers(Buffer(vdp_regs)),
+        Endian.BIG
     )
 
 FORMAT_FUNCTIONS = {
-    'gens_legacy': load_gens_legacy_state
+    'gens_legacy': load_gens_legacy_state,
+    'kega_fusion': load_kega_fusion_state
 }
 
 FORMAT_NAMES = {
-    'gens_legacy': 'Gens Legacy / KMOD'
+    'gens_legacy': 'Gens Legacy / KMOD',
+    'kega_fusion': 'Kega Fusion'
 }
 
 NAMES_FORMAT = dict(reversed(item) for item in FORMAT_NAMES.items())

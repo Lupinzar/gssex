@@ -1,5 +1,5 @@
 from .state import SaveState, PatternData, HardwareSprite, Palette, mask_from_bytes
-from .static import Plane, Priority, ScrollMode
+from .static import Plane, Priority, ScrollMode, Endian
 from .rawfile import RawFile
 from PIL import Image, ImageDraw
 from struct import Struct
@@ -353,7 +353,6 @@ class ScrollTable:
     """
     Reads in the scroll tables for A/B planes and does scroll translations
     """
-    V_DATA_STRUCT = Struct('<2h')
     H_DATA_STRUCT = Struct('>2h')
     def __init__(self, savestate: SaveState):
         self.savestate = savestate
@@ -378,8 +377,9 @@ class ScrollTable:
         
     def load_table(self):
         v_total = 1 if self.v_mode == ScrollMode.FULL else (self.savestate.vdp_registers.cells_wide // 2)
+        vsr_struct = Struct(self.get_vs_ram_format())
         for k in range(0, v_total):
-            values = self.savestate.vs_ram_buffer.read_struct(self.V_DATA_STRUCT, k * self.V_DATA_STRUCT.size)
+            values = self.savestate.vs_ram_buffer.read_struct(vsr_struct, k * vsr_struct.size)
             self.v_table[Plane.SCROLL_A].append(values[0])
             self.v_table[Plane.SCROLL_B].append(values[1])
         
@@ -453,7 +453,8 @@ class ScrollTable:
 
         return map_x, map_y
 
-        
+    def get_vs_ram_format(self):
+        return '>2h' if self.savestate.vs_ram_endian == Endian.BIG else '<2h'
     
 '''
 Helper functions
