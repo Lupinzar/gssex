@@ -315,6 +315,39 @@ class MapRender:
         draw.rectangle(no_draw, fill=bgcolor)
 
         return img
+    
+    def render_scoll_marks(self, plane: Plane, thickness: int = 16) -> Image.Image:
+        size = self.savestate.vdp_registers.get_screen_size()
+        new_size = (size[0] + thickness, size[1] + thickness)
+        img = Image.new('RGBA', new_size, (0,0,0,0))
+        if plane == Plane.WINDOW:
+            return img
+        draw = ImageDraw.Draw(img)
+
+        v_table = self.scroll_table.v_table[plane]
+        h_table = self.scroll_table.h_table[plane]
+        v_increments = size[0] // len(v_table)
+        h_increments = size[1] // len(h_table)
+
+        for ndx, offset in enumerate(v_table):
+            x = ndx * v_increments + thickness
+            draw.rectangle((x, 0, x+v_increments-1, thickness-1), fill=self.offset_to_color(offset))
+
+        for ndx, offset in enumerate(h_table):
+            y = ndx * h_increments + thickness
+            draw.rectangle((0, y, thickness-1, y+h_increments-1), fill=self.offset_to_color(offset))
+
+        return img
+    
+    def offset_to_color(self, offset: int) -> Tuple[int, int, int]:
+        if offset < 0:
+            r = 0xFF
+            offset = abs(offset)
+        else:
+            r = 0
+        g = (offset & 0xFF00) >> 8
+        b = offset & 0x00FF
+        return r, g, b
         
 class ScrollTable:
     """

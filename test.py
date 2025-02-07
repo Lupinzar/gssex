@@ -96,3 +96,6 @@ map_wm_img.save('testoutput/mapper_window_map_test.png')
 map_win_img = mapper.render_screen(Plane.WINDOW, Priority.BOTH, 64)
 map_win_img.putpalette(map_pal.flattened_colors())
 map_win_img.save('testoutput/mapper_window_test.png')
+
+map_mark_img = mapper.render_scoll_marks(Plane.SCROLL_B, 16)
+map_mark_img.save('testoutput/mapper_mark_test.png')
