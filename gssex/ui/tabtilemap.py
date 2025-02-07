@@ -9,6 +9,7 @@ from PIL import Image
 from os.path import basename
 
 class TabTileMap(RenderTab, Ui_TabTileMap):
+    SCROLL_MARK_THICKNESS = 16
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setupUi(self)
@@ -109,7 +110,13 @@ class TabTileMap(RenderTab, Ui_TabTileMap):
         return img
     
     def get_pil_marks(self) -> Image.Image:
-        raise Exception("not implemented yet")
+        plane = Plane(self.plane_combo.currentIndex())
+        img = self.renderer.render_scoll_marks(plane, self.SCROLL_MARK_THICKNESS)
+        screen = self.get_pil_screen()
+
+        img.paste(screen, (self.SCROLL_MARK_THICKNESS, self.SCROLL_MARK_THICKNESS))
+        screen.close()
+        return img
     
     def get_pil_map(self) -> Image.Image:
         pal_data = self.app.get_palette_and_background()
