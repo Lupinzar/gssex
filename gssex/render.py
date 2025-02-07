@@ -310,7 +310,11 @@ class MapRender:
                 no_draw = (0, height, width - 1, size[1] - 1)
             else:
                 no_draw = (width, height, size[0] - 1, size[1] - 1)
-
+        
+        #nothing else to do
+        if no_draw[2] < no_draw[0] or no_draw[3] < no_draw[1]:
+            return img
+        
         draw = ImageDraw.Draw(img)
         draw.rectangle(no_draw, fill=bgcolor)
 
