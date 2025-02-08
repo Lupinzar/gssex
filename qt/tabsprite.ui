@@ -20,31 +20,24 @@
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Sprite</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="sprite_label">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>32</width>
-         <height>64</height>
+         <width>34</width>
+         <height>68</height>
         </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
        </property>
        <property name="text">
         <string>Img</string>
@@ -111,7 +104,7 @@
         <x>0</x>
         <y>0</y>
         <width>601</width>
-        <height>228</height>
+        <height>240</height>
        </rect>
       </property>
       <widget class="QLabel" name="plane_label">
@@ -133,17 +126,21 @@
    <item row="1" column="1">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QLabel" name="label_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QCheckBox" name="checkBox">
        <property name="text">
-        <string>Plane</string>
+        <string>Tile Margins</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Trim</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="trim_combo"/>
      </item>
      <item>
       <widget class="QPushButton" name="hide_button">
