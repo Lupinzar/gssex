@@ -241,6 +241,14 @@ class SpriteTable:
                 break
             index = link
         return list(reversed(order))
+    
+    def __len__(self) -> int:
+        return len(self.sprites)
+    
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.sprites[index.start:index.stop:index.step]
+        return self.sprites[index]
 
 class PatternData:
 

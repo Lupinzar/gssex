@@ -45,6 +45,7 @@ class Ui_TabSprite(object):
         self.sprite_label.setMinimumSize(QSize(34, 68))
         self.sprite_label.setFrameShape(QFrame.Shape.StyledPanel)
         self.sprite_label.setFrameShadow(QFrame.Shadow.Sunken)
+        self.sprite_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
 
         self.verticalLayout_2.addWidget(self.sprite_label)
 
@@ -77,7 +78,7 @@ class Ui_TabSprite(object):
         self.plane_scroll.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 601, 240))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 616, 228))
         self.plane_label = QLabel(self.scrollAreaWidgetContents)
         self.plane_label.setObjectName(u"plane_label")
         self.plane_label.setGeometry(QRect(0, 0, 71, 16))
@@ -101,22 +102,6 @@ class Ui_TabSprite(object):
         self.trim_combo.setObjectName(u"trim_combo")
 
         self.verticalLayout_3.addWidget(self.trim_combo)
-
-        self.hide_button = QPushButton(TabSprite)
-        self.hide_button.setObjectName(u"hide_button")
-        icon2 = QIcon()
-        icon2.addFile(u":/icons/eye-off.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.hide_button.setIcon(icon2)
-
-        self.verticalLayout_3.addWidget(self.hide_button)
-
-        self.show_button = QPushButton(TabSprite)
-        self.show_button.setObjectName(u"show_button")
-        icon3 = QIcon()
-        icon3.addFile(u":/icons/eye.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.show_button.setIcon(icon3)
-
-        self.verticalLayout_3.addWidget(self.show_button)
 
         self.save_plane_button = QPushButton(TabSprite)
         self.save_plane_button.setObjectName(u"save_plane_button")
@@ -157,8 +142,6 @@ class Ui_TabSprite(object):
         self.plane_label.setText(QCoreApplication.translate("TabSprite", u"Sprite Plane", None))
         self.checkBox.setText(QCoreApplication.translate("TabSprite", u"Tile Margins", None))
         self.label_3.setText(QCoreApplication.translate("TabSprite", u"Trim", None))
-        self.hide_button.setText(QCoreApplication.translate("TabSprite", u"Hide Selected", None))
-        self.show_button.setText(QCoreApplication.translate("TabSprite", u"Show Selected", None))
 #if QT_CONFIG(tooltip)
         self.save_plane_button.setToolTip(QCoreApplication.translate("TabSprite", u"Save Sprite", None))
 #endif // QT_CONFIG(tooltip)

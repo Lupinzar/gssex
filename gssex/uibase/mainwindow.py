@@ -238,7 +238,7 @@ class Ui_MainWindow(object):
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_vram), QCoreApplication.translate("MainWindow", u"VRAM", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_raw), QCoreApplication.translate("MainWindow", u"RAW Tiles", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_tilemap), QCoreApplication.translate("MainWindow", u"Tile Maps", None))
-        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Hardware Sprites", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_hw_sprites), QCoreApplication.translate("MainWindow", u"Sprites", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
 

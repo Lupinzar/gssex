@@ -27,11 +27,11 @@ class SpriteModel(QAbstractTableModel):
         ModelColumn(None, 'Hide', hide_special=True)
     ]
     COLUMN_COUNT = len(COLUMNS)
-    def __init__(self, data: SpriteTable):
+    def __init__(self, data: SpriteTable, hidden: set):
         super().__init__()
         self.sprite_table: SpriteTable = data.sprites
         self.drawn: list[int] = data.get_draw_list()
-        self.hidden: set = set()
+        self.hidden: set = hidden
 
     def data(self, index, role):
         if role == Qt.ItemDataRole.DisplayRole:

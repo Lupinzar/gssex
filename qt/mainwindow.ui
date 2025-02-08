@@ -182,7 +182,7 @@
       </widget>
       <widget class="TabSprite" name="tab_hw_sprites">
        <attribute name="title">
-        <string>Hardware Sprites</string>
+        <string>Sprites</string>
        </attribute>
       </widget>
      </widget>
