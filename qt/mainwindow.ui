@@ -180,7 +180,7 @@
         <string>Tile Maps</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="tab_hw_sprites">
+      <widget class="TabSprite" name="tab_hw_sprites">
        <attribute name="title">
         <string>Hardware Sprites</string>
        </attribute>
@@ -315,6 +315,12 @@
    <class>TabTileMap</class>
    <extends>QWidget</extends>
    <header>..ui.tabtilemap.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabSprite</class>
+   <extends>QWidget</extends>
+   <header>..ui.tabsprite.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

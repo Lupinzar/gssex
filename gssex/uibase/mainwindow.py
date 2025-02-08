@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
 from ..ui.colorbutton import ColorButton
 from ..ui.tabpalette import TabPalette
 from ..ui.tabraw import TabRaw
+from ..ui.tabsprite import TabSprite
 from ..ui.tabtilemap import TabTileMap
 from ..ui.tabvram import TabVram
 from . import resource_rc
@@ -164,7 +165,7 @@ class Ui_MainWindow(object):
         self.tab_tilemap = TabTileMap()
         self.tab_tilemap.setObjectName(u"tab_tilemap")
         self.main_tabs.addTab(self.tab_tilemap, "")
-        self.tab_hw_sprites = QWidget()
+        self.tab_hw_sprites = TabSprite()
         self.tab_hw_sprites.setObjectName(u"tab_hw_sprites")
         self.main_tabs.addTab(self.tab_hw_sprites, "")
 

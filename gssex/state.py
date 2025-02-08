@@ -240,7 +240,7 @@ class SpriteTable:
             if link in order:
                 break
             index = link
-        return reversed(order)
+        return list(reversed(order))
 
 class PatternData:
 

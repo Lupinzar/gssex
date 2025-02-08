@@ -6,3 +6,4 @@ pyside6-uic --from-imports qt\tabpalette.ui > gssex\uibase\tabpalette.py
 pyside6-uic --from-imports qt\tabvram.ui > gssex\uibase\tabvram.py
 pyside6-uic --from-imports qt\tabraw.ui > gssex\uibase\tabraw.py
 pyside6-uic --from-imports qt\tabtilemap.ui > gssex\uibase\tabtilemap.py
+pyside6-uic --from-imports qt\tabsprite.ui > gssex\uibase\tabsprite.py
