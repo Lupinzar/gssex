@@ -103,8 +103,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def load_state(self):
         if not self.app.load_state(self.app.config.state_format):
             self.show_timed_status_message(f"Could not load {self.app.make_path()}")
-        if isinstance(self.main_tabs.currentWidget(), RenderTab):
-            self.main_tabs.currentWidget().saveStateChanged.emit()
+        self.emit_state_changed()
 
     def update_file_ui(self):
         self.label_opened_file.setText(self.app.make_path())
@@ -121,6 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app.config.output_path = self.output_directory_line.placeholderText()
         self.app.config.state_format = NAMES_FORMAT[self.state_format_combo.currentText()]
         self.save_config()
+        self.refresh_file()
 
     def save_config(self):
         if self.app.config.save():
@@ -160,3 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
             self.main_tabs.currentWidget().fullRefresh.emit()
+
+    def emit_state_changed(self):
+        if isinstance(self.main_tabs.currentWidget(), RenderTab):
+            self.main_tabs.currentWidget().saveStateChanged.emit()
