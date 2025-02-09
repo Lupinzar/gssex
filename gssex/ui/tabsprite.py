@@ -3,7 +3,7 @@ from .spritemodel import SpriteModel
 from .app import pil_to_qimage, pil_to_clipboard
 from ..uibase.tabsprite import Ui_TabSprite
 from ..state import SpriteTable
-from ..render import SpriteImage
+from ..render import SpriteImage, SpritePlane
 from PySide6.QtCore import Qt, QModelIndex, QItemSelection
 from PySide6.QtGui import QStandardItemModel, QPixmap
 from PIL import Image
@@ -20,11 +20,17 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.hidden_sprites: set = set()
 
         self.clear_view()
+        self.load_trim_combo()
         self.fullRefresh.connect(self.full_refresh)
         self.saveStateChanged.connect(self.state_changed)
         self.paletteSwapped.connect(self.redraw)
         self.save_sprite_button.clicked.connect(self.save_sprite)
         self.copy_sprite_button.clicked.connect(self.copy_sprite_to_clipboard)
+
+    def load_trim_combo(self):
+        for ndx in range(0, len(SpritePlane.TRIM_MODE)):
+            enum = SpritePlane.TRIM_MODE(ndx)
+            self.trim_combo.addItem(enum.name.title())
 
     def resize_headers(self):
         head = self.sprite_view.horizontalHeader()
@@ -58,6 +64,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
             self.clear_view()
             return
         self.render_sprite()
+        self.render_plane()
 
     def full_refresh(self):
         if not self.app.valid_file:
@@ -81,7 +88,6 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.sprite_view.selectionModel().selectionChanged.connect(self.handle_selection)
         self.resize_headers()
 
-
     def render_sprite(self):
         if self.current_sprite is None:
             return
@@ -89,6 +95,10 @@ class TabSprite(RenderTab, Ui_TabSprite):
         qimg = pil_to_qimage(img)
         self.sprite_label.setPixmap(QPixmap.fromImage(qimg))
         img.close()
+
+    def render_plane(self):
+        if not self.app.valid_file:
+            return
 
     def get_pil_sprite(self):
         render = SpriteImage(self.app.savestate.pattern_data, self.sprite_table[self.current_sprite])

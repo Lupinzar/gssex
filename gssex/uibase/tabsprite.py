@@ -88,10 +88,10 @@ class Ui_TabSprite(object):
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.checkBox = QCheckBox(TabSprite)
-        self.checkBox.setObjectName(u"checkBox")
+        self.tile_margins_check = QCheckBox(TabSprite)
+        self.tile_margins_check.setObjectName(u"tile_margins_check")
 
-        self.verticalLayout_3.addWidget(self.checkBox)
+        self.verticalLayout_3.addWidget(self.tile_margins_check)
 
         self.label_3 = QLabel(TabSprite)
         self.label_3.setObjectName(u"label_3")
@@ -140,7 +140,7 @@ class Ui_TabSprite(object):
 #endif // QT_CONFIG(tooltip)
         self.copy_sprite_button.setText(QCoreApplication.translate("TabSprite", u"Copy", None))
         self.plane_label.setText(QCoreApplication.translate("TabSprite", u"Sprite Plane", None))
-        self.checkBox.setText(QCoreApplication.translate("TabSprite", u"Tile Margins", None))
+        self.tile_margins_check.setText(QCoreApplication.translate("TabSprite", u"Tile Margins", None))
         self.label_3.setText(QCoreApplication.translate("TabSprite", u"Trim", None))
 #if QT_CONFIG(tooltip)
         self.save_plane_button.setToolTip(QCoreApplication.translate("TabSprite", u"Save Sprite", None))
