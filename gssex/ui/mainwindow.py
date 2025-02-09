@@ -39,6 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_open_file.triggered.connect(self.open_file)
         self.action_previous_file.triggered.connect(self.previous_file)
         self.action_next_file.triggered.connect(self.next_file)
+        self.action_refresh.triggered.connect(self.refresh_file)
         self.action_lock_palette.triggered.connect(self.update_pal_lock)
 
         #after everything is loaded/setup, handle any tab updates
@@ -71,6 +72,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         if not self.app.open_file(file[0]):
             self.show_timed_status_message(f"Could not open {file}")
+            return
+        self.update_file_ui()
+        self.load_state()
+
+    def refresh_file(self):
+        if self.app.current_file is None:
+            return
+        path = self.app.make_path()
+        if not self.app.open_file(path):
+            self.show_timed_status_message(f"Could not reload {path}")
             return
         self.update_file_ui()
         self.load_state()

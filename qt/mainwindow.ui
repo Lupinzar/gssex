@@ -207,6 +207,7 @@
    <addaction name="action_open_file"/>
    <addaction name="action_previous_file"/>
    <addaction name="action_next_file"/>
+   <addaction name="action_refresh"/>
    <addaction name="separator"/>
    <addaction name="action_lock_palette"/>
   </widget>
@@ -281,6 +282,18 @@
    </property>
    <property name="toolTip">
     <string>Select Save State File</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="action_refresh">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/icons/refresh.svg</normaloff>:/icons/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
