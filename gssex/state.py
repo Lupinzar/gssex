@@ -312,6 +312,23 @@ def load_gens_legacy_state(filepath: str) -> SaveState:
         Endian.LITTLE
     )
 
+#CRAM at a different location than usual Gens
+def load_gens_rr_state(filepath: str) -> SaveState:
+    with open(filepath, 'rb') as f:
+        cram = read_block_and_validate(f, 0x023C60, SaveState.CRAM_SIZE)
+        vram = read_block_and_validate(f, 0x012478, SaveState.VRAM_SIZE)
+        vsram = read_block_and_validate(f, 0x0192, SaveState.VSRAM_SIZE)
+        vdp_regs = read_block_and_validate(f, 0xFA, VDPRegisters.SIZE)
+
+    return SaveState(
+        Buffer(cram),
+        Buffer(vram),
+        Buffer(vsram),
+        VDPRegisters.read_vdp_registers(Buffer(vdp_regs)),
+        Endian.LITTLE
+    )
+
+#Same as Gens, but VSRAM is Big Endian
 def load_kega_fusion_state(filepath: str) -> SaveState:
     with open(filepath, 'rb') as f:
         cram = read_block_and_validate(f, 0x0112, SaveState.CRAM_SIZE)
@@ -329,11 +346,13 @@ def load_kega_fusion_state(filepath: str) -> SaveState:
 
 FORMAT_FUNCTIONS = {
     'gens_legacy': load_gens_legacy_state,
+    'gens_rr': load_gens_rr_state,
     'kega_fusion': load_kega_fusion_state
 }
 
 FORMAT_NAMES = {
     'gens_legacy': 'Gens Legacy / KMOD',
+    'gens_rr': 'Gens Rerecording (TAS)',
     'kega_fusion': 'Kega Fusion'
 }
 
