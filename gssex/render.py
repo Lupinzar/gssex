@@ -1,10 +1,11 @@
-from .state import SaveState, PatternData, HardwareSprite, Palette, mask_from_bytes
+from .state import SaveState, PatternData, HardwareSprite, Palette, SpriteTable, mask_from_bytes
 from .static import Plane, Priority, ScrollMode, Endian
 from .rawfile import RawFile
 from PIL import Image, ImageDraw
 from struct import Struct
 from dataclasses import dataclass
 from typing import Tuple
+from enum import Enum
 
 class SpriteImage:
     def __init__(self, patterns: PatternData, sprite: HardwareSprite):
@@ -460,6 +461,84 @@ class ScrollTable:
     def get_vs_ram_format(self):
         return '>2h' if self.savestate.vs_ram_endian == Endian.BIG else '<2h'
     
+class SpritePlane:
+    """
+    Renders hardware sprites in their position on the plane
+    """
+    class TRIM_MODE(Enum):
+        NONE = 0
+        SCREEN = 1
+        SPRITES = 2
+    PLANE_SIZE = 512
+    DISPLAY_OFFSET = 128
+    def __init__(self, savestate: SaveState, sprites: SpriteTable):
+        self.savestate: SaveState = savestate
+        self.sprites: SpriteTable = sprites
+
+    def render(self, trim_mode: TRIM_MODE, pal: Palette, bgcolor: int, ignore: set = set(), margins: bool = False) -> Image.Image:
+        pal_colors = pal.flattened_colors()
+        if margins:
+            img = Image.new("RGBA", (self.PLANE_SIZE, self.PLANE_SIZE), (0,0,0,0))
+            self.setup_margins(img, pal.colors[bgcolor], ignore)
+        else:
+            img = Image.new("P", (self.PLANE_SIZE, self.PLANE_SIZE), bgcolor)
+            img.putpalette(pal_colors)
+
+        draw_list = self.sprites.get_draw_list()
+        drawn = 0
+        screen_w, screen_h = self.savestate.vdp_registers.get_screen_size()
+        min_max_box = [self.PLANE_SIZE, self.PLANE_SIZE, 0, 0]
+        for ndx in draw_list:
+            if ndx in ignore:
+                continue
+            sprite = self.sprites.sprites[ndx]
+            spr_obj = SpriteImage(self.savestate.pattern_data, sprite)
+            spr_img = spr_obj.get_image()
+            spr_img.putpalette(pal_colors)
+            img.paste(spr_img, (sprite.x, sprite.y), spr_obj.get_mask())
+            spr_img.close()
+            if trim_mode == self.TRIM_MODE.SPRITES:
+                self.adjust_box(min_max_box, sprite)
+            drawn += 1
+
+        if trim_mode == self.TRIM_MODE.NONE or drawn == 0:
+            return img
+        if trim_mode == self.TRIM_MODE.SPRITES:
+            return img.crop(min_max_box)
+        return img.crop((
+            self.DISPLAY_OFFSET, 
+            self.DISPLAY_OFFSET, 
+            self.DISPLAY_OFFSET + screen_w,
+            self.DISPLAY_OFFSET + screen_h
+        ))
+
+    def setup_margins(self, image: Image.Image, color: Tuple[int, int, int], ignore: set):
+        draw_list = self.sprites.get_draw_list()
+        draw = ImageDraw.Draw(image)
+        tile_width = 8
+        tile_height = self.savestate.vdp_registers.tile_height
+        for ndx in draw_list:
+            if ndx in ignore:
+                continue
+            sprite = self.sprites.sprites[ndx]
+            x = sprite.x
+            y = sprite.y
+            x1 = sprite.x + sprite.width * tile_width - 1
+            y1 = sprite.y + sprite.height * tile_height - 1
+            draw.rectangle((x, y, x1, y1), fill=color)
+
+    def adjust_box(self, box: list[int], sprite: HardwareSprite):
+        x2 = sprite.x + sprite.width * 8
+        y2 = sprite.y + sprite.height * self.savestate.vdp_registers.tile_height
+        if sprite.x < box[0]:
+            box[0] = sprite.x
+        if x2 > box[2]:
+            box[2] = x2
+        if sprite.y < box[1]:
+            box[1] = sprite.y
+        if y2 > box[3]:
+            box[3] = y2
+        
 '''
 Helper functions
 '''

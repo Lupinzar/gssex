@@ -1,5 +1,5 @@
 from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
-from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, MapRender, mask_from_bytes
+from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, MapRender, SpritePlane, mask_from_bytes
 from gssex.rawfile import RawFile
 from gssex.static import Plane, Priority
 from PIL import Image
@@ -99,3 +99,10 @@ map_win_img.save('testoutput/mapper_window_test.png')
 
 map_mark_img = mapper.render_scoll_marks(Plane.SCROLL_B, 16)
 map_mark_img.save('testoutput/mapper_mark_test.png')
+
+spr_state = load_gens_legacy_state("testsaves/outrun2019.gs0")
+spr_pal = Palette.from_cram(spr_state.c_ram_buffer)
+spr_pal.colors.append((255, 0, 255))
+spr_r = SpritePlane(spr_state, SpriteTable(spr_state))
+spr_img = spr_r.render(SpritePlane.TRIM_MODE.NONE, spr_pal, 64, margins=False)
+spr_img.save('testoutput/sprite_plane_test.png')

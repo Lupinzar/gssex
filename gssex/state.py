@@ -228,7 +228,7 @@ class SpriteTable:
             )
             self.sprites.append(sprite)
     
-    def get_draw_list(self) -> list:
+    def get_draw_list(self) -> list[int]:
         order = []
         index = 0
         while True:
