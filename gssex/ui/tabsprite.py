@@ -4,8 +4,7 @@ from .app import pil_to_qimage, pil_to_clipboard
 from ..uibase.tabsprite import Ui_TabSprite
 from ..state import SpriteTable
 from ..render import SpriteImage, SpritePlane
-from PySide6.QtCore import Qt, QModelIndex, QItemSelection
-from PySide6.QtGui import QStandardItemModel, QPixmap
+from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QKeySequence
 from PIL import Image
 from base64 import b32encode
 
@@ -31,11 +30,18 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.copy_sprite_button.clicked.connect(self.copy_sprite_to_clipboard)
         self.save_plane_button.clicked.connect(self.save_plane)
         self.copy_plane_button.clicked.connect(self.copy_plane_to_clipboard)
+        self.register_shortcuts()
 
     def load_trim_combo(self):
         for ndx in range(0, len(SpritePlane.TRIM_MODE)):
             enum = SpritePlane.TRIM_MODE(ndx)
             self.trim_combo.addItem(enum.name.title())
+
+    def register_shortcuts(self):
+        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_sprite())
+        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_sprite_to_clipboard())
+        QShortcut(QKeySequence("Shift+Ctrl+S"), self, lambda: self.save_plane())
+        QShortcut(QKeySequence("Shift+Ctrl+C"), self, lambda: self.copy_plane_to_clipboard())
 
     def resize_headers(self):
         head = self.sprite_view.horizontalHeader()
