@@ -92,6 +92,12 @@
    </item>
    <item row="1" column="0">
     <widget class="QScrollArea" name="plane_scroll">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>320</width>
@@ -107,7 +113,7 @@
         <x>0</x>
         <y>0</y>
         <width>616</width>
-        <height>228</height>
+        <height>266</height>
        </rect>
       </property>
       <widget class="QLabel" name="plane_label">
