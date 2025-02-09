@@ -13,7 +13,6 @@
         <file>icons/chevrons-left.svg</file>
         <file>icons/chevrons-right.svg</file>
         <file>icons/search.svg</file>
-        <file>icons/eye.svg</file>
-        <file>icons/eye-off.svg</file>
+        <file>icons/refresh.svg</file>
     </qresource>
 </RCC>
