@@ -1,7 +1,7 @@
 from enum import Enum, auto, Flag
 
 APPLICATION_NAME = 'gssex'
-RELEASE = 'Development Release'
+AUTHOR_STRING = 'Lupinzar'
 
 class ScrollMode(Enum):
     FULL = auto()

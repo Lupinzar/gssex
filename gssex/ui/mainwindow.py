@@ -2,7 +2,8 @@ from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Signal
 from ..uibase.mainwindow import Ui_MainWindow
-from ..static import APPLICATION_NAME, RELEASE
+from ..static import APPLICATION_NAME
+from ..release import RELEASE
 from ..state import FORMAT_NAMES, NAMES_FORMAT
 from .app import App, Config
 from .rendertab import RenderTab
