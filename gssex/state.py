@@ -353,7 +353,7 @@ FORMAT_FUNCTIONS = {
 FORMAT_NAMES = {
     'gens_legacy': 'Gens Legacy / KMOD',
     'gens_rr': 'Gens Rerecording (TAS)',
-    'kega_fusion': 'Kega Fusion'
+    'kega_fusion': 'Kega Fusion / Genecyst'
 }
 
 NAMES_FORMAT = dict(reversed(item) for item in FORMAT_NAMES.items())
