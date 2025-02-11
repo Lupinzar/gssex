@@ -18,6 +18,8 @@ class TabVram(RenderTab, Ui_TabVram):
         self.setupUi(self)
         self.clear_main_image()
 
+        self.loupe_position_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+
         self.reticle = QFrame(self.main_label)
         self.reticle.setFixedSize(8, 8)
         self.reticle.setStyleSheet("border: 1px solid yellow")
