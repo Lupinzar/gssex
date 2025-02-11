@@ -2,6 +2,7 @@ from enum import Enum, auto, Flag
 
 APPLICATION_NAME = 'gssex'
 AUTHOR_STRING = 'Lupinzar'
+GIT_HUB_URL = 'https://github.com/Lupinzar/gssex'
 
 class ScrollMode(Enum):
     FULL = auto()

@@ -16,10 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
-    QHBoxLayout, QLabel, QLayout, QLineEdit,
-    QMainWindow, QPushButton, QSizePolicy, QStatusBar,
-    QTabWidget, QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QGridLayout, QHBoxLayout, QLabel, QLayout,
+    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
+    QStatusBar, QTabWidget, QToolBar, QVBoxLayout,
+    QWidget)
 
 from ..ui.colorbutton import ColorButton
 from ..ui.tabpalette import TabPalette
@@ -158,6 +159,13 @@ class Ui_MainWindow(object):
         self.default_config_button.setGeometry(QRect(10, 130, 93, 24))
         sizePolicy.setHeightForWidth(self.default_config_button.sizePolicy().hasHeightForWidth())
         self.default_config_button.setSizePolicy(sizePolicy)
+        self.about_label = QLabel(self.tab_settings)
+        self.about_label.setObjectName(u"about_label")
+        self.about_label.setGeometry(QRect(10, 180, 421, 141))
+        self.about_label.setFrameShape(QFrame.Shape.NoFrame)
+        self.about_label.setFrameShadow(QFrame.Shadow.Plain)
+        self.about_label.setTextFormat(Qt.TextFormat.PlainText)
+        self.about_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.main_tabs.addTab(self.tab_settings, "")
         self.tab_palette = TabPalette()
         self.tab_palette.setObjectName(u"tab_palette")
@@ -241,6 +249,7 @@ class Ui_MainWindow(object):
         self.output_select_button.setText("")
         self.bg_color_button.setText("")
         self.default_config_button.setText(QCoreApplication.translate("MainWindow", u"Restore Defaults", None))
+        self.about_label.setText(QCoreApplication.translate("MainWindow", u"About", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_vram), QCoreApplication.translate("MainWindow", u"VRAM", None))

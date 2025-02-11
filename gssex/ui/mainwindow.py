@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from ..uibase.mainwindow import Ui_MainWindow
-from ..static import APPLICATION_NAME
+from ..static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL
 from ..release import RELEASE
 from ..state import FORMAT_NAMES, NAMES_FORMAT
 from .app import App, Config
@@ -28,6 +28,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
         #needed for "Find in RAW" feature
         self.tab_vram.link_raw_tab(self.tab_raw)
+
+        #about tab
+        self.about_label.setText(
+            f'{APPLICATION_NAME} {RELEASE}\n\nBy: {AUTHOR_STRING}\nGitHub: {GIT_HUB_URL}'
+        )
+        self.about_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
         #config changes
         self.bg_color_toggle.toggled.connect(self.update_config)
