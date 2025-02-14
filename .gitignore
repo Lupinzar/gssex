@@ -1,2 +1,4 @@
 *.pyc
 gssex.json
+dist/
+build/
