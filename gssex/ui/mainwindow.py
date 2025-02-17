@@ -28,6 +28,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.main_tabs.currentChanged.connect(self.handle_tab_changed)
         #needed for "Find in RAW" feature
         self.tab_vram.link_raw_tab(self.tab_raw)
+        self.tab_hw_sprites.link_raw_tab(self.tab_raw)
 
         #about tab
         self.about_label.setText(

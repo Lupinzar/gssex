@@ -1,4 +1,5 @@
 from .rendertab import RenderTab
+from .tabraw import TabRaw
 from .spritemodel import SpriteModel
 from .app import pil_to_qimage, pil_to_clipboard
 from ..uibase.tabsprite import Ui_TabSprite
@@ -30,12 +31,28 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.copy_sprite_button.clicked.connect(self.copy_sprite_to_clipboard)
         self.save_plane_button.clicked.connect(self.save_plane)
         self.copy_plane_button.clicked.connect(self.copy_plane_to_clipboard)
+        self.find_button.clicked.connect(self.find_in_raw)
         self.register_shortcuts()
+
+    def link_raw_tab(self, tab: TabRaw):
+        self.raw_tab = tab
 
     def load_trim_combo(self):
         for ndx in range(0, len(SpritePlane.TRIM_MODE)):
             enum = SpritePlane.TRIM_MODE(ndx)
             self.trim_combo.addItem(enum.name.title())
+
+    def find_in_raw_allowed(self) -> bool:
+        if self.raw_tab.file is None:
+            return False
+        if not self.app.valid_file:
+            return False
+        if self.current_sprite is None:
+            return False
+        return True
+    
+    def update_find_button(self):
+        self.find_button.setEnabled(self.find_in_raw_allowed())
 
     def register_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_sprite())
@@ -61,19 +78,24 @@ class TabSprite(RenderTab, Ui_TabSprite):
         if not len(selection):
             self.sprite_label.clear()
             self.current_sprite = None
+            self.update_find_button()
             return
         self.current_sprite = selection[0].row()
         self.render_sprite()
+        self.update_find_button()
 
     def redraw(self):
         if not self.app.valid_file:
             self.clear_view()
+            self.update_find_button()
             return
         self.render_sprite()
         self.render_plane()
+        self.update_find_button()
 
     def full_refresh(self):
         if not self.app.valid_file:
+            self.update_find_button()
             self.clear_view()
             return
         self.load_model()
@@ -193,6 +215,20 @@ class TabSprite(RenderTab, Ui_TabSprite):
         img = self.get_pil_plane()
         pil_to_clipboard(img)
         img.close()
+
+    def find_in_raw(self):
+        if self.current_sprite is None:
+            return
+        bytedata = bytearray()
+        sprite = self.sprite_table[self.current_sprite]
+        tile_start = sprite.start
+        tile_end = sprite.width * sprite.height + tile_start
+        for tilenum in range(tile_start, tile_end):
+            offset = self.app.savestate.pattern_data.number_to_offset(tilenum)
+            bytedata += self.app.savestate.pattern_data.get_raw(offset)
+        tabs = self.parent().parent()
+        tabs.setCurrentWidget(self.raw_tab)
+        self.raw_tab.data_search(bytedata)
 
     def get_drawn_string(self) -> str:
         if not len(self.hidden_sprites):

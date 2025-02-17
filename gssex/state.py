@@ -245,7 +245,7 @@ class SpriteTable:
     def __len__(self) -> int:
         return len(self.sprites)
     
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> HardwareSprite:
         if isinstance(index, slice):
             return self.sprites[index.start:index.stop:index.step]
         return self.sprites[index]

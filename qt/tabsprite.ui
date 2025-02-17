@@ -76,6 +76,17 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="find_button">
+       <property name="text">
+        <string>Find in Raw</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/icons/search.svg</normaloff>:/icons/search.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
@@ -113,7 +124,7 @@
         <x>0</x>
         <y>0</y>
         <width>616</width>
-        <height>266</height>
+        <height>252</height>
        </rect>
       </property>
       <widget class="QLabel" name="plane_label">

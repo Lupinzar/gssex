@@ -65,6 +65,14 @@ class Ui_TabSprite(object):
 
         self.verticalLayout_2.addWidget(self.copy_sprite_button)
 
+        self.find_button = QPushButton(TabSprite)
+        self.find_button.setObjectName(u"find_button")
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/search.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.find_button.setIcon(icon2)
+
+        self.verticalLayout_2.addWidget(self.find_button)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
@@ -83,7 +91,7 @@ class Ui_TabSprite(object):
         self.plane_scroll.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 616, 266))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 616, 252))
         self.plane_label = QLabel(self.scrollAreaWidgetContents)
         self.plane_label.setObjectName(u"plane_label")
         self.plane_label.setGeometry(QRect(0, 0, 71, 16))
@@ -144,6 +152,7 @@ class Ui_TabSprite(object):
         self.copy_sprite_button.setToolTip(QCoreApplication.translate("TabSprite", u"Copy Sprite", None))
 #endif // QT_CONFIG(tooltip)
         self.copy_sprite_button.setText(QCoreApplication.translate("TabSprite", u"Copy", None))
+        self.find_button.setText(QCoreApplication.translate("TabSprite", u"Find in Raw", None))
         self.plane_label.setText(QCoreApplication.translate("TabSprite", u"Sprite Plane", None))
         self.tile_margins_check.setText(QCoreApplication.translate("TabSprite", u"Tile Margins", None))
         self.label_3.setText(QCoreApplication.translate("TabSprite", u"Trim", None))
