@@ -34,3 +34,8 @@ The **Screen** mode in the Tile Maps tab is not 100% accurate. Combining the Col
 All sprites are rendered on the sprite plane under the Sprites tab as long as they are in the linked draw list. There are some special VDP tricks where certain lines of sprites can be blanked out, but this isn't duplicated. You can manually hide those sprites if need be.
 
 The graphics mode for Sega Master System compatibility is not currently supported.
+
+# Libraries Used
+
+PySide6 (Qt Bindings) - https://doc.qt.io/qt-6/lgpl.html
+Pillow - https://github.com/python-pillow/Pillow/blob/main/LICENSE
