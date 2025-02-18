@@ -37,5 +37,5 @@ The graphics mode for Sega Master System compatibility is not currently supporte
 
 # Libraries Used
 
-PySide6 (Qt Bindings) - https://doc.qt.io/qt-6/lgpl.html
-Pillow - https://github.com/python-pillow/Pillow/blob/main/LICENSE
+* PySide6 (Qt Bindings) - https://doc.qt.io/qt-6/lgpl.html
+* Pillow - https://github.com/python-pillow/Pillow/blob/main/LICENSE
