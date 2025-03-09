@@ -185,6 +185,8 @@ class Mapper:
         self.savestate: SaveState = savestate
         self.enable_cache: bool = enable_cache
         self.cache: dict[Plane, Map] = {}
+        #if we're in 8x16 tile mode, addresses need to be doubled, so shift an extra bit
+        self.address_shift = 5 if self.savestate.vdp_registers.tile_height == 8 else 6
     
     def get_map(self, plane: Plane, priorities: Priority = Priority.BOTH) -> Map:
         cache_key = f'{plane.value}_{priorities.value}'
@@ -237,7 +239,7 @@ class Mapper:
     def decode_tile_data(self, raw_bytes: int) -> dict:
         return {
             'pal': (raw_bytes & 0x6000) >> 13,
-            'address': (raw_bytes & 0x07FF) << 5,
+            'address': (raw_bytes & 0x07FF) << self.address_shift,
             'priority': bool(raw_bytes & 0x8000),
             'vflip': bool(raw_bytes & 0x1000),
             'hflip': bool(raw_bytes & 0x0800)
@@ -397,7 +399,7 @@ class ScrollTable:
                 #CELL mode stores its values in VRAM with gaps, we need to account for that
                 multi = self.savestate.vdp_registers.tile_height
             case _:
-                h_total = self.savestate.vdp_registers.cells_high * self.savestate.vdp_registers.tile_height
+                h_total = self.savestate.vdp_registers.cells_high * 8 #yes, a hard 8 even in double res mode
         for k in range(0, h_total):
             values = self.savestate.v_ram_buffer.read_struct(self.H_DATA_STRUCT, k * self.H_DATA_STRUCT.size * multi + self.address)
             self.h_table[Plane.SCROLL_A].append(values[0])
@@ -414,8 +416,11 @@ class ScrollTable:
             case ScrollMode.CELL:
                 self.h_index_callback = self.get_index_cell
             case _:
-                self.h_index_callback = self.get_index_line
-        
+                if self.savestate.vdp_registers.tile_height == 8:
+                    self.h_index_callback = self.get_index_line
+                else:
+                    #double res mode
+                    self.h_index_callback = self.get_index_line_double
 
     def get_index_full(self, index: int) -> int:
         return 0
@@ -428,6 +433,9 @@ class ScrollTable:
     
     def get_index_line(self, index: int) -> int:
         return index
+    
+    def get_index_line_double(self, index: int) -> int:
+        return index // 2
     
     '''
     TODO V Column + H Scroll

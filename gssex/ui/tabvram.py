@@ -80,6 +80,7 @@ class TabVram(RenderTab, Ui_TabVram):
 
     def full_refresh(self):
         self.update_find_button()
+        self.resize_reticle()
         self.redraw()
 
     def find_in_raw_allowed(self) -> bool:

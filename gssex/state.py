@@ -279,7 +279,7 @@ class PatternData:
     def get_subset(self, offset: int, tiles_max: int) -> Self:
         end = min(self.buffer.length(), tiles_max * self.tile_byte_size + offset)
         buffer = Buffer(self.buffer[offset:end])
-        return PatternData(buffer)
+        return PatternData(buffer, self.tile_size)
     
     def get_tile_count(self) -> int:
         return self.buffer.length() // self.tile_byte_size
