@@ -116,6 +116,8 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.sprite_view.selectionModel().selectionChanged.connect(self.handle_selection)
         self.sprite_model.dataChanged.connect(self.render_plane)
         self.resize_headers()
+        if self.current_sprite is not None:
+            self.sprite_view.selectRow(self.current_sprite)
 
     def render_sprite(self):
         if self.current_sprite is None:
