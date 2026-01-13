@@ -22,10 +22,8 @@ Use the provided pyinstaller built executable in releases.
 ## Linux / Mac
 
 * Clone this repo or download the source code.
-* Make sure you have Python installed. I recommened using an virtual environment. The application was designed for Python 3.13. It may work on earlier releases, but there are no guarantees.
-* Use pip to install the required dependencies. `pip install -r requirements.txt`
-* Run the `main.py` script with your python interpreter.
-* Pre-built binaries will hopefully be available in the future for these two platforms.
+* This project is configured to use uv. This should ensure you have the proper version of python and the needed dependencies. You can find installation instructions here: https://docs.astral.sh/uv/getting-started/installation/
+* Use `uv run main.py` to start the application.
 
 # Limitations / Known Issues
 
