@@ -229,7 +229,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
             offset = self.app.savestate.pattern_data.number_to_offset(tilenum)
             bytedata += self.app.savestate.pattern_data.get_raw(offset)
         tabs = self.parent().parent()
-        tabs.setCurrentWidget(self.raw_tab)
+        tabs.setCurrentWidget(self.raw_tab) #type: ignore
         self.raw_tab.data_search(bytedata)
 
     def get_drawn_string(self) -> str:

@@ -154,11 +154,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self, 
             "Confirmation", 
             "Are you sure you want to restore defaults?\nYour current configuration will be lost.", 
-            QMessageBox.Yes | QMessageBox.No, 
-            QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+            QMessageBox.StandardButton.No
         )
 
-        if answer != QMessageBox.Yes:
+        if answer != QMessageBox.StandardButton.Yes:
             return
         self.app.config = Config()
         self.refresh_config()
