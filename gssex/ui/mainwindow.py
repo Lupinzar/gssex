@@ -149,7 +149,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
             self.main_tabs.currentWidget().paletteSwapped.emit()    #type: ignore
 
-
     def restore_config_defaults(self):
         answer = QMessageBox.question(
             self, 

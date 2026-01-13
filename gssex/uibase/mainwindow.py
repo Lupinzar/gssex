@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,7 +28,7 @@ from gssex.ui.tabraw import TabRaw
 from gssex.ui.tabsprite import TabSprite
 from gssex.ui.tabtilemap import TabTileMap
 from gssex.ui.tabvram import TabVram
-from gssex.uibase import resource_rc
+import resource_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

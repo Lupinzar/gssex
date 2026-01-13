@@ -3,8 +3,8 @@ from enum import Enum, auto
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
 from PySide6.QtCore import Signal, Qt, QSize, QEvent
 from PySide6.QtGui import QPixmap, QIcon, QKeySequence, QShortcut
-from gssex.uibase import resource_rc
 from typing import Callable
+import resource_rc
 
 class TileLoupe(QWidget):
     class POSITION_DIRECTION(Enum):

@@ -24,7 +24,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>186</width>
+        <width>167</width>
         <height>380</height>
        </rect>
       </property>
@@ -362,7 +362,7 @@
   <customwidget>
    <class>TileLoupe</class>
    <extends>QWidget</extends>
-   <header>..ui.tileloupe.h</header>
+   <header>gssex.ui.tileloupe.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
