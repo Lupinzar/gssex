@@ -226,7 +226,7 @@
   <customwidget>
    <class>PaletteSwatch</class>
    <extends>QWidget</extends>
-   <header>..ui.paletteswatch.h</header>
+   <header>gssex.ui.paletteswatch.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

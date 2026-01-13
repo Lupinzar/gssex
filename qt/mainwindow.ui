@@ -323,36 +323,36 @@
   <customwidget>
    <class>ColorButton</class>
    <extends>QPushButton</extends>
-   <header>..ui.colorbutton.h</header>
+   <header>gssex.ui.colorbutton.h</header>
   </customwidget>
   <customwidget>
    <class>TabPalette</class>
    <extends>QWidget</extends>
-   <header>..ui.tabpalette.h</header>
+   <header>gssex.ui.tabpalette.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TabVram</class>
    <extends>QWidget</extends>
-   <header>..ui.tabvram.h</header>
+   <header>gssex.ui.tabvram.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TabRaw</class>
    <extends>QWidget</extends>
-   <header>..ui.tabraw.h</header>
+   <header>gssex.ui.tabraw.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TabTileMap</class>
    <extends>QWidget</extends>
-   <header>..ui.tabtilemap.h</header>
+   <header>gssex.ui.tabtilemap.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TabSprite</class>
    <extends>QWidget</extends>
-   <header>..ui.tabsprite.h</header>
+   <header>gssex.ui.tabsprite.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

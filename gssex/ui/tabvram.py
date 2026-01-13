@@ -1,9 +1,9 @@
-from .rendertab import RenderTab
-from .tabraw import TabRaw
-from .tileloupe import TileLoupe
-from ..uibase.tabvram import Ui_TabVram
-from ..render import VramRender
-from .app import pil_to_qimage, pil_to_clipboard
+from gssex.ui.rendertab import RenderTab
+from gssex.ui.tabraw import TabRaw
+from gssex.ui.tileloupe import TileLoupe
+from gssex.uibase.tabvram import Ui_TabVram
+from gssex.render import VramRender
+from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
 from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QKeySequence, QHoverEvent
 from PySide6.QtCore import Qt, QEvent

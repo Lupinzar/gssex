@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabsprite.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QGridLayout, QHeaderView, QLabel, QPushButton,
     QScrollArea, QSizePolicy, QSpacerItem, QTableView,
     QVBoxLayout, QWidget)
-from . import resource_rc
+import resource_rc
 
 class Ui_TabSprite(object):
     def setupUi(self, TabSprite):

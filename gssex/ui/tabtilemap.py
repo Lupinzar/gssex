@@ -1,8 +1,8 @@
-from .rendertab import RenderTab
-from .app import pil_to_qimage, pil_to_clipboard
-from ..uibase.tabtilemap import Ui_TabTileMap
-from ..static import Plane, Priority
-from ..render import MapRender
+from gssex.ui.rendertab import RenderTab
+from gssex.ui.app import pil_to_qimage, pil_to_clipboard
+from gssex.uibase.tabtilemap import Ui_TabTileMap
+from gssex.static import Plane, Priority
+from gssex.render import MapRender
 from PySide6.QtWidgets import QButtonGroup, QLabel
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 from PIL import Image

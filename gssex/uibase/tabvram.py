@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabvram.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QComboBox, QFo
     QScrollArea, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
 
-from ..ui.tileloupe import TileLoupe
-from . import resource_rc
+from gssex.ui.tileloupe import TileLoupe
+import resource_rc
 
 class Ui_TabVram(object):
     def setupUi(self, TabVram):
@@ -64,7 +64,7 @@ class Ui_TabVram(object):
         self._zoom_label = QLabel(TabVram)
         self._zoom_label.setObjectName(u"_zoom_label")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self._zoom_label)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self._zoom_label)
 
         self.zoom_combo = QComboBox(TabVram)
         self.zoom_combo.addItem("")
@@ -73,12 +73,12 @@ class Ui_TabVram(object):
         self.zoom_combo.addItem("")
         self.zoom_combo.setObjectName(u"zoom_combo")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.zoom_combo)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.zoom_combo)
 
         self._pal_label = QLabel(TabVram)
         self._pal_label.setObjectName(u"_pal_label")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self._pal_label)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self._pal_label)
 
         self.pal_combo = QComboBox(TabVram)
         self.pal_combo.addItem("")
@@ -87,7 +87,7 @@ class Ui_TabVram(object):
         self.pal_combo.addItem("")
         self.pal_combo.setObjectName(u"pal_combo")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.pal_combo)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.pal_combo)
 
         self.pivot_button = QPushButton(TabVram)
         self.pivot_button.setObjectName(u"pivot_button")
@@ -95,7 +95,7 @@ class Ui_TabVram(object):
         self.pivot_button.setChecked(True)
         self.pivot_button.setFlat(False)
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.pivot_button)
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.pivot_button)
 
 
         self.verticalLayout.addLayout(self.formLayout)

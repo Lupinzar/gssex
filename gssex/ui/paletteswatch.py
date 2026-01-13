@@ -2,7 +2,7 @@
 from PySide6.QtWidgets import QWidget, QSizePolicy, QGridLayout, QColorDialog
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPalette
-from ..state import Palette
+from gssex.state import Palette
 
 #we should only need this here...
 class SwatchColor(QWidget):
@@ -19,7 +19,7 @@ class SwatchColor(QWidget):
 
     def drawColor(self, color: QColor):
         pal = self.palette()
-        pal.setColor(QPalette.Window, color)
+        pal.setColor(QPalette.ColorRole.Window, color)
         self.setPalette(pal)
 
     def selectColor(self):
@@ -67,4 +67,4 @@ class PaletteSwatch(QWidget):
 
     def show_gssex_pal(self, palette: Palette):
         for k in range(0, self.swatch_size):
-            self.elements[k].drawColor(palette.get_color_as_rgb(k))
+            self.elements[k].drawColor(QColor(palette.get_color_as_rgb(k)))

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabpalette.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
-from ..ui.paletteswatch import PaletteSwatch
-from . import resource_rc
+from gssex.ui.paletteswatch import PaletteSwatch
+import resource_rc
 
 class Ui_TabPalette(object):
     def setupUi(self, TabPalette):

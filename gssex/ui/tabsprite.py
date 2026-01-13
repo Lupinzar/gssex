@@ -1,10 +1,10 @@
-from .rendertab import RenderTab
-from .tabraw import TabRaw
-from .spritemodel import SpriteModel
-from .app import pil_to_qimage, pil_to_clipboard
-from ..uibase.tabsprite import Ui_TabSprite
-from ..state import SpriteTable
-from ..render import SpriteImage, SpritePlane
+from gssex.ui.rendertab import RenderTab
+from gssex.ui.tabraw import TabRaw
+from gssex.ui.spritemodel import SpriteModel
+from gssex.ui.app import pil_to_qimage, pil_to_clipboard
+from gssex.uibase.tabsprite import Ui_TabSprite
+from gssex.state import SpriteTable
+from gssex.render import SpriteImage, SpritePlane
 from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QKeySequence
 from PIL import Image
 from base64 import b32encode
@@ -229,7 +229,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
             offset = self.app.savestate.pattern_data.number_to_offset(tilenum)
             bytedata += self.app.savestate.pattern_data.get_raw(offset)
         tabs = self.parent().parent()
-        tabs.setCurrentWidget(self.raw_tab)
+        tabs.setCurrentWidget(self.raw_tab) #type: ignore
         self.raw_tab.data_search(bytedata)
 
     def get_drawn_string(self) -> str:

@@ -247,7 +247,7 @@
   <customwidget>
    <class>TileLoupe</class>
    <extends>QWidget</extends>
-   <header>..ui.tileloupe.h</header>
+   <header>gssex.ui.tileloupe.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

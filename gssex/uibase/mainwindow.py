@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -22,13 +22,13 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QStatusBar, QTabWidget, QToolBar, QVBoxLayout,
     QWidget)
 
-from ..ui.colorbutton import ColorButton
-from ..ui.tabpalette import TabPalette
-from ..ui.tabraw import TabRaw
-from ..ui.tabsprite import TabSprite
-from ..ui.tabtilemap import TabTileMap
-from ..ui.tabvram import TabVram
-from . import resource_rc
+from gssex.ui.colorbutton import ColorButton
+from gssex.ui.tabpalette import TabPalette
+from gssex.ui.tabraw import TabRaw
+from gssex.ui.tabsprite import TabSprite
+from gssex.ui.tabtilemap import TabTileMap
+from gssex.ui.tabvram import TabVram
+import resource_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

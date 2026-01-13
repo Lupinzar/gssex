@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabtilemap.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
     QLabel, QPushButton, QRadioButton, QScrollArea,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
-from . import resource_rc
+import resource_rc
 
 class Ui_TabTileMap(object):
     def setupUi(self, TabTileMap):
@@ -32,7 +32,7 @@ class Ui_TabTileMap(object):
         self.plane_scroll.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 327, 456))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 329, 456))
         self.main_label = QLabel(self.scrollAreaWidgetContents)
         self.main_label.setObjectName(u"main_label")
         self.main_label.setGeometry(QRect(0, 0, 81, 16))
@@ -64,7 +64,7 @@ class Ui_TabTileMap(object):
 
         self.mode_map_radio = QRadioButton(TabTileMap)
         self.mode_map_radio.setObjectName(u"mode_map_radio")
-        self.mode_map_radio.setChecked(True)
+        self.mode_map_radio.setChecked(False)
 
         self.verticalLayout_2.addWidget(self.mode_map_radio)
 

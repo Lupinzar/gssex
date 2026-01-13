@@ -1,8 +1,8 @@
-from .rendertab import RenderTab
-from ..uibase.tabpalette import Ui_TabPalette
-from .app import App, pil_to_clipboard
-from ..state import Palette
-from ..render import PaletteImage
+from gssex.ui.rendertab import RenderTab
+from gssex.uibase.tabpalette import Ui_TabPalette
+from gssex.ui.app import App, pil_to_clipboard
+from gssex.state import Palette
+from gssex.render import PaletteImage
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtGui import QColor

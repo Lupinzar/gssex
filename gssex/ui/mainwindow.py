@@ -1,12 +1,12 @@
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, Signal
-from ..uibase.mainwindow import Ui_MainWindow
-from ..static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL
-from ..release import RELEASE
-from ..state import FORMAT_NAMES, NAMES_FORMAT
-from .app import App, Config
-from .rendertab import RenderTab
+from gssex.uibase.mainwindow import Ui_MainWindow
+from gssex.static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL
+from gssex.release import RELEASE
+from gssex.state import FORMAT_NAMES, NAMES_FORMAT
+from gssex.ui.app import App, Config
+from gssex.ui.rendertab import RenderTab
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage(message, App.DEFAULT_STATUS_TIMEOUT)
 
     def open_folder(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select save state directory...", self.app.directory)
+        directory = QFileDialog.getExistingDirectory(self, "Select save state directory...", self.app.directory) #type: ignore
         if not directory:
             return
         if not self.app.open_directory(directory):
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.load_state()
 
     def open_file(self):
-        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)")
+        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)") #type: ignore
         if not file[0]:
             return
         if not self.app.open_file(file[0]):
@@ -147,19 +147,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_pal_lock(self):
         self.app.use_global_pal = self.action_lock_palette.isChecked()
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
-            self.main_tabs.currentWidget().paletteSwapped.emit()
-
+            self.main_tabs.currentWidget().paletteSwapped.emit()    #type: ignore
 
     def restore_config_defaults(self):
         answer = QMessageBox.question(
             self, 
             "Confirmation", 
             "Are you sure you want to restore defaults?\nYour current configuration will be lost.", 
-            QMessageBox.Yes | QMessageBox.No, 
-            QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+            QMessageBox.StandardButton.No
         )
 
-        if answer != QMessageBox.Yes:
+        if answer != QMessageBox.StandardButton.Yes:
             return
         self.app.config = Config()
         self.refresh_config()
@@ -167,8 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
-            self.main_tabs.currentWidget().fullRefresh.emit()
+            self.main_tabs.currentWidget().fullRefresh.emit()   #type: ignore
 
     def emit_state_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
-            self.main_tabs.currentWidget().saveStateChanged.emit()
+            self.main_tabs.currentWidget().saveStateChanged.emit()  #type: ignore
