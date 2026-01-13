@@ -23,7 +23,8 @@ Use the provided pyinstaller built executable in releases.
 
 * Clone this repo or download the source code.
 * This project is configured to use uv. This should ensure you have the proper version of python and the needed dependencies. You can find installation instructions here: https://docs.astral.sh/uv/getting-started/installation/
-* Use `uv run main.py` to start the application.
+* Use `uv run main.py` to start the application from the gssex directory. On the first run, uv should create a virtual environment with the needed dependencies.
+* If you don't want to use uv for some reason, you should still be able to install the dependencies listed in the pyproject.toml file using your preferred method.
 
 # Limitations / Known Issues
 
