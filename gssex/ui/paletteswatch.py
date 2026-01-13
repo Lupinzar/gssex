@@ -2,7 +2,7 @@
 from PySide6.QtWidgets import QWidget, QSizePolicy, QGridLayout, QColorDialog
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPalette
-from ..state import Palette
+from gssex.state import Palette
 
 #we should only need this here...
 class SwatchColor(QWidget):

@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
     QLabel, QPushButton, QRadioButton, QScrollArea,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
-from . import resource_rc
+from gssex.uibase import resource_rc
 
 class Ui_TabTileMap(object):
     def setupUi(self, TabTileMap):

@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
     QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
     QSpinBox, QVBoxLayout, QWidget)
 
-from ..ui.tileloupe import TileLoupe
-from . import resource_rc
+from gssex.ui.tileloupe import TileLoupe
+from gssex.uibase import resource_rc
 
 class Ui_TabRaw(object):
     def setupUi(self, TabRaw):

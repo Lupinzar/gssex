@@ -1,7 +1,7 @@
 from typing import Tuple
 from os.path import isdir, isfile, dirname, basename, realpath
 from os import scandir
-from ..state import SaveState, Palette, FORMAT_FUNCTIONS, load_wrapper
+from gssex.state import SaveState, Palette, FORMAT_FUNCTIONS, load_wrapper
 import json
 from PIL.ImageQt import ImageQt as ImageQt
 from PIL.Image import Image
@@ -15,7 +15,7 @@ class App():
         self.directory: str|None = None
         self.current_file: str|None = None
         self.valid_file: bool = False
-        self.savestate: SaveState = None
+        self.savestate: SaveState|None = None
         self.file_list: list = []
         self.global_pal: Palette = Palette.make_unique()
         self.state_pal: Palette
@@ -102,7 +102,7 @@ class App():
             bgindex = 0
             palette.colors[0] = Palette.int_to_tuple(self.config.override_color)
         else:
-            bgindex = self.savestate.vdp_registers.bg_color_index
+            bgindex = self.savestate.vdp_registers.bg_color_index #type: ignore
         return (bgindex, palette)
 
     def save_image(self, image: Image, path: str) -> bool:
@@ -113,7 +113,7 @@ class App():
             return False
         
     def build_image_output_path(self, key: str) -> str:
-        return f'{self.config.output_path}/{basename(self.current_file)}_{key}.png'
+        return f'{self.config.output_path}/{basename(self.current_file)}_{key}.png' #type: ignore
 
     #gens formatted for now...
     @staticmethod

@@ -1,4 +1,4 @@
-from ..state import SpriteTable
+from gssex.state import SpriteTable, HardwareSprite
 from PySide6.QtCore import Qt, QAbstractTableModel
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QHeaderView
@@ -29,7 +29,7 @@ class SpriteModel(QAbstractTableModel):
     COLUMN_COUNT = len(COLUMNS)
     def __init__(self, data: SpriteTable, hidden: set):
         super().__init__()
-        self.sprite_table: SpriteTable = data.sprites
+        self.sprite_table: list[HardwareSprite] = data.sprites
         self.drawn: list[int] = data.get_draw_list()
         self.hidden: set = hidden
 

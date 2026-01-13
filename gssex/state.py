@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-from typing import BinaryIO, Tuple, Iterable, Self
+from typing import BinaryIO, Tuple, Iterable, Self, overload
 from struct import Struct
-from .static import ScrollMode, Endian
+from gssex.static import ScrollMode, Endian
 
 class Buffer:
-    def __init__(self, data: bytearray):
+    def __init__(self, data: bytes):
         self.data = data
         self.position = 0
     def seek(self, position: int):
         if position >= len(self.data):
             raise Exception('Tried to seek beyond buffer length')
         self.position = position
-    def read_bytes(self, length: int, position: int = None) -> bytearray:
+    def read_bytes(self, length: int, position: int|None = None) -> bytes:
         if position is None:
             position = self.position
         end = position + length
@@ -19,7 +19,7 @@ class Buffer:
             raise Exception('Tried to read beyond buffer')
         self.position += length
         return self.data[position:end]
-    def read_struct(self, struct: Struct, position: int = None) -> Tuple:
+    def read_struct(self, struct: Struct, position: int|None = None) -> Tuple:
         return struct.unpack(self.read_bytes(struct.size, position))
     def length(self) -> int:
         return len(self.data)
@@ -111,7 +111,7 @@ class SaveState:
     CRAM_SIZE = 128
     VSRAM_SIZE = 80
 
-    def __init__(self, c_ram_buffer: bytearray, v_ram_buffer: bytearray, vs_ram_buffer: bytearray, vdp_registers: VDPRegisters, vs_ram_endian: Endian):
+    def __init__(self, c_ram_buffer: Buffer, v_ram_buffer: Buffer, vs_ram_buffer: Buffer, vdp_registers: VDPRegisters, vs_ram_endian: Endian):
         self.c_ram_buffer: Buffer = c_ram_buffer
         self.v_ram_buffer: Buffer = v_ram_buffer
         self.vs_ram_buffer: Buffer = vs_ram_buffer
@@ -245,7 +245,12 @@ class SpriteTable:
     def __len__(self) -> int:
         return len(self.sprites)
     
-    def __getitem__(self, index) -> HardwareSprite:
+    @overload
+    def __getitem__(self, index: int) -> HardwareSprite: ...
+    @overload
+    def __getitem__(self, index: slice) -> list[HardwareSprite]: ...
+    
+    def __getitem__(self, index: slice | int) -> HardwareSprite | list[HardwareSprite]:
         if isinstance(index, slice):
             return self.sprites[index.start:index.stop:index.step]
         return self.sprites[index]
@@ -267,7 +272,7 @@ class PatternData:
             data.append((b & 0x0F) | (palette << 4))
         return data
     
-    def get_raw(self, address: int) -> bytearray:
+    def get_raw(self, address: int) -> bytes:
         return self.buffer.read_bytes(self.tile_byte_size, address)
         
     def to_mask(self, pattern: bytearray) -> bytearray:
@@ -276,7 +281,7 @@ class PatternData:
     def get_pattern_by_number(self, number: int, palette: int) -> bytearray:
         return self.get_pattern(self.number_to_offset(number), palette)
     
-    def get_subset(self, offset: int, tiles_max: int) -> Self:
+    def get_subset(self, offset: int, tiles_max: int) -> 'PatternData':
         end = min(self.buffer.length(), tiles_max * self.tile_byte_size + offset)
         buffer = Buffer(self.buffer[offset:end])
         return PatternData(buffer, self.tile_size)
@@ -356,12 +361,12 @@ FORMAT_NAMES = {
     'kega_fusion': 'Kega Fusion / Genecyst'
 }
 
-NAMES_FORMAT = dict(reversed(item) for item in FORMAT_NAMES.items())
+NAMES_FORMAT: dict[str, str] = dict(reversed(item) for item in FORMAT_NAMES.items()) #type: ignore
 
 '''
 Helper Functions
 '''
-def read_block_and_validate(handle: BinaryIO, offset: int, length: int) -> bytearray:
+def read_block_and_validate(handle: BinaryIO, offset: int, length: int) -> bytes:
     handle.seek(offset)
     data = handle.read(length)
     if len(data) != length:

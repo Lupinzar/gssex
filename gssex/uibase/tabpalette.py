@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
-from ..ui.paletteswatch import PaletteSwatch
-from . import resource_rc
+from gssex.ui.paletteswatch import PaletteSwatch
+from gssex.uibase import resource_rc
 
 class Ui_TabPalette(object):
     def setupUi(self, TabPalette):

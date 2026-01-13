@@ -1,15 +1,16 @@
-from .rendertab import RenderTab
-from .tileloupe import TileLoupe
-from ..uibase.tabraw import Ui_TabRaw
-from ..render import RawRender
-from ..rawfile import RawFile, BinarySearch
-from .app import pil_to_qimage, pil_to_clipboard
+from gssex.ui.rendertab import RenderTab
+from gssex.ui.tileloupe import TileLoupe
+from gssex.uibase.tabraw import Ui_TabRaw
+from gssex.render import RawRender
+from gssex.rawfile import RawFile, BinarySearch
+from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QRegularExpressionValidator, QShortcut, QKeySequence, QHoverEvent
 from PySide6.QtWidgets import QFileDialog, QFrame
 from os.path import isfile
 from PIL import Image
 from enum import Enum, auto
+from typing import Callable
 
 class TabRaw(RenderTab, Ui_TabRaw):
     class POSITION_DIRECTION(Enum):
@@ -29,7 +30,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         super().__init__(**kwargs)
         self.file: RawFile | None = None
         self.offset: int = 0
-        self.renderer: RawRender | None = None
+        self.renderer: RawRender
         self.context_shortcuts: list[QShortcut] = []
         self.setupUi(self)
         self.search: BinarySearch | None = None
@@ -196,7 +197,7 @@ class TabRaw(RenderTab, Ui_TabRaw):
         self.new_context_shortcut(QKeySequence("Ctrl+Up"),
                           lambda: self.height_spin.setValue(self.height_spin.value() - 1))
         
-    def new_context_shortcut(self, sequence: QKeySequence, callback: callable):
+    def new_context_shortcut(self, sequence: QKeySequence, callback: Callable):
         shortcut = QShortcut(sequence, self)
         shortcut.activated.connect(callback)
         shortcut.setEnabled(False)

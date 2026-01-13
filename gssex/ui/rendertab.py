@@ -1,6 +1,6 @@
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
-from .app import App, Config
+from gssex.ui.app import App
 
 class RenderTab(QWidget):
     STATE_NOT_VALID_MSG = 'No valid save state currently loaded'

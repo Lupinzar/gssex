@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QComboBox, QFo
     QScrollArea, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
 
-from ..ui.tileloupe import TileLoupe
-from . import resource_rc
+from gssex.ui.tileloupe import TileLoupe
+from gssex.uibase import resource_rc
 
 class Ui_TabVram(object):
     def setupUi(self, TabVram):

@@ -1,10 +1,10 @@
-from .state import SaveState, PatternData, HardwareSprite, Palette, SpriteTable, mask_from_bytes
-from .static import Plane, Priority, ScrollMode, Endian
-from .rawfile import RawFile
+from gssex.state import SaveState, PatternData, HardwareSprite, Palette, SpriteTable, mask_from_bytes
+from gssex.static import Plane, Priority, ScrollMode, Endian
+from gssex.rawfile import RawFile
 from PIL import Image, ImageDraw
 from struct import Struct
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Callable
 from enum import Enum
 
 class SpriteImage:
@@ -38,12 +38,12 @@ class SpriteImage:
 
         #flips
         if self.enable_flips and self.sprite.hflip:
-            self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT)
+            self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT) #type: ignore
         if self.enable_flips and self.sprite.vflip:
-            self.image = self.image.transpose(Image.FLIP_TOP_BOTTOM)
+            self.image = self.image.transpose(Image.FLIP_TOP_BOTTOM) #type: ignore
 
         #create mask
-        self.mask.putdata(mask_from_bytes(self.image.getdata()))
+        self.mask.putdata(mask_from_bytes(self.image.getdata())) #type: ignore
         self.rendered = True
     
     def get_image(self) -> Image.Image:
@@ -148,7 +148,7 @@ class RawRender:
             self.tiles_drawn += 1
         return image
     
-    def expand_tile(self, bytes: bytearray, palette: int) -> bytearray:
+    def expand_tile(self, bytes: bytes, palette: int) -> bytearray:
         data = bytearray()
         for b in bytes:
             data.append(((b & 0xF0) >> 4) | (palette << 4))
@@ -184,7 +184,7 @@ class Mapper:
     def __init__(self, savestate: SaveState, enable_cache: bool = True):
         self.savestate: SaveState = savestate
         self.enable_cache: bool = enable_cache
-        self.cache: dict[Plane, Map] = {}
+        self.cache: dict[str, Map] = {}
         #if we're in 8x16 tile mode, addresses need to be doubled, so shift an extra bit
         self.address_shift = 5 if self.savestate.vdp_registers.tile_height == 8 else 6
     
@@ -377,8 +377,8 @@ class ScrollTable:
             Plane.SCROLL_A: [],
             Plane.SCROLL_B: []
         }
-        self.h_index_callback: callable
-        self.v_index_callback: callable
+        self.h_index_callback: Callable
+        self.v_index_callback: Callable
         self.load_table()
         self.set_callbacks()
         
@@ -512,7 +512,7 @@ class SpritePlane:
         if trim_mode == self.TRIM_MODE.NONE or drawn == 0:
             return img
         if trim_mode == self.TRIM_MODE.SPRITES:
-            return img.crop(min_max_box)
+            return img.crop(min_max_box) #type: ignore
         return img.crop((
             self.DISPLAY_OFFSET, 
             self.DISPLAY_OFFSET, 

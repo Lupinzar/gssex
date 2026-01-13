@@ -3,7 +3,8 @@ from enum import Enum, auto
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
 from PySide6.QtCore import Signal, Qt, QSize, QEvent
 from PySide6.QtGui import QPixmap, QIcon, QKeySequence, QShortcut
-from ..uibase import resource_rc
+from gssex.uibase import resource_rc
+from typing import Callable
 
 class TileLoupe(QWidget):
     class POSITION_DIRECTION(Enum):
@@ -78,7 +79,7 @@ class TileLoupe(QWidget):
         self.new_context_shortcut(QKeySequence("Ctrl+Up"),
                           lambda: self.height_spin.setValue(self.height_spin.value() - 1))
         
-    def new_context_shortcut(self, sequence: QKeySequence, callback: callable):
+    def new_context_shortcut(self, sequence: QKeySequence, callback: Callable):
         shortcut = QShortcut(sequence, self)
         shortcut.activated.connect(callback)
         shortcut.setEnabled(False)

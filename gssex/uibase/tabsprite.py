@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QGridLayout, QHeaderView, QLabel, QPushButton,
     QScrollArea, QSizePolicy, QSpacerItem, QTableView,
     QVBoxLayout, QWidget)
-from . import resource_rc
+from gssex.uibase import resource_rc
 
 class Ui_TabSprite(object):
     def setupUi(self, TabSprite):
