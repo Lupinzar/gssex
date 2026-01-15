@@ -1,4 +1,5 @@
 *.pyc
 gssex.json
+keys.json
 dist/
 build/
