@@ -5,8 +5,8 @@ from PySide6.QtCore import QSize
 from gssex.ui.app import Shortcuts
 
 class KeyDefine(QMainWindow):
-    def __init__(self, shortcuts: Shortcuts):
-        super().__init__()
+    def __init__(self, parent, shortcuts: Shortcuts):
+        super().__init__(parent)
         self.shortcuts = shortcuts
         self.key_widgets: dict[str, QKeySequenceEdit] = {}
         self.ok_button: QPushButton
@@ -67,6 +67,7 @@ class KeyDefine(QMainWindow):
 
     def ok(self):
         self.save()
+        self.parent().shortcut_change.emit() #type: ignore
         self.close()
 
     def save(self):
