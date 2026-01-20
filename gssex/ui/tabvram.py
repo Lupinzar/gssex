@@ -70,7 +70,6 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.register_shortcuts(self.app.shortcuts)
 
     def update_shortcuts(self):
-        print('vram tab update called')
         for key in self.shortcuts.keys():
             self.shortcuts[key].setKey(self.app.shortcuts.get_sequence(key))
         self.tile_loupe.update_shortcuts(self.app.shortcuts)
