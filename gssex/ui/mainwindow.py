@@ -182,14 +182,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def register_shortcuts(self):
         self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
         for tab in self.main_tabs.findChildren(RenderTab):
-            if hasattr(tab, 'register_shortcuts'):
-                tab.register_shortcuts() #type: ignore
+            tab.register_shortcuts()
 
     def update_shortcuts(self):
         self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
         for tab in self.main_tabs.findChildren(RenderTab):
-            if hasattr(tab, 'update_shortcuts'):
-                tab.update_shortcuts() #type: ignore
+            tab.update_shortcuts()
 
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
