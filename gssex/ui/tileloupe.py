@@ -2,8 +2,8 @@
 from enum import Enum, auto
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSpinBox, QSizePolicy, QPushButton, QScrollArea
 from PySide6.QtCore import Signal, Qt, QSize, QEvent
-from PySide6.QtGui import QPixmap, QIcon, QKeySequence, QShortcut
-from typing import Callable
+from PySide6.QtGui import QPixmap, QIcon, QShortcut
+from gssex.ui.app import Shortcuts
 import resource_rc
 
 class TileLoupe(QWidget):
@@ -35,8 +35,7 @@ class TileLoupe(QWidget):
         self.image_scroll = QScrollArea()
         self.reference: None|int = None
         self.tiles_drawn: int = 0
-        self.context_shortcuts: list[QShortcut] = []
-        self.image_scroll.installEventFilter(self)
+        self.shortcuts: dict[str, QShortcut] = {}
         self.setupUi()
 
         self.width_spin.valueChanged.connect(self.emit_size_change)
@@ -48,46 +47,30 @@ class TileLoupe(QWidget):
         self.dec_small_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
         self.dec_large_button.clicked.connect(lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
 
-        self.register_shortcuts()
-
-    def eventFilter(self, obj, event):
-        if obj == self.image_scroll:
-            if event.type() == QEvent.Type.Enter:
-                self.toggle_context_shortcuts(True)
-            if event.type() == QEvent.Type.Leave:
-                self.toggle_context_shortcuts(False)
-        return super().eventFilter(obj, event)
-
     def emit_size_change(self):
         self.sizeChanged.emit(self.width_spin.value(), self.height_spin.value())
 
-    def register_shortcuts(self):
-        self.new_context_shortcut(QKeySequence("Right"), 
-                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.SINGLE))
-        self.new_context_shortcut(QKeySequence("Left"), 
-                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
-        self.new_context_shortcut(QKeySequence("Down"), 
-                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WHOLE))
-        self.new_context_shortcut(QKeySequence("Up"),
-                          lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
-        self.new_context_shortcut(QKeySequence("Ctrl+Right"),
-                          lambda: self.width_spin.setValue(self.width_spin.value() + 1))
-        self.new_context_shortcut(QKeySequence("Ctrl+Left"),
-                          lambda: self.width_spin.setValue(self.width_spin.value() - 1))
-        self.new_context_shortcut(QKeySequence("Ctrl+Down"),
-                          lambda: self.height_spin.setValue(self.height_spin.value() + 1))
-        self.new_context_shortcut(QKeySequence("Ctrl+Up"),
-                          lambda: self.height_spin.setValue(self.height_spin.value() - 1))
+    def register_shortcuts(self, config: Shortcuts):
+        self.shortcuts['loupe_inc_single'] = QShortcut(config.get_sequence('loupe_inc_single'), self,
+            lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.SINGLE))
+        self.shortcuts['loupe_dec_single'] = QShortcut(config.get_sequence('loupe_dec_single'), self,
+            lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.SINGLE))
+        self.shortcuts['loupe_inc_whole'] = QShortcut(config.get_sequence('loupe_inc_whole'), self,
+            lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.INCREMENT, self.POSITION_SIZE.WHOLE))
+        self.shortcuts['loupe_dec_whole'] = QShortcut(config.get_sequence('loupe_dec_whole'), self,
+            lambda: self.positionInitiated.emit(self.POSITION_DIRECTION.DECREMENT, self.POSITION_SIZE.WHOLE))
+        self.shortcuts['loupe_inc_width'] = QShortcut(config.get_sequence('loupe_inc_width'), self,  
+            lambda: self.width_spin.setValue(self.width_spin.value() + 1))                                                            
+        self.shortcuts['loupe_dec_width'] = QShortcut(config.get_sequence('loupe_dec_width'), self,
+            lambda: self.width_spin.setValue(self.width_spin.value() - 1))
+        self.shortcuts['loupe_inc_height'] = QShortcut(config.get_sequence('loupe_inc_height'), self,
+            lambda: self.height_spin.setValue(self.height_spin.value() + 1))
+        self.shortcuts['loupe_dec_height'] = QShortcut(config.get_sequence('loupe_dec_height'), self,
+            lambda: self.height_spin.setValue(self.height_spin.value() - 1))
         
-    def new_context_shortcut(self, sequence: QKeySequence, callback: Callable):
-        shortcut = QShortcut(sequence, self)
-        shortcut.activated.connect(callback)
-        shortcut.setEnabled(False)
-        self.context_shortcuts.append(shortcut)
-
-    def toggle_context_shortcuts(self, checked: bool):
-        for shortcut in self.context_shortcuts:
-            shortcut.setEnabled(checked)
+    def update_shortcuts(self, config: Shortcuts):
+        for key in self.shortcuts.keys():
+            self.shortcuts[key].setKey(config.get_sequence(key))
 
     def set_image(self, image: QPixmap, width: int, height: int):
         width *= self.zoom

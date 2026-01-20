@@ -5,7 +5,7 @@ from gssex.uibase.tabvram import Ui_TabVram
 from gssex.render import VramRender
 from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from PIL import Image
-from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QKeySequence, QHoverEvent
+from PySide6.QtGui import QPixmap, QCursor, QMouseEvent, QShortcut, QHoverEvent
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import QFrame
 from enum import Enum
@@ -15,6 +15,7 @@ class TabVram(RenderTab, Ui_TabVram):
     NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.shortcuts: dict[str, QShortcut] = {}
         self.setupUi(self)
         self.clear_main_image()
 
@@ -41,7 +42,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
         self.main_label.setAttribute(Qt.WidgetAttribute.WA_Hover)
-        self.register_shortcuts()
+        #self.register_shortcuts()
     
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -58,10 +59,21 @@ class TabVram(RenderTab, Ui_TabVram):
         return super().eventFilter(obj, event)
     
     def register_shortcuts(self):
-        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_image())
-        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_to_clipboard())
-        QShortcut(QKeySequence("Ctrl+Shift+S"), self, lambda: self.loupe_save_image())
-        QShortcut(QKeySequence("Ctrl+Shift+C"), self, lambda: self.loupe_copy_to_clipboard())
+        self.shortcuts['save_primary'] = QShortcut(self.app.shortcuts.get_sequence('save_primary'), self, 
+            lambda: self.save_image())
+        self.shortcuts['copy_primary'] = QShortcut(self.app.shortcuts.get_sequence('copy_primary'), self, 
+            lambda: self.copy_to_clipboard())
+        self.shortcuts['save_secondary'] = QShortcut(self.app.shortcuts.get_sequence('save_secondary'), self, 
+            lambda: self.loupe_save_image())
+        self.shortcuts['copy_secondary'] = QShortcut(self.app.shortcuts.get_sequence('copy_secondary'), self, 
+            lambda: self.loupe_copy_to_clipboard())
+        self.tile_loupe.register_shortcuts(self.app.shortcuts)
+
+    def update_shortcuts(self):
+        print('vram tab update called')
+        for key in self.shortcuts.keys():
+            self.shortcuts[key].setKey(self.app.shortcuts.get_sequence(key))
+        self.tile_loupe.update_shortcuts(self.app.shortcuts)
 
     def state_changed(self):
         self.tile_loupe.reset()

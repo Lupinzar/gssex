@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QWidget
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, Signal
 from gssex.uibase.mainwindow import Ui_MainWindow
@@ -23,7 +23,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app.shortcuts.load()
         self.setup_state_combo()
         self.refresh_config()
-        self.update_shortcuts()
 
         #do some setup for our tabs that inherit RenderTab
         rtab: RenderTab
@@ -60,6 +59,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #after everything is loaded/setup, handle any tab updates
         self.handle_tab_changed()
+        
+        #keyboard shortcuts
+        self.register_shortcuts()
         
     #dynamically load the combo box based on the supported formats in state module
     def setup_state_combo(self):
@@ -177,8 +179,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sc.setWindowModality(Qt.WindowModality.WindowModal)
         sc.show()
 
+    def register_shortcuts(self):
+        self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
+        for tab in self.main_tabs.findChildren(RenderTab):
+            if hasattr(tab, 'register_shortcuts'):
+                tab.register_shortcuts() #type: ignore
+
     def update_shortcuts(self):
         self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
+        for tab in self.main_tabs.findChildren(RenderTab):
+            if hasattr(tab, 'update_shortcuts'):
+                tab.update_shortcuts() #type: ignore
 
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
