@@ -181,16 +181,16 @@ class Shortcuts:
         'loupe_dec_height': ('Tile Loupe decrease height', 'Ctrl+Up'),
         'raw_inc_byte': ('RAW Tiles increase 1 byte', 'D'),
         'raw_dec_byte': ('RAW Tiles decrease 1 byte', 'A'),
-        'raw_inc_tile': ('RAW Tiles increase 1 tile', 'W'),
-        'raw_dec_tile': ('RAW Tiles decrease 1 tile', 'S'),
+        'raw_inc_tile': ('RAW Tiles increase 1 tile', 'S'),
+        'raw_dec_tile': ('RAW Tiles decrease 1 tile', 'W'),
         'raw_inc_width': ('RAW Tiles increase width', 'Ctrl+D'),
         'raw_dec_width': ('RAW Tiles decrease width', 'Ctrl+A'),
-        'raw_inc_height': ('RAW Tiles increase height', 'Ctrl+W'),
-        'raw_dec_height': ('RAW Tiles decrease height', 'Ctrl+S'),
+        'raw_inc_height': ('RAW Tiles increase height', 'Ctrl+S'),
+        'raw_dec_height': ('RAW Tiles decrease height', 'Ctrl+W'),
         'raw_inc_line': ('RAW Tiles increase line', 'Shift+D'),
         'raw_dec_line': ('RAW Tiles decrease line', 'Shift+A'),
-        'raw_inc_page': ('RAW Tiles increase page', 'Shift+W'),
-        'raw_dec_page': ('RAW Tiles decrease page', 'Shift+S')
+        'raw_inc_page': ('RAW Tiles increase page', 'Shift+S'),
+        'raw_dec_page': ('RAW Tiles decrease page', 'Shift+W')
     }
     sequences: dict[str, str] = {}
 

@@ -15,7 +15,6 @@ class TabVram(RenderTab, Ui_TabVram):
     NO_LOUPE_SELECTED_MSG = 'No tile selected in loupe'
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.shortcuts: dict[str, QShortcut] = {}
         self.setupUi(self)
         self.clear_main_image()
 
@@ -42,7 +41,6 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.positionInitiated.connect(self.handle_loupe_position)
         self.main_label.installEventFilter(self)
         self.main_label.setAttribute(Qt.WidgetAttribute.WA_Hover)
-        #self.register_shortcuts()
     
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -70,8 +68,7 @@ class TabVram(RenderTab, Ui_TabVram):
         self.tile_loupe.register_shortcuts(self.app.shortcuts)
 
     def update_shortcuts(self):
-        for key in self.shortcuts.keys():
-            self.shortcuts[key].setKey(self.app.shortcuts.get_sequence(key))
+        super().update_shortcuts()
         self.tile_loupe.update_shortcuts(self.app.shortcuts)
 
     def state_changed(self):
