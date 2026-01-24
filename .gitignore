@@ -1,5 +1,6 @@
 *.pyc
 gssex.json
 keys.json
-dist/
-build/
+main.build/
+main.dist/
+nuitka-crash-report.xml

@@ -1,0 +1,1 @@
+python -m nuitka --standalone --windows-console=disable --plugin-enable=pyside6 --output-filename=gssex.exe main.py
