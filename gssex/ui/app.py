@@ -5,13 +5,14 @@ from gssex.state import SaveState, Palette, FORMAT_FUNCTIONS, load_wrapper
 import json
 from PIL.ImageQt import ImageQt as ImageQt
 from PIL.Image import Image
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QGuiApplication, QKeySequence
 from copy import deepcopy
 
 class App():
     DEFAULT_STATUS_TIMEOUT = 4000
     def __init__(self):
         self.config: Config = Config()
+        self.shortcuts: Shortcuts = Shortcuts()
         self.directory: str|None = None
         self.current_file: str|None = None
         self.valid_file: bool = False
@@ -158,6 +159,81 @@ class Config():
             return True
         except Exception as e:
             return False
+        
+class Shortcuts:
+    FIELD_DESC = 0
+    FIELD_SEQUENCE = 1
+    
+    SAVE_PATH = realpath("./keys.json")
+    KEY_MAP = {
+        'shortcut_palette_swap': ('Toggle Palette', 'R'),
+        'save_primary': ('Save (primary)', 'F'),
+        'copy_primary': ('Copy to clipboard (primary)', 'C'),
+        'save_secondary': ('Save (secondary)', 'Ctrl+F'),
+        'copy_secondary': ('Copy to clipboard (secondary)', 'Ctrl+C'),
+        'loupe_inc_single': ('Tile Loupe forward single tile', 'Right'),
+        'loupe_dec_single': ('Tile Loupe backward single tile', 'Left'),
+        'loupe_inc_whole': ('Tile Loupe forward sprite size', 'Down'),
+        'loupe_dec_whole': ('Tile Loupe backward sprite size', 'Up'),
+        'loupe_inc_width': ('Tile Loupe increase width', 'Ctrl+Right'),
+        'loupe_dec_width': ('Tile Loupe decrease width', 'Ctrl+Left'),
+        'loupe_inc_height': ('Tile Loupe increase height', 'Ctrl+Down'),
+        'loupe_dec_height': ('Tile Loupe decrease height', 'Ctrl+Up'),
+        'raw_inc_byte': ('RAW Tiles increase 1 byte', 'D'),
+        'raw_dec_byte': ('RAW Tiles decrease 1 byte', 'A'),
+        'raw_inc_tile': ('RAW Tiles increase 1 tile', 'S'),
+        'raw_dec_tile': ('RAW Tiles decrease 1 tile', 'W'),
+        'raw_inc_width': ('RAW Tiles increase width', 'Ctrl+D'),
+        'raw_dec_width': ('RAW Tiles decrease width', 'Ctrl+A'),
+        'raw_inc_height': ('RAW Tiles increase height', 'Ctrl+S'),
+        'raw_dec_height': ('RAW Tiles decrease height', 'Ctrl+W'),
+        'raw_inc_line': ('RAW Tiles increase line', 'Shift+D'),
+        'raw_dec_line': ('RAW Tiles decrease line', 'Shift+A'),
+        'raw_inc_page': ('RAW Tiles increase page', 'Shift+S'),
+        'raw_dec_page': ('RAW Tiles decrease page', 'Shift+W')
+    }
+    sequences: dict[str, str] = {}
+
+    def __init__(self):
+        self.load_defaults()
+
+    def load(self) -> bool:
+        if not isfile(self.SAVE_PATH):
+            self.load_defaults()
+            return True
+        try:
+            with open(self.SAVE_PATH, 'r') as fp:
+                data = json.load(fp)
+            if not isinstance(data, dict):
+                return False
+            for k, v in data.items():
+                if k not in self.KEY_MAP or not isinstance(v, str): #bogus entries (errors, hand editing)
+                    continue
+                self.sequences[k] = v
+            return True
+        except:
+            return False
+        
+    def save(self) -> bool:
+        try:
+            with open(self.SAVE_PATH, 'w') as fp:
+                json.dump(self.sequences, fp)
+            return True
+        except Exception as e:
+            return False
+        
+    def load_defaults(self):
+        for name in self.KEY_MAP:
+            self.sequences[name] = self.KEY_MAP[name][self.FIELD_SEQUENCE]
+
+    def get_sequence(self, name: str) -> QKeySequence:
+        return QKeySequence.fromString(self.sequences.get(name, ''))
+    
+    def get_sequences(self) -> dict[str, str]:
+        return self.sequences
+    
+    def set_sequence(self, name: str, str_sequence: str):
+        self.sequences[name] = str_sequence
         
 def pil_to_qimage(image: Image) -> ImageQt:
     return ImageQt(image)

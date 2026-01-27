@@ -46,40 +46,16 @@
           <x>10</x>
           <y>10</y>
           <width>421</width>
-          <height>140</height>
+          <height>168</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0" columnstretch="0,0">
+        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0" columnstretch="0,0">
          <property name="sizeConstraint">
           <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <property name="horizontalSpacing">
           <number>20</number>
          </property>
-         <item row="2" column="0">
-          <widget class="QLabel" name="__img_output_dir_label">
-           <property name="text">
-            <string>Image Output Directory</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QComboBox" name="state_format_combo"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="__bg_color_override_label">
-           <property name="text">
-            <string>Override Color</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="bg_color_toggle">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="ColorButton" name="bg_color_button">
            <property name="sizePolicy">
@@ -121,6 +97,13 @@
            </item>
           </layout>
          </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="bg_color_toggle">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="__bg_color_toggle_label">
            <property name="text">
@@ -132,6 +115,16 @@
           <widget class="QLabel" name="__state_format">
            <property name="text">
             <string>Save State Format</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="state_format_combo"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="__img_output_dir_label">
+           <property name="text">
+            <string>Image Output Directory</string>
            </property>
           </widget>
          </item>
@@ -148,6 +141,20 @@
            </property>
            <property name="text">
             <string>Restore Defaults</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="__bg_color_override_label">
+           <property name="text">
+            <string>Override Color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QPushButton" name="config_shortcuts_button">
+           <property name="text">
+            <string>Keyboard Shortcuts</string>
            </property>
           </widget>
          </item>

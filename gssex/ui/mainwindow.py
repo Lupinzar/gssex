@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QWidget
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, Signal
 from gssex.uibase.mainwindow import Ui_MainWindow
@@ -7,15 +7,20 @@ from gssex.release import RELEASE
 from gssex.state import FORMAT_NAMES, NAMES_FORMAT
 from gssex.ui.app import App, Config
 from gssex.ui.rendertab import RenderTab
+from gssex.ui.keydefine import KeyDefine
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    shortcut_change: Signal = Signal()
+
     def __init__(self):
         super().__init__()
+
         self.setupUi(self)
         self.label_opened_file.setText("(No save state opened)")
         self.setWindowTitle(f"{APPLICATION_NAME} {RELEASE}")
         self.app = App()
         self.app.config.load()
+        self.app.shortcuts.load()
         self.setup_state_combo()
         self.refresh_config()
 
@@ -42,6 +47,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_format_combo.currentTextChanged.connect(self.update_config)
         self.output_select_button.pressed.connect(self.select_output_dir)
         self.default_config_button.pressed.connect(self.restore_config_defaults)
+        self.config_shortcuts_button.pressed.connect(self.open_shortcuts)
+        self.shortcut_change.connect(self.update_shortcuts)
 
         self.action_open_folder.triggered.connect(self.open_folder)
         self.action_open_file.triggered.connect(self.open_file)
@@ -52,6 +59,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         #after everything is loaded/setup, handle any tab updates
         self.handle_tab_changed()
+        
+        #keyboard shortcuts
+        self.register_shortcuts()
         
     #dynamically load the combo box based on the supported formats in state module
     def setup_state_combo(self):
@@ -163,6 +173,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app.config = Config()
         self.refresh_config()
         self.save_config()
+
+    def open_shortcuts(self):
+        sc = KeyDefine(self, self.app.shortcuts)
+        sc.setWindowModality(Qt.WindowModality.WindowModal)
+        sc.show()
+
+    def register_shortcuts(self):
+        self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
+        for tab in self.main_tabs.findChildren(RenderTab):
+            tab.register_shortcuts()
+
+    def update_shortcuts(self):
+        self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
+        for tab in self.main_tabs.findChildren(RenderTab):
+            tab.update_shortcuts()
 
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):

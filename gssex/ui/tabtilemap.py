@@ -4,7 +4,7 @@ from gssex.uibase.tabtilemap import Ui_TabTileMap
 from gssex.static import Plane, Priority
 from gssex.render import MapRender
 from PySide6.QtWidgets import QButtonGroup, QLabel
-from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
+from PySide6.QtGui import QPixmap, QShortcut
 from PIL import Image
 from os.path import basename
 
@@ -45,8 +45,6 @@ class TabTileMap(RenderTab, Ui_TabTileMap):
         self.priority_group.buttonClicked.connect(self.draw_main)
         self.save_button.clicked.connect(self.save_image)
         self.copy_button.clicked.connect(self.copy_to_clipboard)
-
-        self.register_shortcuts()
     
     def setup_plane_combo(self):
         for k in range(0, len(Plane)):
@@ -54,8 +52,10 @@ class TabTileMap(RenderTab, Ui_TabTileMap):
             self.plane_combo.addItem(enum.name.replace("_", " ").title())
 
     def register_shortcuts(self):
-        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_image())
-        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_to_clipboard())
+        self.shortcuts['save_primary'] = QShortcut(self.app.shortcuts.get_sequence('save_primary'), self, 
+            lambda: self.save_image())
+        self.shortcuts['copy_primary'] = QShortcut(self.app.shortcuts.get_sequence('copy_primary'), self, 
+            lambda: self.copy_to_clipboard())
 
     def update_info(self):
         vdp = self.app.savestate.vdp_registers

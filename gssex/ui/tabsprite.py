@@ -5,7 +5,7 @@ from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from gssex.uibase.tabsprite import Ui_TabSprite
 from gssex.state import SpriteTable
 from gssex.render import SpriteImage, SpritePlane
-from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QKeySequence
+from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut
 from PIL import Image
 from base64 import b32encode
 
@@ -32,7 +32,6 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.save_plane_button.clicked.connect(self.save_plane)
         self.copy_plane_button.clicked.connect(self.copy_plane_to_clipboard)
         self.find_button.clicked.connect(self.find_in_raw)
-        self.register_shortcuts()
 
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -55,10 +54,14 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.find_button.setEnabled(self.find_in_raw_allowed())
 
     def register_shortcuts(self):
-        QShortcut(QKeySequence("Ctrl+S"), self, lambda: self.save_sprite())
-        QShortcut(QKeySequence("Ctrl+C"), self, lambda: self.copy_sprite_to_clipboard())
-        QShortcut(QKeySequence("Shift+Ctrl+S"), self, lambda: self.save_plane())
-        QShortcut(QKeySequence("Shift+Ctrl+C"), self, lambda: self.copy_plane_to_clipboard())
+        self.shortcuts['save_primary'] = QShortcut(self.app.shortcuts.get_sequence('save_primary'), self, 
+            lambda: self.save_sprite())
+        self.shortcuts['copy_primary'] = QShortcut(self.app.shortcuts.get_sequence('copy_primary'), self, 
+            lambda: self.copy_sprite_to_clipboard())
+        self.shortcuts['save_secondary'] = QShortcut(self.app.shortcuts.get_sequence('save_secondary'), self, 
+            lambda: self.save_plane())
+        self.shortcuts['copy_secondary'] = QShortcut(self.app.shortcuts.get_sequence('copy_secondary'), self, 
+            lambda: self.copy_plane_to_clipboard())
 
     def resize_headers(self):
         head = self.sprite_view.horizontalHeader()
