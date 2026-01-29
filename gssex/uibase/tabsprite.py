@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabsprite.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -128,6 +128,16 @@ class Ui_TabSprite(object):
 
         self.verticalLayout_3.addWidget(self.copy_plane_button)
 
+        self.show_all_button = QPushButton(TabSprite)
+        self.show_all_button.setObjectName(u"show_all_button")
+
+        self.verticalLayout_3.addWidget(self.show_all_button)
+
+        self.hide_all_button = QPushButton(TabSprite)
+        self.hide_all_button.setObjectName(u"hide_all_button")
+
+        self.verticalLayout_3.addWidget(self.hide_all_button)
+
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer_2)
@@ -164,5 +174,7 @@ class Ui_TabSprite(object):
         self.copy_plane_button.setToolTip(QCoreApplication.translate("TabSprite", u"Copy Sprite", None))
 #endif // QT_CONFIG(tooltip)
         self.copy_plane_button.setText(QCoreApplication.translate("TabSprite", u"Copy", None))
+        self.show_all_button.setText(QCoreApplication.translate("TabSprite", u"Show All", None))
+        self.hide_all_button.setText(QCoreApplication.translate("TabSprite", u"Hide All", None))
     # retranslateUi
 
