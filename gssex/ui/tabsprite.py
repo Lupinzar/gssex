@@ -1,3 +1,4 @@
+from PySide6.QtCore import QEvent, QObject
 from gssex.ui.rendertab import RenderTab
 from gssex.ui.tabraw import TabRaw
 from gssex.ui.spritemodel import SpriteModel
@@ -31,7 +32,9 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.save_plane_button.clicked.connect(self.save_plane)
         self.copy_plane_button.clicked.connect(self.copy_plane_to_clipboard)
         self.find_button.clicked.connect(self.find_in_raw)
-
+        self.show_all_button.clicked.connect(self.show_all_sprites)
+        self.hide_all_button.clicked.connect(self.hide_all_sprites)
+    
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
 
@@ -84,6 +87,11 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.render_sprite()
         self.update_find_button()
 
+    def change_hidden(self, hidden: set):
+        self.hidden_sprites = hidden
+        self.sprite_model.hidden = hidden
+        self.render_plane()
+
     def redraw(self):
         if not self.app.valid_file:
             self.clear_view()
@@ -119,8 +127,6 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.sprite_view.selectRow(self.current_sprite)
 
     def render_sprite(self):
-        if self.current_sprite is None:
-            return
         img = self.get_pil_sprite()
         qimg = pil_to_qimage(img)
         self.sprite_label.setPixmap(QPixmap.fromImage(qimg))
@@ -222,6 +228,22 @@ class TabSprite(RenderTab, Ui_TabSprite):
         tabs = self.parent().parent()
         tabs.setCurrentWidget(self.raw_tab) #type: ignore
         self.raw_tab.data_search(bytedata)
+
+    def show_all_sprites(self):
+        if not self.app.valid_file:
+            return
+        self.sprite_model.beginResetModel()
+        self.change_hidden(set())
+        self.sprite_model.endResetModel()
+        self.sprite_view.selectRow(self.current_sprite)
+
+    def hide_all_sprites(self):
+        if not self.app.valid_file:
+            return
+        self.sprite_model.beginResetModel()
+        self.change_hidden(set(self.sprite_table.get_draw_list()))
+        self.sprite_model.endResetModel()
+        self.sprite_view.selectRow(self.current_sprite)
 
     def get_drawn_string(self) -> str:
         if not len(self.hidden_sprites):

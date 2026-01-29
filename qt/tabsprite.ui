@@ -191,6 +191,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="show_all_button">
+       <property name="text">
+        <string>Show All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="hide_all_button">
+       <property name="text">
+        <string>Hide All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
