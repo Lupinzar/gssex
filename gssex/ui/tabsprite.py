@@ -10,14 +10,13 @@ from PIL import Image
 from base64 import b32encode
 
 class TabSprite(RenderTab, Ui_TabSprite):
-    NO_SPRITE_SELECTED_MSG = "No sprite currently selected"
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setupUi(self)
         self.sprite_table: SpriteTable
         self.sprite_view.setSelectionBehavior(self.sprite_view.SelectionBehavior.SelectRows)
         self.sprite_view.setSelectionMode(self.sprite_view.SelectionMode.SingleSelection)
-        self.current_sprite: int|None
+        self.current_sprite: int = 0
         self.hidden_sprites: set = set()
 
         self.clear_view()
@@ -69,7 +68,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
             head.setSectionResizeMode(ndx, column.resize_mode)
 
     def clear_view(self):
-        self.current_sprite = None
+        self.current_sprite = 0
         self.sprite_view.setModel(QStandardItemModel())
         self.sprite_label.clear()
         self.plane_label.clear()
@@ -80,7 +79,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
         selection = self.sprite_view.selectedIndexes()
         if not len(selection):
             self.sprite_label.clear()
-            self.current_sprite = None
+            self.current_sprite = 0
             self.update_find_button()
             return
         self.current_sprite = selection[0].row()
@@ -166,9 +165,6 @@ class TabSprite(RenderTab, Ui_TabSprite):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
             return
-        if self.current_sprite is None:
-            self.statusMessage.emit(self.NO_SPRITE_SELECTED_MSG)
-            return
         img = self.get_pil_sprite()
         parts = [
             'hwsprite',
@@ -185,9 +181,6 @@ class TabSprite(RenderTab, Ui_TabSprite):
     def copy_sprite_to_clipboard(self):
         if not self.app.valid_file:
             self.statusMessage.emit(self.STATE_NOT_VALID_MSG)
-            return
-        if self.current_sprite is None:
-            self.statusMessage.emit(self.NO_SPRITE_SELECTED_MSG)
             return
         img = self.get_pil_sprite()
         pil_to_clipboard(img)
