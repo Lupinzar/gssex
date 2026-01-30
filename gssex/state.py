@@ -228,7 +228,7 @@ class SpriteTable:
             )
             self.sprites.append(sprite)
     
-    def get_draw_list(self) -> list[int]:
+    def get_draw_list(self, reverse=True) -> list[int]:
         order = []
         index = 0
         while True:
@@ -240,7 +240,9 @@ class SpriteTable:
             if link in order:
                 break
             index = link
-        return list(reversed(order))
+        if reverse:
+            return list(reversed(order))
+        return order
     
     def __len__(self) -> int:
         return len(self.sprites)

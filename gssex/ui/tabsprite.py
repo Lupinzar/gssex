@@ -1,4 +1,4 @@
-from PySide6.QtCore import QEvent, QObject
+from PySide6.QtCore import QEvent, Qt
 from gssex.ui.rendertab import RenderTab
 from gssex.ui.tabraw import TabRaw
 from gssex.ui.spritemodel import SpriteModel
@@ -6,7 +6,7 @@ from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from gssex.uibase.tabsprite import Ui_TabSprite
 from gssex.state import SpriteTable
 from gssex.render import SpriteImage, SpritePlane
-from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut
+from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QMouseEvent
 from PIL import Image
 from base64 import b32encode
 
@@ -34,6 +34,22 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.find_button.clicked.connect(self.find_in_raw)
         self.show_all_button.clicked.connect(self.show_all_sprites)
         self.hide_all_button.clicked.connect(self.hide_all_sprites)
+        self.plane_label.installEventFilter(self)
+
+    def eventFilter(self, obj, event) -> bool:
+        if obj == self.plane_label and event.type() == QEvent.Type.MouseButtonRelease:
+            self.handle_plane_mouse_click(event)
+        return super().eventFilter(obj, event)
+    
+    def handle_plane_mouse_click(self, event: QMouseEvent):
+        if not self.app.valid_file:
+            return
+        if event.button() == Qt.MouseButton.LeftButton:
+            sprite_number = self.sprite_for_point(event.x(), event.y())
+            if sprite_number is None:
+                return
+            self.current_sprite = sprite_number
+            self.sprite_view.selectRow(self.current_sprite)
     
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -244,6 +260,51 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.change_hidden(set(self.sprite_table.get_draw_list()))
         self.sprite_model.endResetModel()
         self.sprite_view.selectRow(self.current_sprite)
+
+    def sprite_for_point(self, x: int, y: int) -> int | None:
+        x, y = self.adjust_point_for_trim(x, y)
+        candidates = []
+        tile_height = self.app.savestate.vdp_registers.tile_height
+        for ndx in self.sprite_table.get_draw_list(reverse=False):
+            if ndx in self.hidden_sprites:
+                continue
+            sprite = self.sprite_table[ndx]
+            if sprite.x <= x < sprite.x + sprite.width * 8 and sprite.y <= y < sprite.y + sprite.height * tile_height:
+                candidates.append(ndx)
+        if len(candidates) == 0:
+            return None
+        if len(candidates) == 1:
+            return candidates[0]
+        #our currently select sprite is not in our candidate list
+        if self.current_sprite not in candidates:
+            return candidates[0]
+        
+        #multiple candidates and we have one in the list already selected
+        try:
+            current_location = candidates.index(self.current_sprite)
+            #selected candidate is in the last position already, loop to front
+            if current_location + 1 == len(candidates):
+                return candidates[0]
+            #otherwise get the next in the list (should be lower on render order)
+            return candidates[current_location + 1]
+        except ValueError:
+            return None
+
+    def adjust_point_for_trim(self, x: int, y: int) -> tuple[int, int]:
+        trim_mode = SpritePlane.TRIM_MODE(self.trim_combo.currentIndex())
+        if trim_mode == SpritePlane.TRIM_MODE.SCREEN:
+            return x + SpritePlane.DISPLAY_OFFSET, y + SpritePlane.DISPLAY_OFFSET
+        if trim_mode == SpritePlane.TRIM_MODE.SPRITES:
+            drawn = self.sprite_table.get_draw_list(reverse=False)
+            offset_x = SpritePlane.PLANE_SIZE
+            offset_y = SpritePlane.PLANE_SIZE
+            for ndx in drawn:
+                if ndx in self.hidden_sprites:
+                    continue
+                offset_x = min(offset_x, self.sprite_table[ndx].x)
+                offset_y = min(offset_y, self.sprite_table[ndx].y)
+            return x + offset_x, y + offset_y
+        return x, y
 
     def get_drawn_string(self) -> str:
         if not len(self.hidden_sprites):
