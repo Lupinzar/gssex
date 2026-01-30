@@ -50,6 +50,17 @@ class TabSprite(RenderTab, Ui_TabSprite):
                 return
             self.current_sprite = sprite_number
             self.sprite_view.selectRow(self.current_sprite)
+        if event.button() == Qt.MouseButton.RightButton:
+            sprite_number = self.sprite_for_point(event.x(), event.y())
+            if sprite_number is None:
+                return
+            overlap = bool(event.modifiers() & Qt.KeyboardModifier.ShiftModifier)
+            self.current_sprite = sprite_number
+            group = self.find_group(self.current_sprite, overlap)
+            self.sprite_model.beginResetModel()
+            self.change_hidden(set(self.sprite_table.get_draw_list()) - set(group))
+            self.sprite_model.endResetModel()
+            self.sprite_view.selectRow(self.current_sprite)
     
     def link_raw_tab(self, tab: TabRaw):
         self.raw_tab = tab
@@ -305,6 +316,48 @@ class TabSprite(RenderTab, Ui_TabSprite):
                 offset_y = min(offset_y, self.sprite_table[ndx].y)
             return x + offset_x, y + offset_y
         return x, y
+    
+    def find_group(self, target: int, include_overlap: bool = False):
+        drawn = self.sprite_table.get_draw_list()
+        group = [target]
+        stack = [ndx for ndx in drawn if ndx != target]
+        while stack:
+            matched = False
+            returns = []
+            while stack:
+                compare = stack.pop()
+                if self.group_check(group, compare, include_overlap):
+                    group.append(compare)
+                    matched = True
+                else:
+                    returns.append(compare)
+            if not matched:
+                break
+            stack = returns
+        return group
+
+    def group_check(self, group: list[int], check_index: int, include_overlap: bool) -> bool:
+        for i1 in group:
+            if self.check_sprites_touch(i1, check_index, include_overlap):
+                return True
+        return False
+
+    def check_sprites_touch(self, index1: int, index2: int, include_overlap=False) -> bool:
+        tile_height = self.app.savestate.vdp_registers.tile_height
+        s1 = self.sprite_table[index1]
+        s1x2 = s1.x + s1.width * 8
+        s1y2 = s1.y + s1.height * tile_height
+
+        s2 = self.sprite_table[index2]
+        s2x2 = s2.x + s2.width * 8
+        s2y2 = s2.y + s2.height * tile_height
+
+        w = min(s1x2, s2x2) - max(s1.x, s2.x)
+        h = min(s1y2, s2y2) - max(s1.y, s2.y)
+
+        if include_overlap and w > 0 and h > 0:
+            return True
+        return (w == 0 and h >= 0) or (h == 0 and w >= 0)
 
     def get_drawn_string(self) -> str:
         if not len(self.hidden_sprites):
