@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QWidget
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QFileSystemWatcher
 from gssex.uibase.mainwindow import Ui_MainWindow
 from gssex.static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL
 from gssex.release import RELEASE
@@ -8,6 +8,8 @@ from gssex.state import FORMAT_NAMES, NAMES_FORMAT
 from gssex.ui.app import App, Config
 from gssex.ui.rendertab import RenderTab
 from gssex.ui.keydefine import KeyDefine
+from os.path import isfile, basename, join
+from shutil import copyfile
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     shortcut_change: Signal = Signal()
@@ -23,6 +25,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app.shortcuts.load()
         self.setup_state_combo()
         self.refresh_config()
+        self.watcher_path: str
+        self.watcher: QFileSystemWatcher
+        self.watcher_counter: int = 0
 
         #do some setup for our tabs that inherit RenderTab
         rtab: RenderTab
@@ -57,6 +62,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_refresh.triggered.connect(self.refresh_file)
         self.action_lock_palette.triggered.connect(self.update_pal_lock)
 
+        self.watch_file_button.pressed.connect(self.open_watcher_file)
+        self.watch_start_button.pressed.connect(self.start_watching)
+        self.watch_stop_button.pressed.connect(self.stop_watching)
+
         #after everything is loaded/setup, handle any tab updates
         self.handle_tab_changed()
         
@@ -88,8 +97,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)") #type: ignore
         if not file[0]:
             return
-        if not self.app.open_file(file[0]):
-            self.show_timed_status_message(f"Could not open {file}")
+        self.core_open_file(file[0])
+
+    def core_open_file(self, path: str):
+        if not self.app.open_file(path):
+            self.show_timed_status_message(f"Could not open {path}")
             return
         self.update_file_ui()
         self.load_state()
@@ -188,6 +200,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_lock_palette.setShortcut(self.app.shortcuts.get_sequence('shortcut_palette_swap'))
         for tab in self.main_tabs.findChildren(RenderTab):
             tab.update_shortcuts()
+
+    def open_watcher_file(self):
+        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)") #type: ignore
+        if not file[0]:
+            return
+        self.watcher_path = file[0]
+        self.watch_file_path_box.setPlaceholderText(self.watcher_path)
+
+    def start_watching(self):
+        if not hasattr(self, 'watcher_path'):
+            QMessageBox.critical(None, 'Error', 'Please select a save state to watch')
+            return
+        if not isfile(self.watcher_path):
+            QMessageBox.critical(None, 'Error', 'Selected save state is not a file or does not exist')
+            return
+        if not self.watch_load_toggle.isChecked() and not self.watch_save_toggle.isChecked():
+            QMessageBox.critical(None, 'Error', 'Please select at least one of the check box options')
+            return
+        self.watcher = QFileSystemWatcher()
+        self.watcher.addPath(self.watcher_path)
+        self.watcher.fileChanged.connect(self.watcher_change)
+        self.watch_start_button.setEnabled(False)
+        self.watch_stop_button.setEnabled(True)
+
+    def stop_watching(self):
+        self.watcher.removePath(self.watcher_path)
+        del self.watcher
+        self.watch_start_button.setEnabled(True)
+        self.watch_stop_button.setEnabled(False)
+    
+    def watcher_change(self):
+        if self.watch_load_toggle.isChecked():
+            self.core_open_file(self.watcher_path)
+        if self.watch_save_toggle.isChecked():
+            self.watcher_save_copy()
+
+    def watcher_save_copy(self):
+        path = join(self.app.config.output_path, self.build_watcher_name())
+        while isfile(path):
+            self.watcher_counter += 1
+            path = join(self.app.config.output_path, self.build_watcher_name())
+        try:
+            copyfile(self.watcher_path, path)
+        except:
+            self.show_timed_status_message(f'Could not save state copy to: {path}')
+            return
+        self.show_timed_status_message(f'Saved save state copy to: {path}')
+
+    def build_watcher_name(self) -> str:
+        parts = basename(self.watcher_path).split('.')
+        parts[0] = f'{parts[0]}_{self.watcher_counter:05}'
+        return '.'.join(parts)
 
     def handle_tab_changed(self):
         if isinstance(self.main_tabs.currentWidget(), RenderTab):
