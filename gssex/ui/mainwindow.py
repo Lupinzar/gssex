@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, Signal, QFileSystemWatcher
 from gssex.uibase.mainwindow import Ui_MainWindow
-from gssex.static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL
+from gssex.static import APPLICATION_NAME, AUTHOR_STRING, GIT_HUB_URL, SAVESTATE_DIALOG_TYPES
 from gssex.release import RELEASE
 from gssex.state import FORMAT_NAMES, NAMES_FORMAT
 from gssex.ui.app import App, Config
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.load_state()
 
     def open_file(self):
-        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)") #type: ignore
+        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, SAVESTATE_DIALOG_TYPES) #type: ignore
         if not file[0]:
             return
         self.core_open_file(file[0])
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.load_state()
 
     def refresh_file(self):
-        if self.app.current_file is None:
+        if not self.app.current_file:
             return
         path = self.app.make_path()
         if not self.app.open_file(path):
@@ -202,7 +202,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             tab.update_shortcuts()
 
     def open_watcher_file(self):
-        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, "Save states (*.gs?)") #type: ignore
+        file = QFileDialog.getOpenFileName(self, "Select save state...", self.app.directory, SAVESTATE_DIALOG_TYPES) #type: ignore
         if not file[0]:
             return
         self.watcher_path = file[0]

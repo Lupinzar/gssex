@@ -2,6 +2,7 @@ from typing import Tuple
 from os.path import isdir, isfile, dirname, basename, realpath
 from os import scandir
 from gssex.state import SaveState, Palette, FORMAT_FUNCTIONS, load_wrapper
+from gssex.static import Exodus
 import json
 from PIL.ImageQt import ImageQt as ImageQt
 from PIL.Image import Image
@@ -13,10 +14,10 @@ class App():
     def __init__(self):
         self.config: Config = Config()
         self.shortcuts: Shortcuts = Shortcuts()
-        self.directory: str|None = None
-        self.current_file: str|None = None
+        self.directory: str = ''
+        self.current_file: str = ''
         self.valid_file: bool = False
-        self.savestate: SaveState|None = None
+        self.savestate: SaveState
         self.file_list: list = []
         self.global_pal: Palette = Palette.make_unique()
         self.state_pal: Palette
@@ -26,12 +27,16 @@ class App():
         if not isdir(path):
             return False
         self.directory = path
-        self.current_file = None
-        self.valid_file = False
-        self.savestate = None
+        self.current_file = ''
+        self.clear_valid()
         self.load_file_list()
         return True
     
+    def clear_valid(self):
+        if hasattr(self, 'savestate'):
+            del self.savestate
+        self.valid_file = False
+
     def open_file(self, path) -> bool:
         if not isfile(path):
             return False
@@ -39,8 +44,7 @@ class App():
             return False
         self.directory = dirname(path)
         self.current_file = basename(path)
-        self.valid_file = False
-        self.savestate = None
+        self.clear_valid()
         self.load_file_list()
         return True
     
@@ -70,8 +74,7 @@ class App():
             if new_index < 0 or new_index >= len(self.file_list):
                 return False
             self.current_file = self.file_list[new_index]
-            self.valid_file = False
-            self.savestate = None
+            self.clear_valid()
             return True
         except:
             return False
@@ -116,9 +119,10 @@ class App():
     def build_image_output_path(self, key: str) -> str:
         return f'{self.config.output_path}/{basename(self.current_file)}_{key}.png' #type: ignore
 
-    #gens formatted for now...
     @staticmethod
     def allowed_extension(filename: str) -> bool:
+        if filename.lower()[-4:] == Exodus.FILE_EXT:
+            return True
         return filename.lower()[-3:-1] == 'gs'
     
 class Config():

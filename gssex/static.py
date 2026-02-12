@@ -3,6 +3,7 @@ from enum import Enum, auto, Flag
 APPLICATION_NAME = 'gssex'
 AUTHOR_STRING = 'Lupinzar'
 GIT_HUB_URL = 'https://github.com/Lupinzar/gssex'
+SAVESTATE_DIALOG_TYPES = 'Save states (*.gs? *.exs)'
 
 class ScrollMode(Enum):
     FULL = auto()
@@ -23,3 +24,11 @@ class Priority(Flag):
 class Endian(Enum):
     BIG = auto()
     LITTLE = auto()
+
+class Exodus():
+    CRAM_NAME: str = 'MD1600.VDP - CRAM.bin'
+    VRAM_NAME: str = 'MD1600.VDP - VRAM.bin'
+    VSRAM_NAME: str = 'MD1600.VDP - VSRAM.bin'
+    VDP_REG_NAME: str = 'MD1600.VDP.Registers.bin'
+    FORMAT: str = 'exodus'
+    FILE_EXT: str = '.exs'

@@ -319,7 +319,7 @@ class Ui_MainWindow(object):
         self.output_select_button.setText("")
         self.bg_color_toggle.setText("")
         self.__bg_color_toggle_label.setText(QCoreApplication.translate("MainWindow", u"Override Background Color", None))
-        self.__state_format.setText(QCoreApplication.translate("MainWindow", u"Save State Format", None))
+        self.__state_format.setText(QCoreApplication.translate("MainWindow", u"Legacy Save State Format", None))
         self.__img_output_dir_label.setText(QCoreApplication.translate("MainWindow", u"Image Output Directory", None))
         self.default_config_button.setText(QCoreApplication.translate("MainWindow", u"Restore Defaults", None))
         self.__bg_color_override_label.setText(QCoreApplication.translate("MainWindow", u"Override Color", None))

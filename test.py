@@ -1,4 +1,4 @@
-from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state
+from gssex.state import ScrollMode, PatternData, Palette, SpriteTable, load_gens_legacy_state, load_exodus_state
 from gssex.render import SpriteImage, PaletteImage, VramRender, RawRender, MapRender, SpritePlane, mask_from_bytes
 from gssex.rawfile import RawFile
 from gssex.static import Plane, Priority
@@ -7,7 +7,8 @@ from pprint import pp
 from os import fstat
 
 
-state = load_gens_legacy_state("testsaves/kidscroll.gs0")
+#state = load_gens_legacy_state("testsaves/kidscroll.gs0")
+state = load_exodus_state('testsaves/tramp_terror_1.exs')
 
 #pp(state.vdp_registers)
 

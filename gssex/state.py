@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import BinaryIO, Tuple, Iterable, Self, overload
+from typing import IO, Tuple, Iterable, Self, overload
 from struct import Struct
-from gssex.static import ScrollMode, Endian
+from zipfile import ZipFile
+from gssex.static import ScrollMode, Endian, Exodus
 
 class Buffer:
     def __init__(self, data: bytes):
@@ -299,6 +300,9 @@ class PatternData:
 Savestate loading functions
 '''
 def load_wrapper(filepath: str, format: str):
+    #I don't want Exodus in the format dicts since we can automatically determine it by file extension
+    if filepath[-4:] == Exodus.FILE_EXT:
+        return load_exodus_state(filepath)
     if not format in FORMAT_FUNCTIONS:
         raise Exception(f'Unknown save state format {format}')
     func = FORMAT_FUNCTIONS[format]
@@ -351,6 +355,31 @@ def load_kega_fusion_state(filepath: str) -> SaveState:
         Endian.BIG
     )
 
+#compressed version only (which is most likely to be used by end users)
+def load_exodus_state(filepath: str) -> SaveState:
+    with ZipFile(filepath) as zip:
+        with zip.open(Exodus.CRAM_NAME) as f:
+            cram = read_block_and_validate(f, 0, SaveState.CRAM_SIZE)
+        with zip.open(Exodus.VRAM_NAME) as f:
+            vram = read_block_and_validate(f, 0, SaveState.VRAM_SIZE)
+        with zip.open(Exodus.VSRAM_NAME) as f:
+            vsram = read_block_and_validate(f, 0, SaveState.VSRAM_SIZE)
+        with zip.open(Exodus.VDP_REG_NAME) as f:
+            vdp_regs = read_block_and_validate(f, 0, VDPRegisters.SIZE)
+
+    rev_cram = bytearray()
+    for x in range(0, len(cram), 2):
+        rev_cram.append(cram[x+1])
+        rev_cram.append(cram[x])
+    
+    return SaveState(
+        Buffer(rev_cram),
+        Buffer(vram),
+        Buffer(vsram),
+        VDPRegisters.read_vdp_registers(Buffer(vdp_regs)),
+        Endian.BIG
+    )
+
 FORMAT_FUNCTIONS = {
     'gens_legacy': load_gens_legacy_state,
     'gens_rr': load_gens_rr_state,
@@ -368,7 +397,7 @@ NAMES_FORMAT: dict[str, str] = dict(reversed(item) for item in FORMAT_NAMES.item
 '''
 Helper Functions
 '''
-def read_block_and_validate(handle: BinaryIO, offset: int, length: int) -> bytes:
+def read_block_and_validate(handle: IO[bytes], offset: int, length: int) -> bytes:
     handle.seek(offset)
     data = handle.read(length)
     if len(data) != length:
