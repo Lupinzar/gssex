@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
         self.config_shortcuts_button.setText(QCoreApplication.translate("MainWindow", u"Keyboard Shortcuts", None))
         self.about_label.setText(QCoreApplication.translate("MainWindow", u"About", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"The watcher allows you to select a savestate file and load it when the file changes. This way you can use a numbered save state slot in a supported emulator to quickly rip graphics, or build a library of saves.", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"The watcher allows you to select a save state file and load it when the file changes. You can use a numbered save state slot in a supported emulator to quickly rip graphics, or build a library of saves.", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Save State to Watch:", None))
         self.watch_file_path_box.setPlaceholderText("")
 #if QT_CONFIG(tooltip)

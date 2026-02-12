@@ -194,7 +194,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>The watcher allows you to select a savestate file and load it when the file changes. This way you can use a numbered save state slot in a supported emulator to quickly rip graphics, or build a library of saves.</string>
+           <string>The watcher allows you to select a save state file and load it when the file changes. You can use a numbered save state slot in a supported emulator to quickly rip graphics, or build a library of saves.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
