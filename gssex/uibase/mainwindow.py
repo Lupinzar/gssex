@@ -19,8 +19,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QGridLayout, QHBoxLayout, QLabel, QLayout,
     QLineEdit, QMainWindow, QPushButton, QSizePolicy,
-    QStatusBar, QTabWidget, QToolBar, QVBoxLayout,
-    QWidget)
+    QSpacerItem, QStatusBar, QTabWidget, QToolBar,
+    QVBoxLayout, QWidget)
 
 from gssex.ui.colorbutton import ColorButton
 from gssex.ui.tabpalette import TabPalette
@@ -177,6 +177,70 @@ class Ui_MainWindow(object):
         self.about_label.setTextFormat(Qt.TextFormat.PlainText)
         self.about_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.main_tabs.addTab(self.tab_settings, "")
+        self.tab_watcher = QWidget()
+        self.tab_watcher.setObjectName(u"tab_watcher")
+        self.verticalLayout_2 = QVBoxLayout(self.tab_watcher)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label = QLabel(self.tab_watcher)
+        self.label.setObjectName(u"label")
+        self.label.setWordWrap(True)
+
+        self.verticalLayout_2.addWidget(self.label)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_2 = QLabel(self.tab_watcher)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_2.addWidget(self.label_2)
+
+        self.watch_file_path_box = QLineEdit(self.tab_watcher)
+        self.watch_file_path_box.setObjectName(u"watch_file_path_box")
+        self.watch_file_path_box.setEnabled(False)
+
+        self.horizontalLayout_2.addWidget(self.watch_file_path_box)
+
+        self.watch_file_button = QPushButton(self.tab_watcher)
+        self.watch_file_button.setObjectName(u"watch_file_button")
+        self.watch_file_button.setIcon(icon)
+
+        self.horizontalLayout_2.addWidget(self.watch_file_button)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+
+        self.watch_load_toggle = QCheckBox(self.tab_watcher)
+        self.watch_load_toggle.setObjectName(u"watch_load_toggle")
+        self.watch_load_toggle.setChecked(True)
+
+        self.verticalLayout_2.addWidget(self.watch_load_toggle)
+
+        self.watch_save_toggle = QCheckBox(self.tab_watcher)
+        self.watch_save_toggle.setObjectName(u"watch_save_toggle")
+
+        self.verticalLayout_2.addWidget(self.watch_save_toggle)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.watch_start_button = QPushButton(self.tab_watcher)
+        self.watch_start_button.setObjectName(u"watch_start_button")
+
+        self.horizontalLayout_3.addWidget(self.watch_start_button)
+
+        self.watch_stop_button = QPushButton(self.tab_watcher)
+        self.watch_stop_button.setObjectName(u"watch_stop_button")
+        self.watch_stop_button.setEnabled(False)
+
+        self.horizontalLayout_3.addWidget(self.watch_stop_button)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
+
+        self.verticalSpacer = QSpacerItem(17, 181, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
+        self.main_tabs.addTab(self.tab_watcher, "")
         self.tab_palette = TabPalette()
         self.tab_palette.setObjectName(u"tab_palette")
         self.main_tabs.addTab(self.tab_palette, "")
@@ -262,6 +326,18 @@ class Ui_MainWindow(object):
         self.config_shortcuts_button.setText(QCoreApplication.translate("MainWindow", u"Keyboard Shortcuts", None))
         self.about_label.setText(QCoreApplication.translate("MainWindow", u"About", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_settings), QCoreApplication.translate("MainWindow", u"Settings", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"The watcher allows you to select a save state file and load it when the file changes. You can use a numbered save state slot in a supported emulator to quickly rip graphics, or build a library of saves.", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Save State to Watch:", None))
+        self.watch_file_path_box.setPlaceholderText("")
+#if QT_CONFIG(tooltip)
+        self.watch_file_button.setToolTip(QCoreApplication.translate("MainWindow", u"Select Directory", None))
+#endif // QT_CONFIG(tooltip)
+        self.watch_file_button.setText("")
+        self.watch_load_toggle.setText(QCoreApplication.translate("MainWindow", u"Load state on change", None))
+        self.watch_save_toggle.setText(QCoreApplication.translate("MainWindow", u"Save a copy (will save to image output directory)", None))
+        self.watch_start_button.setText(QCoreApplication.translate("MainWindow", u"Start", None))
+        self.watch_stop_button.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
+        self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_watcher), QCoreApplication.translate("MainWindow", u"Watcher", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_palette), QCoreApplication.translate("MainWindow", u"Palette", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_vram), QCoreApplication.translate("MainWindow", u"VRAM", None))
         self.main_tabs.setTabText(self.main_tabs.indexOf(self.tab_raw), QCoreApplication.translate("MainWindow", u"RAW Tiles", None))
