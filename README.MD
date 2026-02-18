@@ -8,6 +8,7 @@ A tool for extracting graphics from Sega Genesis (Sega Mega Drive) emulator save
 * Original Gens & KMOD branches
 * Gens Rerecording (TAS)
 * Kega Fusion
+* Exodus (Compressed)
 
 # Using
 
@@ -17,7 +18,7 @@ Check out the Wiki in this repo for a guide on how to use the tool.
 
 ## Windows
 
-Use the provided pyinstaller built executable in releases.
+Use the provided pre-built executable in releases.
 
 ## Linux / Mac
 
