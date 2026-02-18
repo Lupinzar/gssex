@@ -6,7 +6,7 @@ from gssex.ui.app import pil_to_qimage, pil_to_clipboard
 from gssex.uibase.tabsprite import Ui_TabSprite
 from gssex.state import SpriteTable
 from gssex.render import SpriteImage, SpritePlane
-from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QMouseEvent
+from PySide6.QtGui import QStandardItemModel, QPixmap, QShortcut, QMouseEvent, QCursor
 from PIL import Image
 from base64 import b32encode
 
@@ -100,6 +100,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.sprite_view.setModel(QStandardItemModel())
         self.sprite_label.clear()
         self.plane_label.clear()
+        self.plane_label.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
 
     def handle_selection(self):
         if not self.app.valid_file:
@@ -127,6 +128,7 @@ class TabSprite(RenderTab, Ui_TabSprite):
         self.render_sprite()
         self.render_plane()
         self.update_find_button()
+        self.plane_label.setCursor(QCursor(Qt.CursorShape.CrossCursor))
 
     def full_refresh(self):
         if not self.app.valid_file:
